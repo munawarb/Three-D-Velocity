@@ -1,4 +1,4 @@
-#### Three-D-Velocity: A Fighter Jet Simulator For The Blind and Visually Impaired
+#### Three-D Velocity: A Fighter Jet Simulator For The Blind and Visually Impaired
 
 In 2007, as I was watching "Top Gun," I thought to myself: "How cool would it be if a blind person could fly a fighter jet?" Until this time, there had been no fighter jet simulators that blind people could play. So, a handful of friends and I embarked on the journey to create the world's first ever fully accessible fighter jet simulation.
 
@@ -59,6 +59,6 @@ Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual
 
 While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
 
-## Advisories
+#### Advisories
 
 Three-D Velocity contains adult-oriented cut scenes and is not suitable for minors; parental guidance is advised.
