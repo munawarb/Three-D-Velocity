@@ -39,13 +39,19 @@ Three-D Velocity is a sequel to Treasure Hunt, which was released in 2004 by BPC
 
 The player acts as Lieutenant Orion, a pilot at the center of an effort led by the United States to crash the project. The game follows Orion as he's sent on a mission to stage airstrikes on the project's headquarters.
 
-## How to Play
+## Running The Game
+
+TDV relies on XAudio2 for some of its sound rendering. If you don't have XAudio2 installed, you'll get a semi-cryptic message at startup with the word "xaudio2" in it. If this happens, download and run the [Microsoft DirectX Web Installer](http://www.microsoft.com/directx).
+
+Also, make sure to delete a previous configuration of TDV if you've ever had TDV on your computer, or this version might not work. You can find TDV config files in %APPDATA%\BPCPrograms
+
+### How to Play
 
 If you're not interested in compiling TDV yourself, all you have to do is download this repository and run TDV/bin/releaseX86/tdv.exe.
 
-## How to Compile
+### How to Compile
 
-Three-D Velocity is written in C#.NET. You will need Visual Studio 2013 and .NET Framework 3.5 or higher to compile the project. All other dependencies such as SharpDX and Ogg Vorbis libraries are included with the source distribution. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the project. The executable will be placed in TDV/bin/releaseX86 and is called tdv.exe
+Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2013 solutions, and .NET Framework 3.5 or higher to compile the project. You can get a copy of Visual Studio 2013 Express from Microsoft. This is the recommended IDE. Visual Studio Express is free. All other dependencies such as SharpDX and Ogg Vorbis libraries are included with the source distribution. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the project. The executable will be placed in TDV/bin/releaseX86 and is called tdv.exe
 
 While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
 
