@@ -31,7 +31,7 @@ Here are some of the features in the game:
 - A weapons radar to view all missiles coming towards your aircraft.
 - Racing, Death Match, and Auto Play modes.
 - Mission Mode to follow the "Cloning Malice" story.
-- A comprehensive [manual in HTML format](TDV/bin/docs/documentation.htm).
+- A comprehensive [manual in HTML format](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity/blob/master/TDV/bin/docs/documentation.htm).
 
 ## Background
 
