@@ -268,8 +268,6 @@ namespace TDV
 
 			bool rComplete = (Options.loadedFromMainMenu) ? true : (racingScore >= passingRacingScore);
 			bool dComplete = (Options.loadedFromMainMenu) ? true : (deathMatchScore >= passingDeathMatchScore);
-			rComplete = true;
-			dComplete = true;
 			if (!Options.loadedFromMainMenu)
 				Common.playUntilKeyPress(DSound.SoundPath + "\\mi1.ogg", 0);
 			if ((!rComplete || !dComplete) && !Options.isDemo)
