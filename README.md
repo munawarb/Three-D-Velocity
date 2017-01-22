@@ -49,6 +49,8 @@ TDV relies on XAudio2 for some of its sound rendering. If you don't have XAudio2
 
 Also, make sure to delete a previous configuration of TDV if you've ever had TDV on your computer, or this version might not work. You can find TDV config files in %APPDATA%\BPCPrograms
 
+If you find any bugs or have any suggestions, please post them on the [Issues Page.](https://github.com/munawarb/Three-D-Velocity/issues)
+
 ##### How to Play
 
 If you're not interested in compiling TDV yourself, all you have to do is download this repository and run TDV/bin/releaseX86/tdv.exe.
