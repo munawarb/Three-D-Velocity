@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TGOggPlayer", "TGOggPlayer.csproj", "{9FDCA077-B636-4C21-ACC9-6079253D00CD}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Debug.ActiveCfg = Debug|.NET
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Debug.Build.0 = Debug|.NET
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Release.ActiveCfg = Release|.NET
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

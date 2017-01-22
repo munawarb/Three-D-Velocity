@@ -1,0 +1,15 @@
+E:\g\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\Release\ResolveAssemblyReference.cache
+E:\g\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\Release\OggVorbisDecoder.dll
+E:\g\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\Release\OggVorbisDecoder.pdb
+E:\g\projects\shared\OggVorbisDecoder.dll
+E:\g\projects\shared\OggVorbisDecoder.pdb
+H:\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\Release\ResolveAssemblyReference.cache
+H:\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\Release\OggVorbisDecoder.dll
+H:\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\Release\OggVorbisDecoder.pdb
+H:\projects\shared\OggVorbisDecoder.dll
+H:\projects\shared\OggVorbisDecoder.pdb
+H:\projects\shared\x64\OggVorbisDecoder.dll
+H:\projects\shared\x64\OggVorbisDecoder.pdb
+H:\projects\shared\OggVorbisDecoder64\OggVorbisDecoder\obj\Release\ResolveAssemblyReference.cache
+H:\projects\shared\OggVorbisDecoder64\OggVorbisDecoder\obj\Release\OggVorbisDecoder.dll
+H:\projects\shared\OggVorbisDecoder64\OggVorbisDecoder\obj\Release\OggVorbisDecoder.pdb

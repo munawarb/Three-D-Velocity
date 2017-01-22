@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="TgPlayOgg">
+</Property><Property Name="Solution File" Value="G:\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\TgPlayOgg.sln">
+</Property><Property Name="Date" Value="Monday, September 15, 2008">
+</Property><Property Name="Time" Value="19:42 PM">
+</Property></Properties><Event ErrorLevel="0" Project="TgPlayOgg" Source="TgPlayOgg.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="TgPlayOgg" Source="TgPlayOgg.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="TgPlayOgg.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="TgPlayOgg.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="TgPlayOgg" Source="TgPlayOgg.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

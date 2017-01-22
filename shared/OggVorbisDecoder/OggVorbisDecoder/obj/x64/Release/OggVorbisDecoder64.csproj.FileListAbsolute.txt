@@ -1,0 +1,5 @@
+H:\projects\shared\x64\OggVorbisDecoder.dll
+H:\projects\shared\x64\OggVorbisDecoder.pdb
+H:\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\x64\Release\ResolveAssemblyReference.cache
+H:\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\x64\Release\OggVorbisDecoder.dll
+H:\projects\shared\OggVorbisDecoder\OggVorbisDecoder\obj\x64\Release\OggVorbisDecoder.pdb

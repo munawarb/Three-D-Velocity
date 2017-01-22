@@ -1,0 +1,10 @@
+G:\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\ResolveAssemblyReference.cache
+G:\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\TgPlayOgg.dll
+G:\projects\shared\TgPlayOgg.dll
+G:\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\TgPlayOgg.pdb
+G:\projects\shared\TgPlayOgg.pdb
+E:\g\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\ResolveAssemblyReference.cache
+E:\g\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\TgPlayOgg.dll
+E:\g\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\TgPlayOgg.pdb
+E:\g\projects\shared\TgPlayOgg.dll
+E:\g\projects\shared\TgPlayOgg.pdb

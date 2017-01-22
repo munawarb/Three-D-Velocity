@@ -1,0 +1,15 @@
+H:\projects\shared\BPCSharedComponent\obj\Debug\ResolveAssemblyReference.cache
+H:\projects\shared\BPCSharedComponent\obj\Debug\BPCSharedComponent.dll
+H:\projects\shared\BPCSharedComponent\obj\Debug\BPCSharedComponent.pdb
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\BPCSharedComponent.dll
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\BPCSharedComponent.pdb
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\mscorlib.dll
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\SharpDX.DirectSound.dll
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\SharpDX.dll
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\SharpDX.XAudio2.dll
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\SharpDX.xml
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\SharpDX.DirectSound.xml
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\bin\Debug\SharpDX.XAudio2.xml
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\obj\Debug\BPCSharedComponent.dll
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\obj\Debug\BPCSharedComponent.pdb
+C:\Users\Munawar\Documents\projects\shared\BPCSharedComponent\obj\Debug\BPCSharedComponent64.csprojResolveAssemblyReference.cache

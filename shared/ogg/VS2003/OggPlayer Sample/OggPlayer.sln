@@ -1,0 +1,39 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TgPlayOgg", "TgPlayOgg\TgPlayOgg.csproj", "{C3C77527-5274-4244-9E2C-F37C521BEF06}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3} = {4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TgPlayOgg_vorbisfile", "TgPlayOgg_vorbisfile\TgPlayOgg_vorbisfile.vcproj", "{4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OggPlayer", "TgPlayOgg\Test App\OggPlayer.csproj", "{9FDCA077-B636-4C21-ACC9-6079253D00CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C3C77527-5274-4244-9E2C-F37C521BEF06} = {C3C77527-5274-4244-9E2C-F37C521BEF06}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C3C77527-5274-4244-9E2C-F37C521BEF06}.Debug.ActiveCfg = Debug|.NET
+		{C3C77527-5274-4244-9E2C-F37C521BEF06}.Debug.Build.0 = Debug|.NET
+		{C3C77527-5274-4244-9E2C-F37C521BEF06}.Release.ActiveCfg = Release|.NET
+		{C3C77527-5274-4244-9E2C-F37C521BEF06}.Release.Build.0 = Release|.NET
+		{4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3}.Debug.ActiveCfg = Debug|Win32
+		{4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3}.Debug.Build.0 = Debug|Win32
+		{4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3}.Release.ActiveCfg = Release|Win32
+		{4A2ABB6B-390B-40C1-B515-EFC8F6ED8FA3}.Release.Build.0 = Release|Win32
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Debug.ActiveCfg = Debug|.NET
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Debug.Build.0 = Debug|.NET
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Release.ActiveCfg = Release|.NET
+		{9FDCA077-B636-4C21-ACC9-6079253D00CD}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

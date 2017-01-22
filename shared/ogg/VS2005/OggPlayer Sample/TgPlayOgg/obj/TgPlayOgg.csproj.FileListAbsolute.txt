@@ -1,0 +1,3 @@
+G:\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\ResolveAssemblyReference.cache
+G:\projects\shared\ogg\VS2005\OggPlayer Sample\TgPlayOgg\obj\Release\TgPlayOgg.dll
+G:\projects\shared\TgPlayOgg.dll

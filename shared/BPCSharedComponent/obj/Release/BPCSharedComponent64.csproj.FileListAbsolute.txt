@@ -1,0 +1,10 @@
+G:\projects\shared\x64\BPCSharedComponent.dll
+G:\projects\shared\x64\BPCSharedComponent.pdb
+G:\projects\shared\BPCSharedComponent\obj\Release\ResolveAssemblyReference.cache
+G:\projects\shared\BPCSharedComponent\obj\Release\BPCSharedComponent.dll
+G:\projects\shared\BPCSharedComponent\obj\Release\BPCSharedComponent.pdb
+H:\projects\shared\x64\BPCSharedComponent.dll
+H:\projects\shared\x64\BPCSharedComponent.pdb
+H:\projects\shared\BPCSharedComponent\obj\Release\ResolveAssemblyReference.cache
+H:\projects\shared\BPCSharedComponent\obj\Release\BPCSharedComponent.dll
+H:\projects\shared\BPCSharedComponent\obj\Release\BPCSharedComponent.pdb

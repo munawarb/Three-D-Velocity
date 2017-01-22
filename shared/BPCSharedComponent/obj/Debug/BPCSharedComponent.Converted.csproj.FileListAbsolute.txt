@@ -1,0 +1,9 @@
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\obj\Debug\ResolveAssemblyReference.cache
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\bin\Debug\BPCSharedComponent.dll
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\bin\Debug\BPCSharedComponent.pdb
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\bin\Debug\SlimDX.dll
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\bin\Debug\TgPlayOgg.dll
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\bin\Debug\SlimDX.pdb
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\bin\Debug\TgPlayOgg.pdb
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\obj\Debug\BPCSharedComponent.dll
+G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\obj\Debug\BPCSharedComponent.pdb
