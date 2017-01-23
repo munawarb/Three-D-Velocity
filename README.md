@@ -39,6 +39,10 @@ Three-D Velocity is a sequel to Treasure Hunt, which was released in 2004 by BPC
 
 The player acts as Lieutenant Orion, a pilot at the center of an effort led by the United States to crash the project. The game follows Orion as he's sent on a mission to stage airstrikes on the project's headquarters.
 
+#### Is it abandonware?
+
+No. It's open source, not abandonware. I'll be working on it as time permits. If you have suggestions for future improvements or find bugs, post them on the issues page and you might see the fix or feature in a future update!
+
 #### Documentation
 
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity/blob/master/TDV/bin/docs/documentation.htm)
