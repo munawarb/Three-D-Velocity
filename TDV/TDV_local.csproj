@@ -136,7 +136,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>..\..\Three-D-Velocity-Binaries\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
@@ -145,10 +145,11 @@
     <NoWarn>1591</NoWarn>
     <DebugType>Full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <DefineConstants>x86</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>Three-D-Velocity-Binaries\</OutputPath>
+    <OutputPath>..\..\Three-D-Velocity-Binaries\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <WarningLevel>0</WarningLevel>
