@@ -1,4 +1,4 @@
-#### Three-D Velocity: A Fighter Jet Simulator For The Blind and Visually Impaired
+#### Three-D Velocity: A Fighter Jet Flight Simulator For The Blind and Visually Impaired
 
 In 2007, as I was watching "Top Gun," I thought to myself: "How cool would it be if a blind person could fly a fighter jet?" Until this time, there had been no fighter jet simulators that blind people could play. So, a handful of friends and I embarked on the journey to create the world's first ever fully accessible fighter jet simulation.
 
@@ -30,7 +30,7 @@ Here are some of the features in the game:
 - A weapons radar to view all missiles coming towards your aircraft.
 - Racing, Death Match, and Auto Play modes.
 - Mission Mode to follow the "Cloning Malice" story.
-- A comprehensive [manual in HTML format](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity/blob/master/TDV/bin/docs/documentation.htm).
+- A comprehensive [manual in HTML format](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm).
 
 #### Background
 Three-D Velocity is a sequel to Treasure Hunt, which was released in 2004 by BPCPrograms. The story picks up after the destruction of James Brutus' laboratory and his subsequent death. The original mission was to be an end-all to the Cloning Malice project, which is a privately funded project whose sole goal is to harness the power of today's scientific advances to build a new breed of soldiers, each clones of one another. Project Cloning Malice was started by a scientist named James Brutus. Unfortunately, attempts to shut down the project failed, and the world finds itself faced with the horrors of this project once again.
@@ -41,7 +41,7 @@ The player acts as Lieutenant Orion, a pilot at the center of an effort led by t
 No. It's open source, not abandonware. I'll be working on it as time permits. If you have suggestions for future improvements or find bugs, post them on the issues page and you might see the fix or feature in a future update!
 
 #### Documentation
-There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity/blob/master/TDV/bin/docs/documentation.htm)
+There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
 #### Downloading The Game
 You can either download the Master branch, or download one of the releases listed here. The Master branch itself is considered unstable, so if you're not interested in running TDV from source, download one of these stable releases
