@@ -43,34 +43,47 @@ No. It's open source, not abandonware. I'll be working on it as time permits. If
 #### Documentation
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
-#### Downloading The Game
-You can either download the Master branch, or download one of the releases listed here. The Master branch itself is considered unstable, so if you're not interested in running TDV from source, download one of these stable releases
+#### Change Log
 
-##### [Version 1.01, released on 01/23/2017](../../releases/tag/v1.01)
+##### Version 1.01, released on 01/23/2017
 ###### Fixed
 - Music no longer plays over death scenes in Mission Mode ([#1](../../issues/1))
 - In Training Mode, the player is no longer allowed to flip their aircraft unless required or in free-range combat with Fighter 3 ([#2](../../issues/2))
 
-##### [Version 1.0, released on 01/21/2017](../../releases/tag/v1.0)
+##### Version 1.0, released on 01/21/2017
 ###### Added
 - Initial source code push
 
-#### Running The Game
-Now that you've downloaded a rlease or the Master branch, follow the instructions here to run TDV.
+#### Downloading The Game
+There are several ways to download TDV, depending on your situation and what you want.
 
+##### Dependencies
 TDV relies on XAudio2 for some of its sound rendering. If you don't have XAudio2 installed, you'll get a semi-cryptic message at startup with the word "xaudio2" in it. If this happens, download and run the [Microsoft DirectX Web Installer](https://www.microsoft.com/en-us/download/details.aspx?id=35).
 
 Also, make sure to delete your previous configuration of TDV if you've ever had TDV on your computer, or this version might not work. You can find TDV config files in %APPDATA%\BPCPrograms
 
 If you find any bugs or have any suggestions, please post them on the [Issues Page.](https://github.com/munawarb/Three-D-Velocity/issues)
 
-##### How to Play
-If you're not interested in compiling TDV yourself, all you have to do is download this repository and run TDV/bin/releaseX86/tdv.exe.
-
-##### How to Compile
-Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2013 solutions, and .NET Framework 3.5 or higher to compile the project. You can get a copy of Visual Studio 2013 Express from Microsoft. This is the recommended IDE. Visual Studio Express is free. All other dependencies such as SharpDX and Ogg Vorbis libraries are included with the source distribution. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the project. The executable will be placed in TDV/bin/releaseX86 and is called tdv.exe
-
 While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
+
+##### I just want to play it
+If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/latest.zip).
+
+The zip file contains the TDV executable and all sounds. Run the file tdv.exe to start Three-D Velocity.
+
+##### I just want the source code
+If you just want the source code without the TDV executable and media files, use the git cloen command, like this:
+git clone https://github.com/munawarb/Three-D-Velocity.git
+
+Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2013 solutions, and .NET Framework 3.5 or higher to compile the project. You can get a copy of Visual Studio 2013 Express from Microsoft. This is the recommended IDE. Visual Studio Express is free. Open up the TDV/Three-D Velocity.sln solution in your C# IDE of choice and the project files will load. If you want to successfully run TDV, you must fetch the binaries submodule to include all dependencies and sound files.
+
+##### I want everything!
+Now we're talking! If you want the whole thing which includes the source code and the huge binary release, use the git clone command, like this:
+git clone --recursive https://github.com/munawarb/Three-D-Velocity.git
+
+The --recursive option will tell Git to fetch the binaries submodule. It will be placed in TDV/Three-D-Velocity-Binaries
+
+Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2013 solutions, and .NET Framework 3.5 or higher to compile the project. You can get a copy of Visual Studio 2013 Express from Microsoft. This is the recommended IDE. Visual Studio Express is free. All other dependencies such as SharpDX and Ogg Vorbis libraries are downloaded with the binaries submodule, which was downloaded for you already. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the project. The executable will be placed in TDV/Three-D-Velocity-Binaries and is called tdv.exe
 
 #### Advisories
 Three-D Velocity contains adult-oriented cut scenes and is not suitable for minors; parental guidance is advised.
