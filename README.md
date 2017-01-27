@@ -29,13 +29,13 @@ Here are some of the features in the game:
 - A variety of weapons, including guns, missiles, and active-radar-guided missiles which will follow their targets.
 - A weapons radar to view all missiles coming towards your aircraft.
 - Racing, Death Match, and Auto Play modes.
-- Mission Mode to follow the "Cloning Malice" story.
+- Mission Mode to follow the story.
 - A comprehensive [manual in HTML format](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm).
 
 #### Background
-Three-D Velocity is a sequel to Treasure Hunt, which was released in 2004 by BPCPrograms. The story picks up after the destruction of James Brutus' laboratory and his subsequent death. The original mission was to be an end-all to the Cloning Malice project, which is a privately funded project whose sole goal is to harness the power of today's scientific advances to build a new breed of soldiers, each clones of one another. Project Cloning Malice was started by a scientist named James Brutus. Unfortunately, attempts to shut down the project failed, and the world finds itself faced with the horrors of this project once again.
+The goal in Three-D Velocity is to shut down the Cloning Malice project, which is a privately funded project whose sole goal is to harness the power of today's scientific advances to build a new breed of superhuman soldiers, each clones of one another. The first attempt to shut the project down failed, and the world finds itself faced with the horrors of this project once again as the scientist behind the project builds his army quicker than ever, and has become a formiddable thret to the world, making known his plans for world domination using his army of superhuman soldiers.
 
-The player acts as Lieutenant Orion, a pilot at the center of an effort led by the United States to crash the project. The game follows Orion as he's sent on a mission to stage airstrikes on the project's headquarters.
+Three-D Velocity picks up after the first attempt failed. The player acts as Lieutenant Orion, a pilot at the center of an effort led by the United States to crash the project once again. The game follows Orion as he's sent on a mission to stage airstrikes on the project's headquarters.
 
 #### Is it abandonware?
 No. It's open source, not abandonware. I'll be working on it as time permits. If you have suggestions for future improvements or find bugs, post them on the issues page and you might see the fix or feature in a future update!
