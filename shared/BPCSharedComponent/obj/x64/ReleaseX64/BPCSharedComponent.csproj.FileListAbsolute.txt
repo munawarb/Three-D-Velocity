@@ -1,1 +1,0 @@
-G:\projects\shared\BPCSharedComponent\obj\x64\ReleaseX64\ResolveAssemblyReference.cache

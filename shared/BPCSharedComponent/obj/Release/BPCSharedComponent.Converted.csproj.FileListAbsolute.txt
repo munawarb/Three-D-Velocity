@@ -1,3 +1,0 @@
-G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\obj\Release\ResolveAssemblyReference.cache
-G:\projects\shared\BPCSharedComponent\BPCSharedComponent.ConvertedToC#\obj\Release\BPCSharedComponent.dll
-G:\projects\shared\BPCSharedComponent.dll
