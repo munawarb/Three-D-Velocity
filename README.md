@@ -8,7 +8,7 @@ Over time, we improved the simulator, and then in 2012 decided to redo most of i
 
 I decided to make TDV available as open source for two reasons. First, I feel that people can learn from what it has to offer. There is full support for flight controllers in this game, along with many other things that developers can benefit from. Second, flying a jet at mach-2 is a unique experience for blind people, and now that the company no longer exists, this is my best option to get TDV to people who will enjoy it.
 
-#### Doante
+#### Donate
 This project is open source, so it'll remain free. If you'd like to show your support for it, [please consider donating!](http://paypal.me/munawarb)
 
 #### Features
