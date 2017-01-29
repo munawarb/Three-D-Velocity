@@ -266,16 +266,13 @@ namespace TDV
 			if (!Options.isDemo)
 				readFromFile();
 
-			racingScore = 50;
-			deathMatchScore = 50;
-
 			bool rComplete = (Options.loadedFromMainMenu) ? true : (racingScore >= passingRacingScore);
 			bool dComplete = (Options.loadedFromMainMenu) ? true : (deathMatchScore >= passingDeathMatchScore);
 			if (!Options.loadedFromMainMenu)
 				Common.playUntilKeyPress(DSound.SoundPath + "\\mi1.ogg", 0);
-			if ((!rComplete || !dComplete) && !Options.isDemo)
+			if (!dComplete)
 				Common.playUntilKeyPress(DSound.SoundPath + "\\ri.ogg", 0);
-			if (!Options.loadedFromMainMenu && rComplete && dComplete)
+			if (!Options.loadedFromMainMenu && dComplete)
 				Common.playUntilKeyPress(DSound.SoundPath + "\\mi2.ogg", 0);
 
 			Options.mode = getCurrentMode();
