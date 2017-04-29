@@ -664,8 +664,12 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				 * Once all adds are complete, client will receive a startGame command from the server.
 				 * */
 				bool connected = false;
+				SapiSpeech.speak("Enter IP address or domain to connect to.", SapiSpeech.SpeakFlag.interruptable);
+				String ip = Common.mainGUI.receiveInput();
+				SapiSpeech.speak("Enter your call sign. This is how you'll be known on the server.", SapiSpeech.SpeakFlag.interruptable);
+				String callSign = Common.mainGUI.receiveInput();
 					DSound.playAndWait(DSound.NSoundPath + "\\c1.wav");
-					connected = Client.connect("127.0.0.1", null, 4444, getLicensedID());
+					connected = Client.connect(ip, callSign, 4444);
 					failedConnect = !connected;
 					if (!connected)
 					{

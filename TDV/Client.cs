@@ -183,9 +183,8 @@ namespace TDV
 			set { m_serverTag = value; }
 		}
 
-		public static bool connect(String host, String password, int port, String tag)
+		public static bool connect(String host, String callSign, int port)
 		{
-			System.Diagnostics.Trace.WriteLine("Server tag is " + tag);
 				  ports = new int[]{4444, 4445, 4567, 6969, 32000 };
 			if (dataLocker == null)
 				dataLocker = new object();
@@ -206,7 +205,6 @@ namespace TDV
 			isConnected = false; error = false;
 			live = false;
 			client = new TcpClient();
-			serverTag = tag;
 			int i = (port != 0) ? Array.IndexOf(ports, port) : 0;
 			int time = 0;
 
@@ -237,22 +235,8 @@ namespace TDV
 			{
 				using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
 				{
-					writer.Write((int)0);
-					System.Diagnostics.Trace.WriteLine("After int: " + writer.BaseStream.Length);
-					writer.Write(Convert.ToSingle(Common.applicationVersion));
-					writer.Write(tag);
-					System.Diagnostics.Trace.WriteLine("Tag is now " + tag);
-					if (password != null)
-						writer.Write(password);
+					writer.Write(callSign);
 					writer.Flush();
-					System.Diagnostics.Trace.WriteLine("After password: " + writer.BaseStream.Length);
-					writer.BaseStream.Position = 0;
-					writer.Write((int)(writer.BaseStream.Length - 4));
-					writer.Flush();
-
-					System.Diagnostics.Trace.WriteLine("After data size print " + writer.BaseStream.Length);
-					System.Diagnostics.Trace.WriteLine("SSL packet size: " + (writer.BaseStream.Length - 4));
-					writer.BaseStream.Position = 0;
 					CSCommon.sendData(client, writer);
 				} //using
 				LoginMessages resp = LoginMessages.none;
@@ -298,11 +282,6 @@ namespace TDV
 			processThread = new Thread(processRCV);
 			processThread.Start();
 			return true;
-		}
-
-		public static bool connect(String host, String tag, String password)
-		{
-			return connect(host, password, 4444, tag);
 		}
 
 		private static void connectedEvent(IAsyncResult result)
