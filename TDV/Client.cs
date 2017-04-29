@@ -186,8 +186,7 @@ namespace TDV
 		public static bool connect(String host, String password, int port, String tag)
 		{
 			System.Diagnostics.Trace.WriteLine("Server tag is " + tag);
-			//	  ports = new int[]{4444, 4445, 4567, 6969, 32000 };
-			ports = new int[] { 31111 };
+				  ports = new int[]{4444, 4445, 4567, 6969, 32000 };
 			if (dataLocker == null)
 				dataLocker = new object();
 			if (chatLocker == null)
@@ -236,7 +235,6 @@ namespace TDV
 			Options.writeToFile();
 			try
 			{
-				SslStream ssl = null;
 				using (BinaryWriter writer = new BinaryWriter(new MemoryStream()))
 				{
 					writer.Write((int)0);
@@ -248,8 +246,6 @@ namespace TDV
 						writer.Write(password);
 					writer.Flush();
 					System.Diagnostics.Trace.WriteLine("After password: " + writer.BaseStream.Length);
-					ssl = new SslStream(client.GetStream(), true);
-					ssl.AuthenticateAsClient("bpcprograms.com");
 					writer.BaseStream.Position = 0;
 					writer.Write((int)(writer.BaseStream.Length - 4));
 					writer.Flush();
@@ -257,7 +253,7 @@ namespace TDV
 					System.Diagnostics.Trace.WriteLine("After data size print " + writer.BaseStream.Length);
 					System.Diagnostics.Trace.WriteLine("SSL packet size: " + (writer.BaseStream.Length - 4));
 					writer.BaseStream.Position = 0;
-					((MemoryStream)writer.BaseStream).WriteTo(ssl);
+					CSCommon.sendData(client, writer);
 				} //using
 				LoginMessages resp = LoginMessages.none;
 				using (BinaryReader reader = new BinaryReader(CSCommon.getData(client, 5000)))

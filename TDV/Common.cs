@@ -663,21 +663,9 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				/* We will add the player's craft here by requesting a create, but all subsequent adds will be done by Client.
 				 * Once all adds are complete, client will receive a startGame command from the server.
 				 * */
-				String password = null;
-				if (isRegistered())
-				{
-					SecondarySoundBuffer pBuff = DSound.LoadSound(DSound.NSoundPath + "\\pw1.wav");
-					DSound.PlaySound(pBuff, true, false);
-					password = mainGUI.receiveInput(true);
-					DSound.unloadSound(ref pBuff);
-				}
-
 				bool connected = false;
-				//null password means this is demo license on client-side.
-				if (password == null || password.Length > 0)
-				{
 					DSound.playAndWait(DSound.NSoundPath + "\\c1.wav");
-					connected = Client.connect("bpcprograms.com", password, Client.port, getLicensedID());
+					connected = Client.connect("127.0.0.1", null, 4444, getLicensedID());
 					failedConnect = !connected;
 					if (!connected)
 					{
@@ -689,7 +677,6 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						fadeMusic();
 						buildOnlineMenu();
 					} //if connected
-				} //if provided good password or is demo
 				if (Options.requestedShutdown)
 					return;
 				//If got down here, wants to exit menu or the connection failed

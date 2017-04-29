@@ -976,11 +976,7 @@ namespace TDV
 												   (Options.mode != Options.Modes.autoPlay) ? "mainmenu_2_3.wav" : "",
                                                    (Options.mode != Options.Modes.autoPlay) ? "mainmenu_2_4.wav" : "",
 (Options.mode != Options.Modes.autoPlay) ? "mainmenu_2_5.wav" : "",
-#if BETA
-(Options.mode != Options.Modes.autoPlay) ? "mainmenu_2_6.wav" : ""
-#else
-                                   (Options.mode != Options.Modes.autoPlay) ? "" : "" //"" : ""
-#endif
+"mainmenu_2_6.wav"
 					   };
 			int modeIndex = Common.sVGenerateMenu("", modeOptions, Common.getIncDecVol());
 			if (modeIndex == -1)
