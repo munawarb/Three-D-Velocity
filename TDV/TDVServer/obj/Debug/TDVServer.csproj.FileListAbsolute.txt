@@ -1,0 +1,12 @@
+C:\Users\munawar\projects\TDVServer\bin\Debug\TDVServer.exe.config
+C:\Users\munawar\projects\TDVServer\bin\Debug\TDVServer.exe
+C:\Users\munawar\projects\TDVServer\bin\Debug\TDVServer.pdb
+C:\Users\munawar\projects\TDVServer\obj\Debug\TDVServer.csprojResolveAssemblyReference.cache
+C:\Users\munawar\projects\TDVServer\obj\Debug\TDVServer.exe
+C:\Users\munawar\projects\TDVServer\obj\Debug\TDVServer.pdb
+C:\Users\munawar\projects\Three-D-Velocity\TDV\TDVServer\bin\Debug\TDVServer.exe.config
+C:\Users\munawar\projects\Three-D-Velocity\TDV\TDVServer\obj\Debug\TDVServer.exe
+C:\Users\munawar\projects\Three-D-Velocity\TDV\TDVServer\obj\Debug\TDVServer.pdb
+C:\Users\munawar\projects\Three-D-Velocity\TDV\TDVServer\bin\Debug\TDVServer.exe
+C:\Users\munawar\projects\Three-D-Velocity\TDV\TDVServer\bin\Debug\TDVServer.pdb
+C:\Users\munawar\projects\Three-D-Velocity\TDV\TDVServer\obj\Debug\TDVServer.csprojResolveAssemblyReference.cache
