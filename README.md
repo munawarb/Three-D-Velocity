@@ -47,6 +47,9 @@ No. It's open source, not abandonware. I'll be working on it as time permits. If
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
 #### Change Log
+##### Version 2.0, released on 04/29/2017
+###### Added
+- The multiplayer mode is available in this version. Instructions for running the server are found elsewhere in this document ([#7](../../issues/7))
 
 ##### Version 1.01, released on 01/23/2017
 ###### Fixed
@@ -72,21 +75,26 @@ While the commercial version offered a 64-bit version of the game, I've removed 
 ##### I just want to play it
 If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/latest.zip).
 
-The zip file contains the TDV executable and all sounds. Run the file tdv.exe to start Three-D Velocity.
+The zip file contains the TDV executable, all sounds, and the server executable. Run the file tdv.exe to start Three-D Velocity.
 
 ##### I just want the source code
-If you just want the source code without the TDV executable and media files, use the git cloen command, like this:
-git clone https://github.com/munawarb/Three-D-Velocity.git
+If you just want the source code without the TDV executable and media files, use the git clone command, like this:
+`git clone https://github.com/munawarb/Three-D-Velocity.git`
 
 Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2013 solutions, and .NET Framework 3.5 or higher to compile the project. You can get a copy of Visual Studio 2013 Express from Microsoft. This is the recommended IDE. Visual Studio Express is free. Open up the TDV/Three-D Velocity.sln solution in your C# IDE of choice and the project files will load. If you want to successfully run TDV, you must fetch the binaries submodule to include all dependencies and sound files.
 
 ##### I want everything!
 Now we're talking! If you want the whole thing which includes the source code and the huge binary release, use the git clone command, like this:
-git clone --recursive https://github.com/munawarb/Three-D-Velocity.git
+`git clone --recursive https://github.com/munawarb/Three-D-Velocity.git`
 
 The --recursive option will tell Git to fetch the binaries submodule. It will be placed in TDV/Three-D-Velocity-Binaries
 
 Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2013 solutions, and .NET Framework 3.5 or higher to compile the project. You can get a copy of Visual Studio 2013 Express from Microsoft. This is the recommended IDE. Visual Studio Express is free. All other dependencies such as SharpDX and Ogg Vorbis libraries are downloaded with the binaries submodule, which was downloaded for you already. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the project. The executable will be placed in TDV/Three-D-Velocity-Binaries and is called tdv.exe
+
+#### The Multiplayer Server
+Yes, you read that correctly! TDV contains a multiplayer server so you can fight other aircraft online. If you want to run the server, run the file TDVServer.exe in the binary distribution. For those of you who have the source code, the source code for the server is located in TDV/TDVServer. If you compile the server, the executable will be placed in TDV/TDVServer/bin/Debug.
+
+To connect to someone else's server, launch the game and select "Multiplayer Mode" from the "Mode Selection" menu. You'll be asked for the IP address or domain to connect to, along with the call sign you wish to use on the server. You should allow ports 4444 and 4445 through your firewall, since these are the ports TDV will attempt to connect on.
 
 #### Advisories
 Three-D Velocity contains adult-oriented cut scenes and is not suitable for minors; parental guidance is advised.
