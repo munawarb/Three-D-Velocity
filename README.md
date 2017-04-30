@@ -55,9 +55,9 @@ There's a training mode in the game that will help you get familiar with the bas
 ###### Fixed
 - When loading a game from the main menu, the player no longer hears two engines. Previously, the player would hear an idle engine, and their own engine which was throttling up ([#5](../../issues/5))
 - In Multiplayer Mode, when a second player joins a private game, TDV no longer crashes ([#13](../../issues/13))
-- In parts of the game invloved close-quarters combat, the player's orientation would get stuck according to the last known direction of their aircraft ([#14](../../issues/14))
+- In parts of the game involving close-quarters combat, the player's orientation would get stuck according to the last known direction of their aircraft ([#14](../../issues/14))
 - TDV would behave unexpectedly if the player provided a blank IP address and/or call sign when connecting to the server. Blank input in these fields is no longer allowed ([#15](../../issues/15))
-- 
+
 ##### Version 2.0, released on 04/29/2017
 ###### Added
 - The multiplayer mode is available in this version. Instructions for running the server are found elsewhere in this document ([#7](../../issues/7))
