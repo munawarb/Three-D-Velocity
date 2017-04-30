@@ -94,24 +94,18 @@ namespace TDVServer {
 		}
 
 		public bool add(Player p) {
-			output("Lock returns in add", true);
 			lock (returnsLock) {
-				output("Success", true);
 				returns.Add(p);
 			}
-			output("Exit returnslock for add", true);
 			return true;
 		}
 
 		private void enterPendingPlayers() {
-			output("Lock returnslock in pending", true);
 			lock (returnsLock) {
-				output("Success", true);
 				foreach (Player player in returns)
 					unlockedReturns.Add(player);
 				returns.Clear();
 			}
-			output("Unlocked", true);
 
 			foreach (Player player in unlockedReturns)
 				add(player.tag, player);
@@ -127,9 +121,7 @@ namespace TDVServer {
 			try {
 				//pauseProcessing();
 				output("Adding player " + tag + "...");
-				output("Lock clientList in add", true);
 				lock (lockObject) {
-					output("success", true);
 					if (clientList.Count == 0 && type != GameType.freeForAll) //This is first player being added, so this is the host.
 						p.host = true;
 					//Create local player.
@@ -148,7 +140,6 @@ namespace TDVServer {
 							propogate(CSCommon.buildCMDString(CSCommon.cmd_distributeServerTag, tag, p.name, (byte)ObjectType.aircraft, (int)p.team, (short)0),
 					  p.client);
 						}
-						output("ok", true);
 					} //if entryMode != 1
 
 					//Give this player info about all other players.
@@ -163,7 +154,6 @@ namespace TDVServer {
 								(int)player.team, (short)0));
 						}
 					} //foreach connected player
-					output("ok", true);
 
 					foreach (BotInfo info in bots) {
 						if (info.creator == null) {
@@ -175,11 +165,9 @@ namespace TDVServer {
 							CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_distributeServerTag, info.id, info.name, (byte)info.objectType,
 								(short)0));
 					}
-					output("Ok", true);
 					if (type == GameType.freeForAll) {
 						output("FFA, Starting local player...", true);
 						CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_startGame));
-						output("ok", true);
 					} //if FFA
 					clientList[tag] = p;
 					if (type == GameType.teamDeath)
@@ -193,7 +181,6 @@ namespace TDVServer {
 						(p.entryMode == 1) ? " as a spectator" : entMessage),
 					   p.client);
 				} //lock
-				output("unlock clientList", true);
 				if (type != GameType.freeForAll && !canEvaluateGameEnd
 					&& (type == GameType.teamDeath && getNumberOfTeams() >= 2 || type != GameType.teamDeath))
 					canEvaluateGameEnd = true;
@@ -293,12 +280,10 @@ namespace TDVServer {
 				while (rcvData.BaseStream.Length > rcvData.BaseStream.Position) {
 					start = rcvData.BaseStream.Position;
 					c = rcvData.ReadSByte();
-					output(" char " + c, true);
 					if (c > 4)
 						return;
 					if (c == 1) {
 						command = rcvData.ReadByte();
-						output("value " + command, true);
 
 						switch (command) {
 							case CSCommon.cmd_test:
@@ -322,11 +307,9 @@ namespace TDVServer {
 							case CSCommon.cmd_whois:
 								using (BinaryWriter whoWriter = new BinaryWriter(new MemoryStream())) {
 									whoWriter.Write((short)clientList.Count);
-									output("Doing whois... Client length: " + clientList.Count, true);
 									foreach (Player p in clientList.Values) {
 										whoWriter.Write(p.tag);
 										whoWriter.Write(p.name + ((p.admin) ? " (GM)" : ""));
-										output(String.Format("tag: {0}, name: {1}", p.tag, p.name), true);
 									}
 									CSCommon.sendResponse(client, whoWriter);
 								} //using
@@ -599,7 +582,6 @@ namespace TDVServer {
 		/// Requests the game to stop processing incoming data.
 		/// </summary>
 		private void pauseProcessing() {
-			output("Pausing...", true);
 			requestPause = true;
 			while (!paused)
 				Thread.Sleep(0);

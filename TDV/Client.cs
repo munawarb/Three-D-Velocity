@@ -164,7 +164,7 @@ namespace TDV
 			set { m_port = value; }
 		}
 		private static StreamWriter theFile;
-		private static bool log = true;
+		private static bool log = false;
 		private static bool isConnected, error;
 		private static bool live;
 		private static TcpClient client;

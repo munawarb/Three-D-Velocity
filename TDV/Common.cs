@@ -875,8 +875,9 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 								resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinGame, (byte)3, gamesList[option].getId(), team, entryMode));
 							}
 							else // no team death
+								// The server will return true if the player has been added to the game.
 								resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinGame, (byte)2, gamesList[option].getId(), entryMode));
-							if (resp.ReadByte() == (byte)1)
+							if (resp.ReadBoolean())
 								Interaction.inOnlineGame = true;
 							break;
 

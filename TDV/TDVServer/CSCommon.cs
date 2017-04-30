@@ -128,7 +128,6 @@ namespace TDV
 			try {
 #if SERVER
 				stream.BeginWrite(BitConverter.GetBytes(buffer.Length), 0, 4, new AsyncCallback(writeEnded), stream);
-				Server.output("" + BitConverter.ToInt32(BitConverter.GetBytes(buffer.Length), 0), true);
 				stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(writeEnded), stream);
 #else
 				stream.Write(BitConverter.GetBytes(buffer.Length), 0, 4);
@@ -216,30 +215,16 @@ namespace TDV
 					}
 				} //if ssl
 
-#if SERVER
-				Server.output(String.Format("Data available before size read {0}", stream.DataAvailable), true);
-#endif
-
 				byte[] sizeBuffer = new byte[4];
 				int sizeSize = 0; //how many bytes of the first int we read
 				do {
 					sizeSize += (ssl) ? secureStream.Read(sizeBuffer, sizeSize, sizeBuffer.Length - sizeSize) : stream.Read(sizeBuffer, sizeSize, sizeBuffer.Length - sizeSize);
 				} while (sizeSize < 4);
-#if SERVER
-				Server.output("sizesize: " + sizeSize, true);
-#else
-					System.Diagnostics.Trace.WriteLine("sizesize: " + sizeSize);
-#endif
 
 
 				int size = 0; //How many bytes we read.
 				int totalSize = 0; //Total bytes read from the stream
 				int sizeToRead = BitConverter.ToInt32(sizeBuffer, 0); //How many bytes ultimately make up this packet?
-#if SERVER
-				Server.output("Need to read " + sizeToRead + " bytes", true);
-#else
-				System.Diagnostics.Trace.WriteLine("Need to read " + sizeToRead + " bytes");
-#endif
 
 				byte[] buffer = new byte[sizeToRead];
 				do {
@@ -272,11 +257,6 @@ namespace TDV
 					s.Write(buffer,
 					0, size); //don't get 0 bytes at end
 				} while (totalSize < sizeToRead);
-#if SERVER
-				Server.output("Completed reading " + totalSize + " bytes", true);
-#else
-				System.Diagnostics.Trace.WriteLine("Completed reading " + totalSize + " bytes");
-#endif
 			} //if data available
 
 			if (s == null)

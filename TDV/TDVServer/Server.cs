@@ -361,20 +361,13 @@ namespace TDVServer {
 				output("Call sign is " + callSign + ".");
 				//Custom logic to determine admin flag goes here
 				bool admin = true;
-				output("Read", true);
-
-				output("Before chat", true);
 				sendChatMessage(null, callSign + " has logged on.", MessageType.enterRoom, true);
-				output("After chat", true);
 				String serverTag = Guid.NewGuid().ToString();
 				sendConnectResponse(c, LoginMessages.serverAssignedTag, serverTag);
-				output("Lock returnlock", true);
 				lock (returnLock) {
-					output("success", true);
 					Player p = null;
 					returns.Add(p = new Player(serverTag, callSign, admin, c));
 				} //lock
-				output("After add.", true);
 			} catch (Exception e) {
 				output(e.Message + e.StackTrace);
 			} finally {
@@ -432,15 +425,12 @@ namespace TDVServer {
 				loopedThrough = false;
 				//If a game kicks out a player, could cause deadlock
 				if (returns.Count > 0) {
-					output("Lock returns", true);
 					lock (returnLock) {
-						output("success", true);
 						foreach (Player player in returns) {
 							clientList.Add(player.tag, player);
 						} //foreach
 						returns.Clear();
 					} //lock
-					output("Exit returns", true);
 				} //if modded list
 				lock (lockObject) {
 					while (!loopedThrough) {
@@ -632,7 +622,6 @@ namespace TDVServer {
 							clientList[tag].entryMode = rcvData.ReadInt32();
 							sendMessage(clientList[tag].name + " has joined F F A", client);
 							joinFFA(tag);
-							output("success", true);
 							break;
 
 						case CSCommon.cmd_joinGame:
@@ -681,12 +670,9 @@ namespace TDVServer {
 			try {
 				if (keepOnServer) {
 					p.host = false;
-					output("Lock returns in removve", true);
 					lock (returnLock) {
-						output("success", true);
 						returns.Add(p);
 					}
-					output("unlock returns", true);
 					modifiedClientList = true;
 					if (!crash)
 						sendMessage(p.name + " Has returned from a game.", p.client);
@@ -770,12 +756,15 @@ namespace TDVServer {
 			output("Joining game " + id + " using client " + tag);
 			if (!gameList.ContainsKey(id)) {
 				output("ERROR: id " + id + " doesn't exist.");
+				CSCommon.sendResponse(clientList[tag].client, false);
 				return null;
 			}
 			String name = gameList[id].ToString();
-			if (!gameList[id].isOpen(tag, clientList[tag].entryMode))
+			if (!gameList[id].isOpen(tag, clientList[tag].entryMode))  {
+				CSCommon.sendResponse(clientList[tag].client, false);
 				return null;
-			CSCommon.sendData(clientList[tag].client, (byte)1);
+		}
+			CSCommon.sendResponse(clientList[tag].client, true);
 			gameList[id].add(clientList[tag]);
 			clientList.Remove(tag);
 			modifiedClientList = true;
@@ -1081,7 +1070,6 @@ namespace TDVServer {
 				output("Cleaning up...");
 				foreach (Game g in gameList.Values)
 					g.setForceGameEnd((rebooting) ? null : "there was a problem with the server.");
-				output("Sent forceGameEnd");
 				while (gameList.Count != 0)
 					Thread.Sleep(0);
 				output("All games ended.");
@@ -1177,7 +1165,6 @@ namespace TDVServer {
 					writer.Write((int)l);
 					if ((l & LoginMessages.serverAssignedTag) == LoginMessages.serverAssignedTag)
 						writer.Write(serverTag);
-					output("sending data", true);
 					CSCommon.sendData(c, writer);
 					if ((l & LoginMessages.wrongCredentials) == LoginMessages.wrongCredentials
 						|| (l & LoginMessages.badVersion) == LoginMessages.badVersion)
