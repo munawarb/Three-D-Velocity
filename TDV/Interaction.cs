@@ -1596,7 +1596,6 @@ namespace TDV
 				furnishing.Add(new Wall(10, 1, 1000, 0, 10));
 				furnishing.Add(new Wall(10, 20, 1000, 0, 10));
 				furnishing.Add(new Shelf(6, 19, 1000, 0, 5));
-
 				MapNode.buildMap(furnishing, 10, 20);
 				MapNode.loadAStarFromFile("maps\\map3.tdv");
 			}
@@ -1612,6 +1611,8 @@ namespace TDV
 				MapNode.buildMap(furnishing, 10, 20);
 				MapNode.loadAStarFromFile("maps\\map4.tdv");
 			}
+
+			DSound.setOrientation(0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
 			while (!won && !lost)
 			{
 				foreach (Person person in people)
