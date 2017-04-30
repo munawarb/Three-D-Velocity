@@ -291,9 +291,12 @@ namespace TDVServer {
 		private static Dictionary<String, Game> gameList;
 		private static Dictionary<String, ChatRoom> chatRooms;
 		private static TcpListener[] connections;
+		private static Thread inputThread;
 
 
 		public static void Main(String[] args) {
+			inputThread = new Thread(inputHandler);
+			inputThread.Start();
 			try {
 				ports = ((testing) ? new int[] { 31111 } : new int[] { 4444, 4445, 4567, 6969, 60385, 32000 });
 				//ports = new int[]{4445});
@@ -337,11 +340,13 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="result">The async callback object</param>
 		private static void whenConnectionMade(IAsyncResult result) {
-			TcpListener listener = (TcpListener)result.AsyncState;
-			TcpClient c = listener.EndAcceptTcpClient(result);
 			bool error = false;
-			String callSign = null;
+			TcpListener listener = null;
+			TcpClient c = null;
 			try {
+				listener = (TcpListener)result.AsyncState;
+				c = listener.EndAcceptTcpClient(result);
+				String callSign = null;
 				output("Client connected!");
 				//Next, client will send call sign to server.
 				//Wait for it.
@@ -360,7 +365,7 @@ namespace TDVServer {
 				} //try/catch
 				output("Call sign is " + callSign + ".");
 				//Custom logic to determine admin flag goes here
-				bool admin = true;
+				bool admin = false;
 				sendChatMessage(null, callSign + " has logged on.", MessageType.enterRoom, true);
 				String serverTag = Guid.NewGuid().ToString();
 				sendConnectResponse(c, LoginMessages.serverAssignedTag, serverTag);
@@ -501,16 +506,9 @@ namespace TDVServer {
 
 						case CSCommon.cmd_setMessage:
 							String msgOfTheDay = rcvData.ReadString();
-							if (!clientList[tag].admin)
-								break;
-							setMessage(msgOfTheDay);
 							break;
 
 						case CSCommon.cmd_reboot:
-							if (!clientList[tag].admin)
-								break;
-							totalRebootTime = DateTime.Now;
-							rebooting = true;
 							break;
 
 						case CSCommon.cmd_viewChatRooms:
@@ -760,10 +758,10 @@ namespace TDVServer {
 				return null;
 			}
 			String name = gameList[id].ToString();
-			if (!gameList[id].isOpen(tag, clientList[tag].entryMode))  {
+			if (!gameList[id].isOpen(tag, clientList[tag].entryMode)) {
 				CSCommon.sendResponse(clientList[tag].client, false);
 				return null;
-		}
+			}
 			CSCommon.sendResponse(clientList[tag].client, true);
 			gameList[id].add(clientList[tag]);
 			clientList.Remove(tag);
@@ -1100,7 +1098,7 @@ namespace TDVServer {
 				DateTime d = DateTime.Now;
 				int current = d.Subtract(totalRebootTime).Minutes;
 				if (current < 5 && current != elapsedRebootTime) {
-					sendCriticalMessage("Server rebooting in " + (5 - current) + " minutes");
+					sendCriticalMessage("Server shutting down in " + (5 - current) + " minutes");
 					elapsedRebootTime = current;
 				}
 				return current == 5;
@@ -1175,6 +1173,28 @@ namespace TDVServer {
 				c.Close();
 		}
 
+		private static void inputHandler() {
+			String input = "";
+			while (!input.Equals("exit") && !input.Equals("shutdown")) {
+				System.Console.WriteLine("Enter message to set a message of the day, shutdown to shutdown the server with a five minute warning to all players, and exit to shutdown the server immediately.");
+				input = System.Console.ReadLine().Trim().ToLower();
+				switch (input) {
+					case "message":
+						System.Console.WriteLine("Enter message.");
+						setMessage(System.Console.ReadLine());
+						break;
+					case "shutdown":
+						totalRebootTime = DateTime.Now;
+						rebooting = true;
+						sendCriticalMessage("Admins have issued a shutdown on the server. The server will go offline in five minutes.");
+						break;
+					case "exit":
+						crash = true;
+						break;
+				}
+				System.Console.WriteLine("Ok");
+			}
+		}
 
 	} 	 //class
 } //namespace
