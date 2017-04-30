@@ -47,6 +47,17 @@ No. It's open source, not abandonware. I'll be working on it as time permits. If
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
 #### Change Log
+
+##### Version 2.10, released on 04/30/2017
+###### Added
+- Admins can now control the server from the console; in-game changes are no longer permitted ([#17](../../issues/17))
+
+###### Fixed
+- When loading a game from the main menu, the player no longer hears two engines. Previously, the player would hear an idle engine, and their own engine which was throttling up ([#5](../../issues/5))
+- In Multiplayer Mode, when a second player joins a private game, TDV no longer crashes ([#13](../../issues/13))
+- In parts of the game invloved close-quarters combat, the player's orientation would get stuck according to the last known direction of their aircraft ([#14](../../issues/14))
+- TDV would behave unexpectedly if the player provided a blank IP address and/or call sign when connecting to the server. Blank input in these fields is no longer allowed ([#15](../../issues/15))
+- 
 ##### Version 2.0, released on 04/29/2017
 ###### Added
 - The multiplayer mode is available in this version. Instructions for running the server are found elsewhere in this document ([#7](../../issues/7))
@@ -95,6 +106,8 @@ Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual
 Yes, you read that correctly! TDV contains a multiplayer server so you can fight other aircraft online. If you want to run the server, run the file TDVServer.exe in the binary distribution. For those of you who have the source code, the source code for the server is located in TDV/TDVServer. If you compile the server, the executable will be placed in TDV/TDVServer/bin/Debug.
 
 To connect to someone else's server, launch the game and select "Multiplayer Mode" from the "Mode Selection" menu. You'll be asked for the IP address or domain to connect to, along with the call sign you wish to use on the server. You should allow ports 4444 and 4445 through your firewall, since these are the ports TDV will attempt to connect on.
+
+Controlling the server is documented in the manual under the section "Running The Server."
 
 #### Advisories
 Three-D Velocity contains adult-oriented cut scenes and is not suitable for minors; parental guidance is advised.
