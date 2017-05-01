@@ -84,7 +84,7 @@ If you find any bugs or have any suggestions, please post them on the [Issues Pa
 While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
 
 ##### I just want to play it
-If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/latest.zip).
+If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip).
 
 The zip file contains the TDV executable, all sounds, and the server executable. Run the file tdv.exe to start Three-D Velocity.
 
