@@ -295,6 +295,8 @@ namespace TDVServer {
 
 
 		public static void Main(String[] args) {
+			dayMsg = "";
+			loadSettings();
 			inputThread = new Thread(inputHandler);
 			inputThread.Start();
 			try {
@@ -1140,7 +1142,6 @@ namespace TDVServer {
 
 		private static void nextDay() {
 			createLogs();
-			clearDayMsg();
 		}
 
 		private static void setMessage(String msg) {
@@ -1148,12 +1149,12 @@ namespace TDVServer {
 		}
 
 		private static void sendMessageOfTheDay(String tag) {
-			if (dayMsg != null)
+			if (!dayMsg.Equals(""))
 				CSCommon.sendData(clientList[tag].client, CSCommon.buildCMDString(CSCommon.cmd_chat, (byte)MessageType.normal, "[Message of the day]: " + dayMsg));
 		}
 
 		private static void clearDayMsg() {
-			dayMsg = null;
+			dayMsg = "";
 		}
 
 		private static void sendConnectResponse(TcpClient c, LoginMessages l, String serverTag) {
@@ -1176,12 +1177,13 @@ namespace TDVServer {
 		private static void inputHandler() {
 			String input = "";
 			while (!input.Equals("exit") && !input.Equals("shutdown")) {
-				System.Console.WriteLine("Enter message to set a message of the day, shutdown to shutdown the server with a five minute warning to all players, and exit to shutdown the server immediately.");
+				System.Console.WriteLine("Enter message to set a message of the day, options to change options, shutdown to shutdown the server with a five minute warning to all players, and exit to shutdown the server immediately.");
 				input = System.Console.ReadLine().Trim().ToLower();
 				switch (input) {
 					case "message":
-						System.Console.WriteLine("Enter message.");
+						System.Console.WriteLine("Enter message. Press ENTER for \"" + dayMsg + "\".");
 						setMessage(System.Console.ReadLine());
+						saveSettings();
 						break;
 					case "shutdown":
 						totalRebootTime = DateTime.Now;
@@ -1191,15 +1193,48 @@ namespace TDVServer {
 					case "exit":
 						crash = true;
 						break;
+					case "options":
+						int resp = menu("Select an option:", "Set server timeout");
+						switch (resp) {
+							case 1:
+								System.Console.WriteLine("Enter the timeout in seconds. Press ENTER for " + CSCommon.secondsTimeout + " seconds.");
+								String sec = System.Console.ReadLine();
+								if (sec.Equals(""))
+									break;
+								CSCommon.initialize(Convert.ToInt32(sec));
+								break;
+						}
+						saveSettings();
+						break;
 				}
 				System.Console.WriteLine("Ok");
 			}
+		}
+
+		private static int menu(String prompt, params String[] options) {
+			while (!crash) {
+				System.Console.WriteLine(prompt);
+				int i = 0;
+				foreach (String option in options)
+					System.Console.WriteLine((++i) + ": " + option);
+				int resp = Convert.ToInt32(System.Console.ReadLine());
+				System.Console.WriteLine(resp);
+				if (resp == 0)
+					return 0;
+				if (resp < 0 || resp > options.Length) {
+					System.Console.WriteLine("Invalid choice.");
+					continue;
+				}
+				return resp;
+			}
+			return 0;
 		}
 
 		private static void saveSettings() {
 			BinaryWriter s = new BinaryWriter(new FileStream("settings", FileMode.Create));
 			s.Write(dayMsg);
 			s.Write(CSCommon.secondsTimeout);
+			s.Close();
 		}
 
 		private static void loadSettings() {
