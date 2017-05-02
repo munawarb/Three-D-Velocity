@@ -1196,5 +1196,20 @@ namespace TDVServer {
 			}
 		}
 
+		private static void saveSettings() {
+			BinaryWriter s = new BinaryWriter(new FileStream("settings", FileMode.Create));
+			s.Write(dayMsg);
+			s.Write(CSCommon.secondsTimeout);
+		}
+
+		private static void loadSettings() {
+			if (!File.Exists("settings"))
+				return;
+			BinaryReader s = new BinaryReader(new FileStream("settings", FileMode.Open));
+			setMessage(s.ReadString());
+			CSCommon.initialize(s.ReadInt32());
+			s.Close();
+		}
+
 	} 	 //class
 } //namespace

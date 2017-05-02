@@ -79,7 +79,16 @@ namespace TDV
 		cmd_test = 38,
 		cmd_addMember = 39,
 		cmd_removeMember = 40;
-		private const int maxDemoTime = 15;
+		private static int m_secondsTimeout = 5;
+		public static int secondsTimeout { get { return m_secondsTimeout; } }
+
+		/// <summary>
+		/// Initializes options.
+		/// </summary>
+		/// <param name="secondsTimeout">Number of seconds before timing out</param>
+		public static void initialize(int secondsTimeout) {
+			m_secondsTimeout = secondsTimeout;
+		}
 		/* Returns a valid commandstring
 		 * to the caller, in the format cmd:command|arg1&arg2&...&argN
 		 * */
@@ -230,18 +239,13 @@ namespace TDV
 				do {
 					if (!ssl && !stream.DataAvailable) {
 						DateTime startTime = DateTime.Now;
-#if SERVER
-						Server.output("No data, waiting 5 seconds", true);
-#else
-				System.Diagnostics.Trace.WriteLine("No data, waiting 5 seconds.");
-#endif
 						do {
 							Thread.Sleep(0);
-							if (DateTime.Now.Subtract(startTime).TotalSeconds > 5) {
+							if (DateTime.Now.Subtract(startTime).TotalSeconds > secondsTimeout) {
 #if SERVER
-								Server.output("Waited five seconds. No payload arrived. Returning null.", true);
+								Server.output("Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.", true);
 #else
-				System.Diagnostics.Trace.WriteLine("Waited five seconds. No payload arrived. Returning null.");
+				System.Diagnostics.Trace.WriteLine("Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.", true);
 #endif
 								return null;
 							}
