@@ -428,7 +428,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <returns>True if the sound is playing, false if either s is NULL or is not playing.</returns>
 		public static bool isPlaying(SecondarySoundBuffer s)
 		{
-			if (s == null)
+			if (s == null || s.IsDisposed)
 				return false;
 			if ((s.Status & (int)BufferStatus.Playing) == (int)BufferStatus.Playing)
 				return true;
@@ -437,6 +437,8 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		public static bool isLooping(SecondarySoundBuffer s)
 		{
+			if (s == null || s.IsDisposed)
+				return false;
 			if ((s.Status & (int)BufferStatus.Looping) == (int)BufferStatus.Looping)
 				return true;
 			return false;

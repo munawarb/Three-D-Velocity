@@ -48,6 +48,11 @@ There's a training mode in the game that will help you get familiar with the bas
 
 #### Change Log
 
+##### Version 2.11, released on 04/29/2018
+
+###### Fixed
+- When the player selects "Act as spectator," TDV no longer crashes ([#16](../../issues/16))
+
 ##### Version 2.10, released on 04/30/2017
 ###### Added
 - Admins can now control the server from the console; in-game changes are no longer permitted ([#17](../../issues/17))
