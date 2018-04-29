@@ -453,6 +453,7 @@ namespace TDV
 
 									case CSCommon.cmd_distributeServerTag:
 										Projector o = Interaction.createObjectFromServer(cmds.ReadString(), cmds.ReadString(), OnlineRole.receiver, (ObjectType)cmds.ReadByte());
+										System.Diagnostics.Trace.WriteLine("Received request to create opponent " + o.name);
 										if (Options.mode == Options.Modes.teamDeath)
 											o.team = (Projector.TeamColors)cmds.ReadInt32();
 										AddOnArgs[] distAdd = processAddOns(cmds);
@@ -469,6 +470,8 @@ namespace TDV
 
 									case CSCommon.cmd_startGame:
 										hostStartedGame = true;
+
+										System.Diagnostics.Trace.WriteLine("Host started game");
 										break;
 
 									case CSCommon.cmd_gameEnded:

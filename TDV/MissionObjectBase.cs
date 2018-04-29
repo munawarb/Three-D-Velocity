@@ -203,7 +203,7 @@ namespace TDV
 			if (!DSound.isPlaying(explodeSound))
 			{ //game hasn't ended, or explode sound is playing
 				if (Interaction.isGameFinished(true))
-					System.Diagnostics.Trace.WriteLine(String.Format("shutdown {0}, demo expired {1}, abort {2}, player damage is {3}", Options.requestedShutdown, Options.demoExpired, Options.abortGame, Mission.player.damage));
+					System.Diagnostics.Trace.WriteLine(String.Format("shutdown {0}, demo expired {1}, abort {2}, player damage is {3}", Options.requestedShutdown, Options.demoExpired, Options.abortGame, (Mission.player == null)?0:Mission.player.damage));
 				return isRequestedTerminated || Interaction.isGameFinished(true);
 			}
 			return false;

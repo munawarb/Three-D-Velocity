@@ -567,8 +567,10 @@ namespace TDV
 
 		public static void startAllThreads()
 		{
-			for (int i = 0; i < holderArray.Count; i++)
+			for (int i = 0; i < holderArray.Count; i++) {
 				holderAt(i).startThread();
+				System.Diagnostics.Trace.WriteLine("Started holder " + i);
+			}
 		}
 
 
@@ -1323,7 +1325,8 @@ namespace TDV
 		{
 			bool endSpectatorMode = false;
 			bool dirtyTrack = true; //Pick random player to spectate when first entering mode.
-			SapiSpeech.speak("There are no players currently in the game. You can wait for players or press ESCAPE to exit.", SapiSpeech.SpeakFlag.interruptableButStop);
+			if (m_objectCount == 0)
+				SapiSpeech.speak("There are no players currently in the game. You can wait for players or press ESCAPE to exit.", SapiSpeech.SpeakFlag.interruptable);
 			while (!endSpectatorMode)
 			{
 				if (m_objectCount > 0 //in case spectator has entered game with 0 players, IE: empty FFA

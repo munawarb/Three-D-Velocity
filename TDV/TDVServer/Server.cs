@@ -29,7 +29,7 @@ namespace TDVServer {
 		badVersion = 32
 	}
 
-	public enum MessageType : byte {
+    	public enum MessageType : byte {
 		normal,
 		enterRoom,
 		leaveRoom,
