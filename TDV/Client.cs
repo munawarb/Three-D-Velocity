@@ -107,7 +107,8 @@ namespace TDV
 			wrongCredentials = 4,
 			unauthorized = 8,
 			serverAssignedTag = 16,
-			badVersion = 32
+			badVersion = 32,
+			messageOfTheDay = 64
 		}
 
 		private static List<ChatRoomMember> members;
@@ -247,7 +248,16 @@ namespace TDV
 					if ((resp & LoginMessages.serverAssignedTag) == LoginMessages.serverAssignedTag)
 					{
 						serverTag = reader.ReadString();
-						System.Diagnostics.Trace.WriteLine("Server sent tag: " + serverTag);
+						String messageOfTheDay = reader.ReadString();
+						if ((resp & LoginMessages.messageOfTheDay) == LoginMessages.messageOfTheDay)
+						{
+							// We now need to speak the message and then show an input box for the user to
+							// press ENTER to continue. This is because some screen readers
+							// Don't have a way to stop the running thread.
+							SapiSpeech.speak("[Welcome message]: " + messageOfTheDay + " (press ENTER to continue)", SapiSpeech.SpeakFlag.interruptable);
+							Common.mainGUI.receiveInput().Trim();
+						}
+							System.Diagnostics.Trace.WriteLine("Server sent tag: " + serverTag);
 					}
 				} //using
 				if ((resp & LoginMessages.demo) == LoginMessages.demo)

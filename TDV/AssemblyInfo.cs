@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("A real-time fighter jet simulation for blind and visually impaired people.")]
 [assembly: AssemblyCompany("BPCPrograms, LLC")]
 [assembly: AssemblyProduct("Three-D Velocity")]
-[assembly: AssemblyCopyright("(C) BPCPrograms, LLC")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -40,5 +40,5 @@ using System.Runtime.InteropServices;
 #if BETA
 [assembly: AssemblyVersion("2.20.5.*")]
 #else
-[assembly: AssemblyVersion("2.23.0.*")]
+[assembly: AssemblyVersion("2.1.1.*")]
 #endif

@@ -26,7 +26,8 @@ namespace TDVServer {
 		wrongCredentials = 4,
 		unauthorized = 8,
 		serverAssignedTag = 16,
-		badVersion = 32
+		badVersion = 32,
+		messageOfTheDay = 64
 	}
 
     	public enum MessageType : byte {
@@ -370,7 +371,12 @@ namespace TDVServer {
 				bool admin = false;
 				sendChatMessage(null, callSign + " has logged on.", MessageType.enterRoom, true);
 				String serverTag = Guid.NewGuid().ToString();
-				sendConnectResponse(c, LoginMessages.serverAssignedTag, serverTag);
+				LoginMessages responses = LoginMessages.serverAssignedTag;
+				// Here, even if we have not set a message of the day, we send a second string to kepe things consistent.
+				// It will not be processed by the client if messageOfTheDay is not set.
+				if (!dayMsg.Equals(""))
+					responses |= LoginMessages.messageOfTheDay;
+				sendConnectResponse(c, responses, serverTag, dayMsg);
 				lock (returnLock) {
 					Player p = null;
 					returns.Add(p = new Player(serverTag, callSign, admin, c));
@@ -484,10 +490,12 @@ namespace TDVServer {
 			if (!CSCommon.isLiveConnection(client))
 				return;
 			MemoryStream stream = CSCommon.getData(client);
+			/*
 			if (clientList[tag].firstTick && DateTime.Now.Subtract(clientList[tag].logOnTime).Seconds >= 10) {
 				sendMessageOfTheDay(tag);
 				clientList[tag].firstTick = false;
 			}
+			*/
 
 			if (stream == null)
 				return;
@@ -1157,14 +1165,17 @@ namespace TDVServer {
 			dayMsg = "";
 		}
 
-		private static void sendConnectResponse(TcpClient c, LoginMessages l, String serverTag) {
+		private static void sendConnectResponse(TcpClient c, LoginMessages l, params String[] args) {
+			String serverTag = args[0];
+			String messageOfTheDay = args[1];
 			if ((l & LoginMessages.unauthorized) != LoginMessages.unauthorized) {
 				using (BinaryWriter writer = new BinaryWriter(new MemoryStream())) {
 					c.NoDelay = true;
 					writer.Write((int)l);
 					if ((l & LoginMessages.serverAssignedTag) == LoginMessages.serverAssignedTag)
 						writer.Write(serverTag);
-					CSCommon.sendData(c, writer);
+						writer.Write(messageOfTheDay); // Could be empty string
+						CSCommon.sendData(c, writer);
 					if ((l & LoginMessages.wrongCredentials) == LoginMessages.wrongCredentials
 						|| (l & LoginMessages.badVersion) == LoginMessages.badVersion)
 						c.Close();

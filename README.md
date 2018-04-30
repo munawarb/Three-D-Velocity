@@ -52,6 +52,8 @@ There's a training mode in the game that will help you get familiar with the bas
 
 ###### Fixed
 - When the player selects "Act as spectator," TDV no longer crashes ([#16](../../issues/16))
+- TDV would sometimes crash with an invalid status error when checking for playing status of a sound ([#30](../../issues/30))
+- The "message of the day," if set on the server, will now show upon connect to the server instead of a little while after connecting ([#22](../../issues/22))
 
 ##### Version 2.10, released on 04/30/2017
 ###### Added
