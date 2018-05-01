@@ -476,7 +476,7 @@ namespace TDVServer {
 		/// </summary>
 		private static void startMonitoringForData() {
 			bool loopedThrough = false;
-
+			const int waitTime = 10;
 			while (true) {
 				if (DateTime.Now.Day != currentDay.Day) {
 					currentDay = DateTime.Now;
@@ -517,7 +517,7 @@ namespace TDVServer {
 					} //while ! loopedthrough
 				} //lock
 				if (!modifiedClientList)
-					Thread.Sleep(100);
+					Thread.Sleep(waitTime);
 				if (crash && clientList.Count == 0 && returns.Count == 0) {
 					cleanUp();
 					return;

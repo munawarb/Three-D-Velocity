@@ -216,7 +216,7 @@ namespace TDVServer
 		/// </summary>
 		private void startMonitoringForData()
 		{
-			const int waitTime = 100;
+			const int waitTime = 10;
 			while (true) {
 				try {
 					if (returns.Count > 0)
@@ -368,7 +368,7 @@ namespace TDVServer
 								break;
 
 							case CSCommon.cmd_serverMessage:
-								sendMessage(rcvData.ReadString(), client);
+								sendMessage(rcvData.ReadString(), null);
 								break;
 
 							case CSCommon.cmd_disconnectMe:

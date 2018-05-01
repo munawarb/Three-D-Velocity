@@ -462,8 +462,10 @@ public void sendUpdate(byte[] data)
 
 	 int numArgs = 0;
   while (incomingData.Length > incomingData.Position) {
-      //info will hold each weapon's information: the targetId, the ID for the projectile to which this hit belongs, type of weapon
-	  numArgs = reader.ReadInt16();
+					//info will hold each weapon's information: the targetId, the ID for the projectile to which this hit belongs, type of weapon
+					System.Diagnostics.Trace.WriteLine("in serverupdate, length is " + incomingData.Length + " and position is " + incomingData.Position);
+
+					numArgs = reader.ReadInt16();
       for (int i = 1; i <= numArgs; i++) {
     //crawl each projectile info here
 		  projectileId = creator.id + reader.ReadString();

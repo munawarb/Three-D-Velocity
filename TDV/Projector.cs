@@ -1137,7 +1137,7 @@ namespace TDV
 		}
 
 		/// <summary>
-		/// Sends destroyed inidcation to server
+		/// Sends destroyed indication to server
 		/// </summary>
 		/// <param name="name">The name of the killer</param>
 		/// <param name="tag">The tag of the killer</param>
