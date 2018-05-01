@@ -46,37 +46,8 @@ No. It's open source, not abandonware. I'll be working on it as time permits. If
 #### Documentation
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
-#### Change Log
-
-##### Version 2.11, released on 04/29/2018
-
-###### Fixed
-- When the player selects "Act as spectator," TDV no longer crashes ([#16](../../issues/16))
-- TDV would sometimes crash with an invalid status error when checking for playing status of a sound ([#30](../../issues/30))
-- The "message of the day," if set on the server, will now show upon connect to the server instead of a little while after connecting ([#22](../../issues/22))
-
-##### Version 2.10, released on 04/30/2017
-###### Added
-- Admins can now control the server from the console; in-game changes are no longer permitted ([#17](../../issues/17))
-
-###### Fixed
-- When loading a game from the main menu, the player no longer hears two engines. Previously, the player would hear an idle engine, and their own engine which was throttling up ([#5](../../issues/5))
-- In Multiplayer Mode, when a second player joins a private game, TDV no longer crashes ([#13](../../issues/13))
-- In parts of the game involving close-quarters combat, the player's orientation would get stuck according to the last known direction of their aircraft ([#14](../../issues/14))
-- TDV would behave unexpectedly if the player provided a blank IP address and/or call sign when connecting to the server. Blank input in these fields is no longer allowed ([#15](../../issues/15))
-
-##### Version 2.0, released on 04/29/2017
-###### Added
-- The multiplayer mode is available in this version. Instructions for running the server are found elsewhere in this document ([#7](../../issues/7))
-
-##### Version 1.01, released on 01/23/2017
-###### Fixed
-- Music no longer plays over death scenes in Mission Mode ([#1](../../issues/1))
-- In Training Mode, the player is no longer allowed to flip their aircraft unless required or in free-range combat with Fighter 3 ([#2](../../issues/2))
-
-##### Version 1.0, released on 01/21/2017
-###### Added
-- Initial source code push
+#### What's new?
+If you'd like to check out a list of the latest features, you can view the [change log here](changelog.md). When you pull the Master branch or download the latest binary distribution, you're always getting the most recent version noted in the change log.
 
 #### Downloading The Game
 There are several ways to download TDV, depending on your situation and what you want.
