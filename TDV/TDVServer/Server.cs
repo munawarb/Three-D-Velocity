@@ -337,6 +337,7 @@ namespace TDVServer {
 									break;
 								case "debug":
 									logLevel |= LoggingLevels.debug;
+									newLevels += "debug, ";
 									break;
 							}
 						}

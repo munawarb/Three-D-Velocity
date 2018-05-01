@@ -17,18 +17,23 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
-namespace TDVServer {
-	public class Game {
-		public enum GameType {
+namespace TDVServer
+{
+	public class Game
+	{
+		public enum GameType
+		{
 			freeForAll = 8,
 			oneOnOne,
 			teamDeath
 		}
-		private enum DisconnectMethod {
+		private enum DisconnectMethod
+		{
 			gameEnded,
 			midGame
 		}
-		public enum ObjectType : byte {
+		public enum ObjectType : byte
+		{
 			aircraft,
 			carrierBlue,
 			carrierGreen,
@@ -44,10 +49,10 @@ namespace TDVServer {
 		private bool requestPause;
 		private bool paused;
 		private bool canEvaluateGameEnd; //if set, conditions to end the game will be evaluated.
-		//This flag is set either if this is an FFA game, or when the first player is added to a non-FFA game, since end-of-game
-		//is most often determined by if there are zero players remaining in the game.
+										 //This flag is set either if this is an FFA game, or when the first player is added to a non-FFA game, since end-of-game
+										 //is most often determined by if there are zero players remaining in the game.
 		private bool forceGameEnd; //if true, this game has been forced to end.
-		//This may happen if a player in Team Death disconnects, giving the others an unfair advantage (used to thwart cheating!)
+								   //This may happen if a player in Team Death disconnects, giving the others an unfair advantage (used to thwart cheating!)
 		private String reason; //If forceGameEnd is set, contains the reason why (optional)
 		private string serverMessage; //used to send critical server messages
 		private long next;
@@ -61,7 +66,8 @@ namespace TDVServer {
 		private GameType m_type;
 
 
-		public GameType type {
+		public GameType type
+		{
 			get { return m_type; }
 			set { m_type = value; }
 		}
@@ -70,12 +76,14 @@ namespace TDVServer {
 		/// <summary>
 		/// Unique identifier for this game. This is what clients will use to specify what game to connect to
 		/// </summary>
-		public string id {
+		public string id
+		{
 			get { return m_id; }
 			set { m_id = value; }
 		}
 
-		public Game(String id, GameType type) {
+		public Game(String id, GameType type)
+		{
 			returnsLock = new Object();
 			lockObject = new object();
 			returns = new List<Player>();
@@ -93,14 +101,16 @@ namespace TDVServer {
 			ticker.Start();
 		}
 
-		public bool add(Player p) {
+		public bool add(Player p)
+		{
 			lock (returnsLock) {
 				returns.Add(p);
 			}
 			return true;
 		}
 
-		private void enterPendingPlayers() {
+		private void enterPendingPlayers()
+		{
 			lock (returnsLock) {
 				foreach (Player player in returns)
 					unlockedReturns.Add(player);
@@ -117,7 +127,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The server tag of the player being added</param>
 		/// <param name="p">The Player object representing the connection.</param>
-		private bool add(String tag, Player p) {
+		private bool add(String tag, Player p)
+		{
 			try {
 				//pauseProcessing();
 				output(LoggingLevels.debug, "Adding player " + tag + "...");
@@ -129,7 +140,7 @@ namespace TDVServer {
 						int maxWeight = 0;
 						CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_position, next++, (short)0));
 						CSCommon.sendData(p.client,
-						  CSCommon.buildCMDString(CSCommon.cmd_requestCreate, p.name, maxWeight));
+						CSCommon.buildCMDString(CSCommon.cmd_requestCreate, p.name, maxWeight));
 
 						//Give this player's info to all players.
 						output(LoggingLevels.debug, "Propogating connection...");
@@ -186,14 +197,16 @@ namespace TDVServer {
 					canEvaluateGameEnd = true;
 				//resumeProcessing();
 				return true;
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				output(LoggingLevels.error, e.Message + Environment.NewLine + e.StackTrace);
 			}
 			return false;
 		}
 
 		[Conditional("DEBUG")]
-		private void output(LoggingLevels l, String message) {
+		private void output(LoggingLevels l, String message)
+		{
 			Server.output(l, "Game " + id + ":" + message);
 		}
 
@@ -201,7 +214,8 @@ namespace TDVServer {
 		/// This method will periodically tick and check if a client has sent data.
 		/// It will run on its own thread and is the main operation of the server.
 		/// </summary>
-		private void startMonitoringForData() {
+		private void startMonitoringForData()
+		{
 			const int waitTime = 100;
 			while (true) {
 				try {
@@ -247,7 +261,8 @@ namespace TDVServer {
 						return;
 					} //if game ended
 					sendCriticalMessage();
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					output(LoggingLevels.error, e.Message + e.StackTrace);
 					setForceGameEnd("there was a problem with the game.");
 				}
@@ -259,7 +274,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The GUID of the player to perform commands on</param>
 		/// <param name="client">The player's TcpClient object</param>
-		private void performCMDRCV(String tag, TcpClient client) {
+		private void performCMDRCV(String tag, TcpClient client)
+		{
 			if (!CSCommon.isLiveConnection(client))
 				return;
 			MemoryStream stream = CSCommon.getData(client);
@@ -311,7 +327,7 @@ namespace TDVServer {
 								break;
 
 							case CSCommon.cmd_requestStartGame:
-								if (type == GameType.oneOnOne && clientList.Count == 2)
+								if (type == GameType.oneOnOne && (clientList.Count + bots.Count) > 1)
 									gameStarted = true;
 								if (type == GameType.teamDeath) {
 									if (getNumberOfTeams() >= 2)
@@ -388,7 +404,8 @@ namespace TDVServer {
 						propogate(buffer, client);
 					} //if something else besides cmd_command.
 				} //foreach serverCommand
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				output(LoggingLevels.error, "Error while reading data from " + tag + ". Char = " + c + Environment.NewLine + "Last command: " + command + Environment.NewLine + "Stack trace: " + e.Message + e.StackTrace);
 			} //catch
 		}
@@ -398,7 +415,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="data">The MemoryStream containing data to send</param>
 		/// <param name="exclude">Null if all clients should get this data</param>
-		private void propogate(MemoryStream stream, TcpClient exclude) {
+		private void propogate(MemoryStream stream, TcpClient exclude)
+		{
 			foreach (Player p in clientList.Values) {
 				if (p.client != exclude)
 					CSCommon.sendData(p.client, stream);
@@ -410,7 +428,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="data">The byte array containing data to send</param>
 		/// <param name="exclude">Null if all clients should get this data</param>
-		private void propogate(byte[] data, TcpClient exclude) {
+		private void propogate(byte[] data, TcpClient exclude)
+		{
 			propogate(new MemoryStream(data), exclude);
 		}
 
@@ -419,7 +438,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="message">The message to send.</param>
 		/// <param name="exclude">The client to exclude.</param>
-		private void sendMessage(String message, TcpClient exclude) {
+		private void sendMessage(String message, TcpClient exclude)
+		{
 			propogate(CSCommon.buildCMDString(CSCommon.cmd_serverMessage, message),
 			 exclude);
 			output(LoggingLevels.chat, message);
@@ -434,7 +454,8 @@ namespace TDVServer {
 		/// <param name="keepOnServer">If true, this player will not be dropped from the server.</param>
 		/// <param name="d">The method by which this player is being disconnected. If the player was disconnected because they lost,
 		/// this flag should be set to gameEnd. Otherwise, if the player hit escape or was dropped, this flag should be set to midGame.</param>
-		private void removeFromGame(String tag, bool keepOnServer, DisconnectMethod d) {
+		private void removeFromGame(String tag, bool keepOnServer, DisconnectMethod d)
+		{
 			if (clientList[tag].host) //If this is the game host,
 				forceGameEnd = true; //If they drop or disconnect, end the game.
 			Server.returnFromGame(tag, clientList[tag], keepOnServer);
@@ -459,7 +480,8 @@ namespace TDVServer {
 		/// Returns the user-friendly description for this game.
 		/// </summary>
 		/// <returns>The type of the game as well as the players.</returns>
-		public override string ToString() {
+		public override string ToString()
+		{
 			String r = "";
 			if (type == GameType.oneOnOne)
 				r += "One-on-one death match with ";
@@ -474,7 +496,8 @@ namespace TDVServer {
 			return r;
 		}
 
-		private bool isGameEnd() {
+		private bool isGameEnd()
+		{
 			if (forceGameEnd)
 				return true;
 			if (!canEvaluateGameEnd)
@@ -491,7 +514,8 @@ namespace TDVServer {
 		/// <summary>
 		///  Allocates points to winning players after a match.
 		/// </summary>
-		private void allocatePoints() {
+		private void allocatePoints()
+		{
 			if (type == GameType.teamDeath) {
 				//Find out which team value has > 0 players, this is winner
 				int t = Math.Max(bColor, Math.Max(gColor, Math.Max(rColor, yColor)));
@@ -517,7 +541,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The tag of the player just added.</param>
 		/// <param name="c">The color of the team.</param>
-		private void incrementTeam(String tag, TeamColors c) {
+		private void incrementTeam(String tag, TeamColors c)
+		{
 			if (c == TeamColors.blue && ++bColor == 0) {
 				bColor++;
 				createBot(tag, ObjectType.carrierBlue);
@@ -533,7 +558,8 @@ namespace TDVServer {
 			}
 		}
 
-		private void decrementTeam(TeamColors c) {
+		private void decrementTeam(TeamColors c)
+		{
 			if (c == TeamColors.blue)
 				bColor--;
 			else if (c == TeamColors.green)
@@ -550,7 +576,8 @@ namespace TDVServer {
 		/// <param name="tag">The tag of the player attempting to connect.</param>
 		/// <param name="entryMode">An entry mode value.</param>
 		/// <returns>True on success, false on failure.</returns>
-		public bool isOpen(String tag, int entryMode) {
+		public bool isOpen(String tag, int entryMode)
+		{
 			if (entryMode == 1)
 				return true;
 			if (gameStarted)
@@ -560,7 +587,8 @@ namespace TDVServer {
 			return true;
 		}
 
-		private int getNumberOfTeams() {
+		private int getNumberOfTeams()
+		{
 			int numTeams = 0;
 			if (bColor > 0)
 				numTeams++;
@@ -576,7 +604,8 @@ namespace TDVServer {
 		/// <summary>
 		/// Requests the game to stop processing incoming data.
 		/// </summary>
-		private void pauseProcessing() {
+		private void pauseProcessing()
+		{
 			requestPause = true;
 			while (!paused)
 				Thread.Sleep(0);
@@ -585,14 +614,16 @@ namespace TDVServer {
 		/// <summary>
 		/// Resumes processing of incoming data.
 		/// </summary>
-		private void resumeProcessing() {
+		private void resumeProcessing()
+		{
 			requestPause = false;
 		}
 
 		/// <summary>
 		/// Interrupts processing of incoming data.
 		/// </summary>
-		private void pause() {
+		private void pause()
+		{
 			if (requestPause) {
 				paused = true;
 				while (requestPause)
@@ -605,7 +636,8 @@ namespace TDVServer {
 		/// Gets the user-friendly title of this game without player count and listing.
 		/// </summary>
 		/// <returns>The title of this game such as Team Death.</returns>
-		public String getTitle() {
+		public String getTitle()
+		{
 			if (type == GameType.oneOnOne)
 				return "one-on-one death match";
 			else if (type == GameType.teamDeath)
@@ -619,7 +651,8 @@ namespace TDVServer {
 		/// <param name="winner">The ID of the winning player.</param>
 		/// <param name="loser">The id of the losing player.</param>
 		/// <returns>The amount by which the winner's valor points were updated.</returns>
-		private int recordWin(String winner, String loser) {
+		private int recordWin(String winner, String loser)
+		{
 			int amount = clientList[winner].recordWin(clientList[loser]);
 			output(LoggingLevels.info, String.Format("{0} got {1} points", winner, (int)amount));
 			return amount;
@@ -629,7 +662,8 @@ namespace TDVServer {
 		/// Gets an id for a bot.
 		/// </summary>
 		/// <returns>The id to assign to a bot.</returns>
-		private String getBotID() {
+		private String getBotID()
+		{
 			Random r = new Random();
 			bool validID = false;
 			String theID = null;
@@ -657,7 +691,8 @@ namespace TDVServer {
 		/// Pushes the bot to a new player, in the event the previous host was disconnected. The bots list will always be modified after this method runs. Call this method after removing the player.
 		/// </summary>
 		/// <param name="index">The position in bots to remove.</param>
-		private void pushBot(int index) {
+		private void pushBot(int index)
+		{
 			String botID = bots[index].id;
 			String botName = bots[index].name;
 			ObjectType objectType = bots[index].objectType;
@@ -678,7 +713,8 @@ namespace TDVServer {
 		/// If a player is disconnected who is hosting bots, this method reassigns those bots to a new host.
 		/// </summary>
 		/// <param name="id">The id of the player who was disconnected.</param>
-		private void clearBotsFromPlayer(String id) {
+		private void clearBotsFromPlayer(String id)
+		{
 			output(LoggingLevels.debug, "Clearing bots.");
 			bool clear = true;
 			do {
@@ -699,11 +735,13 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="id">The bot id to check</param>
 		/// <returns>True if the id exists, false otherwise.</returns>
-		private bool botIDExists(String id) {
+		private bool botIDExists(String id)
+		{
 			return getBot(id) > -1;
 		}
 
-		private bool isBotID(String id) {
+		private bool isBotID(String id)
+		{
 			return id.StartsWith("B-");
 		}
 
@@ -712,7 +750,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="id">The bot id</param>
 		/// <returns>The index in the bots array, or -1 if not found</returns>
-		private int getBot(String id) {
+		private int getBot(String id)
+		{
 			for (int i = 0; i < bots.Count; i++) {
 				if (bots[i].id.Equals(id))
 					return i;
@@ -725,7 +764,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="index">The index of the bot to remove</param>
 		/// <returns>The id of the bot just removed</returns>
-		private String removeBot(int index) {
+		private String removeBot(int index)
+		{
 			if (bots.Count == 0 || index >= bots.Count)
 				return null;
 			String id = bots[index].id;
@@ -738,7 +778,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="creator">The tag of the player that will hold the bot's data initially.</param>
 		/// <param name="objectType">The type of the bot.</param>
-		private void createBot(String creator, ObjectType objectType) {
+		private void createBot(String creator, ObjectType objectType)
+		{
 			String id = getBotID();
 			String botName = "Bot " + id;
 			String botId = "B-" + id;
@@ -749,19 +790,23 @@ namespace TDVServer {
 				sendMessage(botName + " has been created.", null);
 			bots.Add(new BotInfo(creator, botId, botName, objectType));
 			bots.Sort();
+			output(LoggingLevels.debug, "Bot " + botName + " created");
 		}
 
-		public void setForceGameEnd(String reason) {
+		public void setForceGameEnd(String reason)
+		{
 			forceGameEnd = true;
 			this.reason = reason;
 		}
 
-		public void queueCriticalMessage(String message) {
+		public void queueCriticalMessage(String message)
+		{
 			lock (serverMessage)
 				serverMessage = message;
 		}
 
-		private void sendCriticalMessage() {
+		private void sendCriticalMessage()
+		{
 			if (String.IsNullOrEmpty(serverMessage))
 				return;
 			lock (serverMessage) {
@@ -776,7 +821,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="target">The recipient of the message</param>
 		/// <param name="message">The message to send</param>
-		private void sendPrivateChatMessage(String target, String message) {
+		private void sendPrivateChatMessage(String target, String message)
+		{
 			Player p = getPlayerByID(target);
 			if (p != null)
 				CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_chat, (byte)MessageType.privateMessage, message));
@@ -788,10 +834,12 @@ namespace TDVServer {
 		/// <param name="tag">The tag of the player sending a message. Can be null</param>
 		/// <param name="message">The message</param>
 		/// <param name="type">The message type</param>
-		private void sendChatMessage(String tag, String message, MessageType type) {
+		private void sendChatMessage(String tag, String message, MessageType type)
+		{
 			if (tag != null)
 				message = clientList[tag].name + ": " + message;
 			propogate(CSCommon.buildCMDString(CSCommon.cmd_chat, (byte)type, message), (tag != null) ? clientList[tag].client : null);
+			output(LoggingLevels.chat, message);
 		}
 
 		/// <summary>
@@ -799,7 +847,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The server tag.</param>
 		/// <returns>The player object associated with the tag, or null if not found.</returns>
-		private Player getPlayerByID(String tag) {
+		private Player getPlayerByID(String tag)
+		{
 			Player p = null;
 			clientList.TryGetValue(tag, out p);
 			return p;
