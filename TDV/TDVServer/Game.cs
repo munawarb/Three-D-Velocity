@@ -120,7 +120,7 @@ namespace TDVServer {
 		private bool add(String tag, Player p) {
 			try {
 				//pauseProcessing();
-				output("Adding player " + tag + "...");
+				output(LoggingLevels.debug, "Adding player " + tag + "...");
 				lock (lockObject) {
 					if (clientList.Count == 0 && type != GameType.freeForAll) //This is first player being added, so this is the host.
 						p.host = true;
@@ -132,7 +132,7 @@ namespace TDVServer {
 						  CSCommon.buildCMDString(CSCommon.cmd_requestCreate, p.name, maxWeight));
 
 						//Give this player's info to all players.
-						output("Propogating connection...", true);
+						output(LoggingLevels.debug, "Propogating connection...");
 						if (type != GameType.teamDeath) {
 							propogate(CSCommon.buildCMDString(CSCommon.cmd_distributeServerTag, tag, p.name, (byte)ObjectType.aircraft, (short)0),
 							 p.client);
@@ -143,7 +143,7 @@ namespace TDVServer {
 					} //if entryMode != 1
 
 					//Give this player info about all other players.
-					output("Sending info about other clients to this client...", true);
+					output(LoggingLevels.debug, "Sending info about other clients to this client...");
 					foreach (Player player in clientList.Values) {
 						if (player.entryMode == 1)  //spectator
 							continue;
@@ -160,13 +160,13 @@ namespace TDVServer {
 							info.creator = tag;
 							CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_createBot, info.id, info.name, (byte)info.objectType));
 							CSCommon.sendData(p.client, new MemoryStream(info.data));
-							output("Created bot " + info.id, true);
+							output(LoggingLevels.debug, "Created bot " + info.id);
 						} else
 							CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_distributeServerTag, info.id, info.name, (byte)info.objectType,
 								(short)0));
 					}
 					if (type == GameType.freeForAll) {
-						output("FFA, Starting local player...", true);
+						output(LoggingLevels.debug, "FFA, Starting local player...");
 						CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_startGame));
 					} //if FFA
 					clientList[tag] = p;
@@ -187,20 +187,15 @@ namespace TDVServer {
 				//resumeProcessing();
 				return true;
 			} catch (Exception e) {
-				output(e.Message + Environment.NewLine + e.StackTrace);
+				output(LoggingLevels.error, e.Message + Environment.NewLine + e.StackTrace);
 			}
 			return false;
 		}
 
 		[Conditional("DEBUG")]
-		private void output(String message, bool force) {
-			Server.output("Game " + id + ":" + message, true);
+		private void output(LoggingLevels l, String message) {
+			Server.output(l, "Game " + id + ":" + message);
 		}
-
-		private void output(String message) {
-			Server.output(message);
-		}
-
 
 		/// <summary>
 		/// This method will periodically tick and check if a client has sent data.
@@ -230,7 +225,7 @@ namespace TDVServer {
 					if (!modifiedClientList)
 						Thread.Sleep(waitTime);
 					if (isGameEnd()) {
-						output("Doing game ended routine");
+						output(LoggingLevels.debug, "Doing game ended routine");
 						if (!forceGameEnd) //don't give points if team death player disconnected
 							allocatePoints();
 						else {
@@ -253,7 +248,7 @@ namespace TDVServer {
 					} //if game ended
 					sendCriticalMessage();
 				} catch (Exception e) {
-					output(e.Message + e.StackTrace);
+					output(LoggingLevels.error, e.Message + e.StackTrace);
 					setForceGameEnd("there was a problem with the game.");
 				}
 			} //while
@@ -394,7 +389,7 @@ namespace TDVServer {
 					} //if something else besides cmd_command.
 				} //foreach serverCommand
 			} catch (Exception e) {
-				output("Error while reading data from " + tag + ". Char = " + c + Environment.NewLine + "Last command: " + command + Environment.NewLine + "Stack trace: " + e.Message + e.StackTrace);
+				output(LoggingLevels.error, "Error while reading data from " + tag + ". Char = " + c + Environment.NewLine + "Last command: " + command + Environment.NewLine + "Stack trace: " + e.Message + e.StackTrace);
 			} //catch
 		}
 
@@ -427,7 +422,7 @@ namespace TDVServer {
 		private void sendMessage(String message, TcpClient exclude) {
 			propogate(CSCommon.buildCMDString(CSCommon.cmd_serverMessage, message),
 			 exclude);
-			output(message);
+			output(LoggingLevels.chat, message);
 		}
 
 		/// <summary>
@@ -626,7 +621,7 @@ namespace TDVServer {
 		/// <returns>The amount by which the winner's valor points were updated.</returns>
 		private int recordWin(String winner, String loser) {
 			int amount = clientList[winner].recordWin(clientList[loser]);
-			output(String.Format("{0} got {1} points", winner, (int)amount));
+			output(LoggingLevels.info, String.Format("{0} got {1} points", winner, (int)amount));
 			return amount;
 		}
 
@@ -684,7 +679,7 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="id">The id of the player who was disconnected.</param>
 		private void clearBotsFromPlayer(String id) {
-			output("Clearing bots.", true);
+			output(LoggingLevels.debug, "Clearing bots.");
 			bool clear = true;
 			do {
 				clear = true;
@@ -696,7 +691,7 @@ namespace TDVServer {
 					} //if found player with bot
 				} //for
 			} while (!clear);
-			output("Ok", true);
+			output(LoggingLevels.debug, "Ok");
 		}
 
 		/// <summary>

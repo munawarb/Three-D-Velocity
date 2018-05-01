@@ -157,7 +157,7 @@ namespace TDV
 			} catch (ObjectDisposedException) {
 			} catch (Exception e) {
 #if SERVER
-				Server.output(e.Message + e.StackTrace);
+				Server.output(LoggingLevels.error, e.Message + e.StackTrace);
 #endif
 			}
 		}
@@ -215,10 +215,10 @@ namespace TDV
 						secureStream.AuthenticateAsServer(new X509Certificate2("bpcprograms.p12"));
 					} catch (Exception e) {
 #if SERVER
-						Server.output("While authenticating" + e.Message, true);
-						Server.output(e.StackTrace, true);
+						Server.output(LoggingLevels.error, "While authenticating" + e.Message);
+						Server.output(LoggingLevels.error, e.StackTrace);
 						if (e.InnerException != null)
-							Server.output(e.InnerException.Message, true);
+							Server.output(LoggingLevels.error, e.InnerException.Message);
 #endif
 						throw;
 					}
@@ -243,7 +243,7 @@ namespace TDV
 							Thread.Sleep(0);
 							if (DateTime.Now.Subtract(startTime).TotalSeconds > secondsTimeout) {
 #if SERVER
-								Server.output("Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.", true);
+								Server.output(LoggingLevels.debug, "Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.");
 #else
 				System.Diagnostics.Trace.WriteLine("Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.", true);
 #endif

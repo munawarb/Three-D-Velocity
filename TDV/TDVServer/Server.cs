@@ -30,6 +30,16 @@ namespace TDVServer {
 		messageOfTheDay = 64
 	}
 
+	[Flags]
+	public enum LoggingLevels
+	{
+		indiscriminate = 0,
+		info = 1,
+		debug = 2,
+		error=4,
+		chat = 8,
+	}
+
     	public enum MessageType : byte {
 		normal,
 		enterRoom,
@@ -279,7 +289,6 @@ namespace TDVServer {
 		private static bool rebooting = false;
 		private static DateTime totalRebootTime;
 		private static int elapsedRebootTime = -1;
-		private static int nextDemoNumber;
 		private static DateTime serverStartTime;
 		private static DateTime currentDay;
 		private static String dayMsg = null;
@@ -293,9 +302,50 @@ namespace TDVServer {
 		private static Dictionary<String, ChatRoom> chatRooms;
 		private static TcpListener[] connections;
 		private static Thread inputThread;
-
+		private static LoggingLevels logLevel = LoggingLevels.indiscriminate | LoggingLevels.info;
 
 		public static void Main(String[] args) {
+			lockObject = new object();
+			fileLock = new Object();
+			chatFileLocker = new Object();
+			createLogs();
+			int cliTrack = 0;
+			
+			while (cliTrack < args.Length) {
+				String arg = args[cliTrack].ToLower();
+				if (arg.Equals("--log")) {
+					cliTrack++;
+					if (cliTrack == args.Length)
+						output(LoggingLevels.indiscriminate, "no arguments to --log parameter. Using default logging level");
+					else {
+						String[] levels = args[cliTrack].ToLower().Trim().Split(',');
+						String newLevels = "";
+						for (int j = 0; j < levels.Length; j++) {
+							String currentLevel = levels[j].Trim();
+							switch(currentLevel) {
+								case "info":
+									logLevel |= LoggingLevels.info;
+									newLevels += "info, ";
+									break;
+								case "error":
+									logLevel |= LoggingLevels.error;
+									newLevels += "error, ";
+									break;
+								case "chat":
+									logLevel |= LoggingLevels.chat;
+									newLevels += "chat, ";
+									break;
+								case "debug":
+									logLevel |= LoggingLevels.debug;
+									break;
+							}
+						}
+						newLevels = newLevels.Substring(0, newLevels.Length - 2);
+						output(LoggingLevels.indiscriminate, "Logging levels in effect: " + newLevels);
+					}
+				}
+				cliTrack++;
+			}
 			dayMsg = "";
 			loadSettings();
 			inputThread = new Thread(inputHandler);
@@ -304,15 +354,11 @@ namespace TDVServer {
 				ports = ((testing) ? new int[] { 31111 } : new int[] { 4444, 4445, 4567, 6969, 60385, 32000 });
 				//ports = new int[]{4445});
 				connections = new TcpListener[ports.Length];
-				lockObject = new object();
-				fileLock = new Object();
-				chatFileLocker = new Object();
 				returnLock = new Object();
 				returns = new List<Player>();
 				serverStartTime = DateTime.Now;
 				currentDay = DateTime.Now;
-				createLogs();
-				output("Initializing...");
+				output(LoggingLevels.indiscriminate, "Initializing...");
 				clientList = new Dictionary<String, Player>();
 				gameList = new Dictionary<String, Game>();
 				chatRooms = new Dictionary<String, ChatRoom>();
@@ -325,13 +371,13 @@ namespace TDVServer {
 					connections[i] = new TcpListener(IPAddress.Parse("0.0.0.0"),
 					 ports[i]);
 					connections[i].Start();
-					output("Server listening on port " + ports[i]);
+					output(LoggingLevels.indiscriminate, "Server listening on port " + ports[i]);
 					connections[i].BeginAcceptTcpClient(new AsyncCallback(whenConnectionMade),
 					 connections[i]);
 				}
 				checkThread.Start();
 			} catch (Exception e) {
-				output(e.Message + e.StackTrace);
+				output(LoggingLevels.error, e.Message + e.StackTrace);
 			}
 		} //startServer
 
@@ -350,23 +396,23 @@ namespace TDVServer {
 				listener = (TcpListener)result.AsyncState;
 				c = listener.EndAcceptTcpClient(result);
 				String callSign = null;
-				output("Client connected!");
+				output(LoggingLevels.debug, "Client connected!");
 				//Next, client will send call sign to server.
 				//Wait for it.
-				output("Waiting for call sign.");
+				output(LoggingLevels.debug, "Waiting for call sign.");
 				try {
 					using (BinaryReader signReader = new BinaryReader(CSCommon.getData(c, 10000, true))) {
 						callSign = signReader.ReadString();
 					} //using
 				} catch (System.TimeoutException e) {
-					output("Client never sent sign!" + e.GetBaseException() + " Closed connection.", true);
+					output(LoggingLevels.error, "Client never sent sign!" + e.GetBaseException() + " Closed connection.");
 					error = true;
 					return;
 				} catch (System.Net.Sockets.SocketException e) {
-					output(e.Message + " Closing connection.");
+					output(LoggingLevels.error, e.Message + " Closing connection.");
 					return;
 				} //try/catch
-				output("Call sign is " + callSign + ".");
+				output(LoggingLevels.info, "New connection, call sign is " + callSign + ".");
 				//Custom logic to determine admin flag goes here
 				bool admin = false;
 				sendChatMessage(null, callSign + " has logged on.", MessageType.enterRoom, true);
@@ -382,13 +428,13 @@ namespace TDVServer {
 					returns.Add(p = new Player(serverTag, callSign, admin, c));
 				} //lock
 			} catch (Exception e) {
-				output(e.Message + e.StackTrace);
+				output(LoggingLevels.error, e.Message + e.StackTrace);
 			} finally {
 				if (error) {
 					c.Close();
-					output("Closed due to error.");
+					output(LoggingLevels.error, "Closed due to error.");
 				} else {
-					output("ok");
+					output(LoggingLevels.debug, "ok");
 				} //if !error
 				clientConnected(listener);
 			}
@@ -398,7 +444,7 @@ namespace TDVServer {
 			int port = ((IPEndPoint)listener.LocalEndpoint).Port;
 			listener.BeginAcceptTcpClient(new AsyncCallback(whenConnectionMade),
 			   listener);
-			output("Listening for connection on port " + port);
+			output(LoggingLevels.info, "Listening for connection on port " + port);
 		}
 
 		/// <summary>
@@ -463,7 +509,7 @@ namespace TDVServer {
 									break;
 							} //foreach
 						} catch (Exception e) {
-							output("ERROR: startMonitoringForData\n"
+							output(LoggingLevels.error, "ERROR: startMonitoringForData\n"
 							   + e.Message + e.StackTrace);
 							crash = true;
 						}
@@ -686,7 +732,7 @@ namespace TDVServer {
 						sendMessage(p.name + " Has returned from a game.", p.client);
 				}
 			} catch (Exception e) {
-				output("ERROR: removeFromGame:\n"
+				output(LoggingLevels.error, "ERROR: removeFromGame:\n"
 				+ e.Message + e.StackTrace);
 				crash = true;
 			}
@@ -709,7 +755,7 @@ namespace TDVServer {
 			leaveRoom(tag, false);
 			clientList.Remove(tag);
 			sendChatMessage(null, name + " has left the server.", MessageType.leaveRoom, true);
-			output(name + " disconnected");
+			output(LoggingLevels.debug, name + " disconnected");
 			modifiedClientList = true;
 		}
 
@@ -721,9 +767,9 @@ namespace TDVServer {
 		/// <returns>The created game instance</returns>
 		private static Game createNewGame(String tag, Game.GameType type) {
 			if (tag != null)
-				output("creating game at request of " + tag);
+				output(LoggingLevels.debug, "creating game at request of " + tag);
 			else
-				output("Creating FFA.");
+				output(LoggingLevels.debug, "Creating FFA.");
 			String id = getID(gameList);
 			Game g = new Game(id, type);
 			g.gameFinished += gameFinishedEvent;
@@ -733,7 +779,7 @@ namespace TDVServer {
 				clientList.Remove(tag);
 				modifiedClientList = true;
 			}
-			output("ok");
+			output(LoggingLevels.debug, "ok");
 			return g;
 		}
 
@@ -750,7 +796,7 @@ namespace TDVServer {
 		/// <param name="sender">The game instance to flush</param>
 		private static void gameFinishedEvent(Game sender) {
 			gameList.Remove(sender.id);
-			output("Game " + sender.id + " ended.");
+			output(LoggingLevels.debug, "Game " + sender.id + " ended.");
 			sender.gameFinished -= gameFinishedEvent;
 		}
 
@@ -761,9 +807,9 @@ namespace TDVServer {
 		/// <param name="id">The ID of the game to add to.</param>
 		/// <returns>If the player could be added, returns the name of the game. else NULL.</returns>
 		private static String joinGame(String tag, String id) {
-			output("Joining game " + id + " using client " + tag);
+			output(LoggingLevels.debug, "Joining game " + id + " using client " + tag);
 			if (!gameList.ContainsKey(id)) {
-				output("ERROR: id " + id + " doesn't exist.");
+				output(LoggingLevels.error, "ERROR: id " + id + " doesn't exist.");
 				CSCommon.sendResponse(clientList[tag].client, false);
 				return null;
 			}
@@ -776,7 +822,7 @@ namespace TDVServer {
 			gameList[id].add(clientList[tag]);
 			clientList.Remove(tag);
 			modifiedClientList = true;
-			output("ok");
+			output(LoggingLevels.debug, "ok");
 			return name;
 		}
 
@@ -811,29 +857,26 @@ namespace TDVServer {
 			removeFromServer(tag);
 		}
 
-		public static void output(String text) {
-			System.Console.WriteLine(text + "");
-			lock (fileLock) {
-				theFile.Write(text + Environment.NewLine);
-				theFile.Flush();
-			}
-		}
-
 		public static void outputChat(String text) {
-			lock (chatFileLocker) {
-				theChatFile.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy"));
-				theChatFile.WriteLine(text);
-				theChatFile.WriteLine();
-				theChatFile.Flush();
+			if ((logLevel & LoggingLevels.chat) == LoggingLevels.chat) {
+				Console.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy") + ": " + text + " [chat or system message]");
+				lock (chatFileLocker) {
+					theChatFile.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy"));
+					theChatFile.WriteLine(text);
+					theChatFile.WriteLine();
+					theChatFile.Flush();
+				}
 			}
 		}
 
-		[Conditional("DEBUG")]
-		public static void output(String text, bool b) {
-			System.Console.WriteLine(text + "");
-			lock (fileLock) {
-				theFile.Write(text + Environment.NewLine);
-				theFile.Flush();
+		public static void output(LoggingLevels l, String text) {
+			if ((logLevel & l) == l) {
+				System.Console.WriteLine(text + " [" + l.ToString() + "]");
+				lock (fileLock)
+				{
+					theFile.Write(text + ", log type " + l.ToString() + Environment.NewLine);
+					theFile.Flush();
+				}
 			}
 		}
 
@@ -844,10 +887,11 @@ namespace TDVServer {
 		/// <param name="message">The message to send</param>
 		/// <param name="exclude">The TcpClient to exclude in the message sending.</param>
 		private static void sendMessage(String message, TcpClient exclude) {
-			output("Sending message: " + message);
+			output(LoggingLevels.chat, message);
+			output(LoggingLevels.debug, "Sending message: " + message);
 			MemoryStream sendStream = CSCommon.buildCMDString(CSCommon.cmd_serverMessage, message);
 			propogate(sendStream, exclude);
-			output("Success", true);
+			output(LoggingLevels.debug, "Success");
 		}
 
 		/// <summary>
@@ -1075,17 +1119,17 @@ namespace TDVServer {
 
 		private static void cleanUp() {
 			try {
-				output("Cleaning up...");
+				output(LoggingLevels.debug, "Cleaning up...");
 				foreach (Game g in gameList.Values)
 					g.setForceGameEnd((rebooting) ? null : "there was a problem with the server.");
 				while (gameList.Count != 0)
 					Thread.Sleep(0);
-				output("All games ended.");
+				output(LoggingLevels.debug, "All games ended.");
 				for (int i = 0; i < connections.Length; i++)
 					connections[i].Stop();
-				output("Connections closed.");
+				output(LoggingLevels.debug, "Connections closed.");
 
-				output("Cleaned up, ending server process.");
+				output(LoggingLevels.debug, "Cleaned up, ending server process.");
 				if (theFile != null) {
 					theFile.Flush();
 					theFile.Close();
@@ -1095,7 +1139,7 @@ namespace TDVServer {
 					theChatFile.Close();
 				}
 			} catch (Exception e) {
-				output(e.Message + e.StackTrace);
+				output(LoggingLevels.error, e.Message + e.StackTrace);
 			}
 		}
 
@@ -1144,8 +1188,7 @@ namespace TDVServer {
 				theFile = new StreamWriter(String.Format("log{0}.log", currentDay.ToString("MMMM-d-yyyy")), true);
 				theChatFile = new StreamWriter(String.Format("chat{0}.log", currentDay.ToString("MMMM-d-yyyy")));
 			}
-			outputChat("New chat log created.");
-			output("New log created on " + DateTime.Now.ToString("MMMM/d/yyyy"));
+			output(LoggingLevels.info, "New log created on " + DateTime.Now.ToString("MMMM/d/yyyy"));
 		}
 
 		private static void nextDay() {
@@ -1154,6 +1197,7 @@ namespace TDVServer {
 
 		private static void setMessage(String msg) {
 			dayMsg = msg;
+			output(LoggingLevels.info, "Message of the day now set to " + dayMsg);
 		}
 
 		private static void sendMessageOfTheDay(String tag) {
