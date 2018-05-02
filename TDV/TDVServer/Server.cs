@@ -38,6 +38,7 @@ namespace TDVServer {
 		debug = 2,
 		error=4,
 		chat = 8,
+		messages = 16
 	}
 
     	public enum MessageType : byte {
@@ -302,7 +303,7 @@ namespace TDVServer {
 		private static Dictionary<String, ChatRoom> chatRooms;
 		private static TcpListener[] connections;
 		private static Thread inputThread;
-		private static LoggingLevels logLevel = LoggingLevels.indiscriminate | LoggingLevels.info;
+		private static LoggingLevels logLevel = LoggingLevels.indiscriminate;
 
 		public static void Main(String[] args) {
 			lockObject = new object();
@@ -323,6 +324,10 @@ namespace TDVServer {
 						for (int j = 0; j < levels.Length; j++) {
 							String currentLevel = levels[j].Trim();
 							switch(currentLevel) {
+								case "messages":
+									logLevel |= LoggingLevels.messages;
+									newLevels += "messages, ";
+									break;
 								case "info":
 									logLevel |= LoggingLevels.info;
 									newLevels += "info, ";
@@ -860,7 +865,7 @@ namespace TDVServer {
 
 		public static void outputChat(String text) {
 			if ((logLevel & LoggingLevels.chat) == LoggingLevels.chat) {
-				Console.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy") + ": " + text + " [chat or system message]");
+				Console.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy") + ": " + text + " [chat]");
 				lock (chatFileLocker) {
 					theChatFile.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy"));
 					theChatFile.WriteLine(text);
@@ -872,10 +877,11 @@ namespace TDVServer {
 
 		public static void output(LoggingLevels l, String text) {
 			if ((logLevel & l) == l) {
-				System.Console.WriteLine(text + " [" + l.ToString() + "]");
+				String outputString = text + " [" + l.ToString() + "]";
+				System.Console.WriteLine(outputString);
 				lock (fileLock)
 				{
-					theFile.Write(text + ", log type " + l.ToString() + Environment.NewLine);
+					theFile.Write(outputString + Environment.NewLine);
 					theFile.Flush();
 				}
 			}
@@ -888,7 +894,7 @@ namespace TDVServer {
 		/// <param name="message">The message to send</param>
 		/// <param name="exclude">The TcpClient to exclude in the message sending.</param>
 		private static void sendMessage(String message, TcpClient exclude) {
-			output(LoggingLevels.chat, message);
+			output(LoggingLevels.messages, message);
 			output(LoggingLevels.debug, "Sending message: " + message);
 			MemoryStream sendStream = CSCommon.buildCMDString(CSCommon.cmd_serverMessage, message);
 			propogate(sendStream, exclude);
@@ -1166,6 +1172,7 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="message">The message to send</param>
 		private static void sendCriticalMessage(String message) {
+			output(LoggingLevels.messages, message);
 			sendChatMessage(null, message, MessageType.critical, true);
 			foreach (ChatRoom room in chatRooms.Values)
 				sendChatMessage(room.id, message, MessageType.critical, true);

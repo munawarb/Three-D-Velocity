@@ -4,8 +4,9 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 ##### Version 2.15, released on mm/dd/yyyy
 
 ###### Fixed
-- The server now contains a `--log` option. The choices are `info, debug, error, and chat`. You can specify log options by using the `--log level1,level2,...` syntax, like this: `--log error,debug`. The server will tell you what log levels are in use so you can make sure the levels you want are in place. ([#32](../../issues/32))
+- The server now contains a `--log` option. The choices are `info, debug, messages, error, and chat`. You can specify log options by using the `--log level1,level2,...` syntax, like this: `--log error,debug`. The server will tell you what log levels are in use so you can make sure the levels you want are in place ([#32](../../issues/32))
 - In a Death Match game online, if you created a bot, the bot would not be counted as a player in the game, so even if it was just you and one or more bots, you would not be permitted to start the game. Now, bots are enrolled as part of the player count in an online Death Match game ([#28](../../issues/28))
+- When many weapons were fired, the server would experience a lag. The server now consumes data faster which greatly increases response time. This fixed an issue where sometimes bots would not clear from the server immediately upon destruction ([27](../../issues/27))
 
 ##### Version 2.11, released on 04/29/2018
 
