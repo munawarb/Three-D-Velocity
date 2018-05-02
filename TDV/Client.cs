@@ -907,7 +907,10 @@ namespace TDV
 			int choice = Common.GenerateMenu("Press ENTER on a user to send a private message to them", names, Common.getIncDecVol());
 			if (choice == -1)
 				return;
-			sendChatMessage(ids[choice]);
+			if (ids[choice].Equals(serverTag))
+				SapiSpeech.speak("The first sign of insanity is talking to yourself. Sorry, we can't let you do that!", SapiSpeech.SpeakFlag.interruptable);
+			else
+				sendChatMessage(ids[choice]);
 		}
 
 		public static void adminMenu()
