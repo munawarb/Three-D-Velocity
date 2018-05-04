@@ -9,6 +9,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Text;
 using System.Net; //for IPAddress
@@ -310,6 +311,9 @@ namespace TDVServer {
 			fileLock = new Object();
 			chatFileLocker = new Object();
 			createLogs();
+			Assembly execAssembly = Assembly.GetCallingAssembly();
+			AssemblyName name = execAssembly.GetName();
+			output(LoggingLevels.indiscriminate, "Running server version " + name.Version.Major.ToString() + "." + name.Version.Minor.ToString());
 			int cliTrack = 0;
 			
 			while (cliTrack < args.Length) {
@@ -877,7 +881,7 @@ namespace TDVServer {
 
 		public static void output(LoggingLevels l, String text) {
 			if ((logLevel & l) == l) {
-				String outputString = text + " [" + l.ToString() + "]";
+				String outputString = text + ((l != LoggingLevels.indiscriminate)? (" [" + l.ToString() + "]"):"");
 				System.Console.WriteLine(outputString);
 				lock (fileLock)
 				{
@@ -1159,7 +1163,8 @@ namespace TDVServer {
 				DateTime d = DateTime.Now;
 				int current = d.Subtract(totalRebootTime).Minutes;
 				if (current < 5 && current != elapsedRebootTime) {
-					sendCriticalMessage("Server shutting down in " + (5 - current) + " minutes");
+					int remainder = 5 - current;
+					sendCriticalMessage("Server shutting down in " + remainder+ ((remainder > 1)?" minutes.":" minute."));
 					elapsedRebootTime = current;
 				}
 				return current == 5;

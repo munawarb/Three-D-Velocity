@@ -4,10 +4,11 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 ##### Version 2.15, released on mm/dd/yyyy
 
 ###### Added
+- The server now contains a `--log` option. The choices are `info, debug, messages, error, and chat`. You can specify log options by using the `--log level1,level2,...` syntax, like this: `--log error,debug`. The server will tell you what log levels are in use so you can make sure the levels you want are in place ([#32](../../issues/32))
 - The IP address and call sign the player enters are now saved, and the prompts asking for this information will be populated with them. This way, the player doesn't have to repeatedly enter these pieces of information ([#18](../../issues/18))
+- The server now displays the version number when started ([#35](../../issues/35))
 
 ###### Fixed
-- The server now contains a `--log` option. The choices are `info, debug, messages, error, and chat`. You can specify log options by using the `--log level1,level2,...` syntax, like this: `--log error,debug`. The server will tell you what log levels are in use so you can make sure the levels you want are in place ([#32](../../issues/32))
 - In a Death Match game online, if you created a bot, the bot would not be counted as a player in the game, so even if it was just you and one or more bots, you would not be permitted to start the game. Now, bots are enrolled as part of the player count in an online Death Match game ([#28](../../issues/28))
 - When many weapons were fired, the server would experience a lag. The server now consumes data faster which greatly increases response time. This fixed an issue where sometimes bots would not clear from the server immediately upon destruction ([27](../../issues/27))
 - On the server, players are no longer permitted to send private messages to themselves when in the hangar ([#26](../../issues/26))
