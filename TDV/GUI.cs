@@ -908,6 +908,16 @@ namespace TDV
 			if (modeIndex == -1)
 				return false;
 			Options.mode = (Options.Modes)(modeIndex + 1);
+			if (Options.mode == Options.Modes.mission)
+				Mission.isMission = true;
+			else
+				Mission.isMission = false;
+			//reset in case coming out of mission mode
+			if (Options.mode == Options.Modes.multiplayer)
+				Options.isPlayingOnline = true;
+			else
+				Options.isPlayingOnline = false;
+
 			if (Options.mode == Options.Modes.autoPlay) { //player selected autoplay,
 														  //so next they need to select racing or dm to autoplay
 				if (!selectMode(false)) {
@@ -918,16 +928,6 @@ namespace TDV
 					return true;
 				} //if selected *an* autoplay mode
 			} //if selected Modes.autoplay
-
-			if (Options.mode == Options.Modes.mission)
-				Mission.isMission = true;
-			else
-				Mission.isMission = false;
-			//reset in case coming out of mission mode
-			if (Options.mode == Options.Modes.multiplayer)
-				Options.isPlayingOnline = true;
-			else
-				Options.isPlayingOnline = false;
 			return true;
 		}
 
@@ -1180,6 +1180,8 @@ namespace TDV
 				return false;
 			Options.loadedFromMainMenu = true; //so loadGame knows we're loading from the main screen.
 			Options.Modes oldMode = Options.mode;
+			bool oldIsPlayingOnline = Options.isPlayingOnline;
+			Options.isPlayingOnline = false;
 			Options.mode = Options.Modes.mission; //Some loading code like weapons needs this to be set.
 			if (Common.loadGame(slot)) {
 				Mission.isMission = true;
@@ -1188,6 +1190,7 @@ namespace TDV
 			DSound.playAndWait(DSound.NSoundPath + "\\ldne.wav");
 			Options.loadedFromMainMenu = false;
 			Options.mode = oldMode;
+			Options.isPlayingOnline = oldIsPlayingOnline;
 			return false;
 		}
 
