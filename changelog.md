@@ -3,13 +3,16 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 
 ##### Version 2.15, released on mm/dd/yyyy
 
+###### Added
+- The IP address and call sign the player enters are now saved, and the prompts asking for this information will be populated with them. This way, the player doesn't have to repeatedly enter these pieces of information ([#18](../../issues/18))
+
 ###### Fixed
 - The server now contains a `--log` option. The choices are `info, debug, messages, error, and chat`. You can specify log options by using the `--log level1,level2,...` syntax, like this: `--log error,debug`. The server will tell you what log levels are in use so you can make sure the levels you want are in place ([#32](../../issues/32))
 - In a Death Match game online, if you created a bot, the bot would not be counted as a player in the game, so even if it was just you and one or more bots, you would not be permitted to start the game. Now, bots are enrolled as part of the player count in an online Death Match game ([#28](../../issues/28))
 - When many weapons were fired, the server would experience a lag. The server now consumes data faster which greatly increases response time. This fixed an issue where sometimes bots would not clear from the server immediately upon destruction ([27](../../issues/27))
 - On the server, players are no longer permitted to send private messages to themselves when in the hangar ([#26](../../issues/26))
 - When presented with an input prompt, such as when asked to type an IP address to connect to, CPU usage would suddenly spike. This was caused by a blocking thread which was waiting for input from this prompt, and has been corrected ([25](../../issues/25))
-- When TDV prompted for an IP address or domain to connect to, pressing ESCAPE to back out of the prompt would not work. Now, players can exit this prompt by pressing ESCAPE ([#34](../../issues/34))
+- When TDV prompted for an IP address or domain to connect to, pressing ESCAPE to back out of the prompt would not work. Now, players can exit this prompt by pressing ESCAPE. This also works for the call sign prompt  ([#34](../../issues/34))
 - When loading a game from the main menu while multiplayer mode was selected, the game would load but context would immediately switch to online mode. Now, TDV loads games properly and doesn't try to connect to a multiplayer server ([#19](../../issues/19))
 
 ##### Version 2.11, released on 04/29/2018

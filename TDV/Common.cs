@@ -665,16 +665,20 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				 * */
 				bool connected = false;
 				SapiSpeech.speak("Enter IP address or domain to connect to.", SapiSpeech.SpeakFlag.interruptable);
-				String ip = Common.mainGUI.receiveInput().Trim();
+				String ip = Common.mainGUI.receiveInput(Options.ipOrDomain, false).Trim();
 				if (ip.Equals("")) {
 					menuNotifier.Set();
 					return;
 				}
-				String callSign = "";
-				while (callSign.Equals("")) {
-					SapiSpeech.speak("Enter your call sign. This is how you'll be known on the server.", SapiSpeech.SpeakFlag.interruptable);
-					callSign = Common.mainGUI.receiveInput().Trim();
+				SapiSpeech.speak("Enter your call sign. This is how you'll be known on the server.", SapiSpeech.SpeakFlag.interruptable);
+				String callSign = Common.mainGUI.receiveInput(Options.callSign, false).Trim();
+				if (callSign.Equals("")) {
+					menuNotifier.Set();
+					return;
 				}
+				Options.ipOrDomain = ip;
+				Options.callSign = callSign;
+				Options.writeToFile();
 					DSound.playAndWait(DSound.NSoundPath + "\\c1.wav");
 					connected = Client.connect(ip, callSign, 4444);
 					failedConnect = !connected;

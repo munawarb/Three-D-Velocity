@@ -52,6 +52,21 @@ namespace TDV
 			get;
 			set;
 		}
+
+		// We need to make these explicit declarations so we can initialize their values. Otherwise,
+		// writing to the options file for the first time will throw an error because these values will be null.
+		private static String m_ipOrDomain = "";
+		private static String m_callSign = "";
+		public static String ipOrDomain
+		{
+			get { return m_ipOrDomain; }
+			set { m_ipOrDomain = value; }
+		}
+		public static String callSign
+		{
+			get { return m_callSign; }
+			set { m_callSign = value; }
+		}
 		private static bool m_initializingLoad;
 		private static bool m_loadedFromMainMenu;
 
@@ -291,6 +306,8 @@ namespace TDV
 			s.Write(hour);
 			s.Write(day);
 			s.Write(year);
+			s.Write(ipOrDomain);
+			s.Write(callSign);
 			s.Flush();
 			s.Close();
 		}
@@ -320,6 +337,8 @@ namespace TDV
 				int ho = s.ReadInt32();
 				int da = s.ReadInt32();
 				int ye = s.ReadInt32();
+				String ip = s.ReadString();
+				String callSign = s.ReadString();
 
 				Common.currentMusicVol = musicVol;
 				announceCourseChange = announceCourse;
@@ -337,6 +356,8 @@ namespace TDV
 				hour = ho;
 				day = da;
 				year = ye;
+				Options.ipOrDomain = ip;
+				Options.callSign = callSign;
 			}
 			catch (Exception e)
 			{

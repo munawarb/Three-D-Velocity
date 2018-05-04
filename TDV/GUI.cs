@@ -25,6 +25,7 @@ namespace TDV
 		private int lastProgress = 0;
 		private String chatTitle;
 		private String history;
+		private String defaultText;
 		public delegate void getInputHandler();
 		public delegate void commitMembersHandler(ChatRoomMember[] members);
 		public delegate void addMemberHandler(ChatRoomMember member);
@@ -962,8 +963,11 @@ namespace TDV
 		{
 			this.AcceptButton = null;
 			this.CancelButton = null;
+			if (defaultText == null)
+				defaultText = "";
 			if (pwd)
 				this.textBox1.PasswordChar = '*';
+			this.textBox1.Text = defaultText;
 			textBox1.Visible = true;
 			textBox1.Focus();
 		}
@@ -983,6 +987,7 @@ namespace TDV
 				textBox1.Clear();
 				textBox1.Visible = false;
 				this.Focus();
+				defaultText = "";
 				pressedEnter = true;
 			} else
 				e.Handled = false;
@@ -1032,8 +1037,9 @@ namespace TDV
 		/// </summary>
 		/// <param name="password">True if the user is entering a password, false otherwise</param>
 		/// <returns>The string entered, empty or null if nothing was entered</returns>
-		public String receiveInput(bool password)
+		public String receiveInput(String defaultText, bool password)
 		{
+			this.defaultText = defaultText;
 			pwd = password;
 			SapiSpeech.enableJAWSHook();
 			pressedEnter = false;
@@ -1053,7 +1059,7 @@ namespace TDV
 
 		public String receiveInput()
 		{
-			return receiveInput(false);
+			return receiveInput("", false);
 		}
 
 		public void addToHistory(String message)
