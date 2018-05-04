@@ -9,6 +9,7 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 - When many weapons were fired, the server would experience a lag. The server now consumes data faster which greatly increases response time. This fixed an issue where sometimes bots would not clear from the server immediately upon destruction ([27](../../issues/27))
 - On the server, players are no longer permitted to send private messages to themselves when in the hangar ([#26](../../issues/26))
 - When presented with an input prompt, such as when asked to type an IP address to connect to, CPU usage would suddenly spike. This was caused by a blocking thread which was waiting for input from this prompt, and has been corrected ([25](../../issues/25))
+- When TDV prompted for an IP address or domain to connect to, pressing ESCAPE to back out of the prompt would not work. Now, players can exit this prompt by pressing ESCAPE ([#34](../../issues/34))
 
 ##### Version 2.11, released on 04/29/2018
 

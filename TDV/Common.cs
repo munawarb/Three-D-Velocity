@@ -664,10 +664,11 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				 * Once all adds are complete, client will receive a startGame command from the server.
 				 * */
 				bool connected = false;
-				String ip = "";
-				while (ip.Equals("")) {
-					SapiSpeech.speak("Enter IP address or domain to connect to.", SapiSpeech.SpeakFlag.interruptable);
-					ip = Common.mainGUI.receiveInput().Trim();
+				SapiSpeech.speak("Enter IP address or domain to connect to.", SapiSpeech.SpeakFlag.interruptable);
+				String ip = Common.mainGUI.receiveInput().Trim();
+				if (ip.Equals("")) {
+					menuNotifier.Set();
+					return;
 				}
 				String callSign = "";
 				while (callSign.Equals("")) {
