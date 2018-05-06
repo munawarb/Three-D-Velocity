@@ -10,7 +10,6 @@ using System.Collections;
 using SharpDX.XAudio2;
 using SharpDX.Multimedia;
 using OggVorbisDecoder;
-using System.Windows.Forms;
 using System.Threading;
 using System.IO;
 namespace BPCSharedComponent.ExtendedAudio
@@ -29,8 +28,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		private delegate void stopEventDelegate();
 		private event stopEventDelegate stopEvent;
 		private SourceVoice sourceVoice;
-		private OggVorbisFileStream oggFile;
-		private OggVorbisEncodedStream oggStream;
+		private OggVorbisFileStream oggFile = null;
+		private OggVorbisEncodedStream oggStream = null;
 		private Object lockObject;
 		private const short bitsPerSample = 16;
 		private XAudio2 device;
@@ -201,7 +200,6 @@ namespace BPCSharedComponent.ExtendedAudio
 			// Decode the Ogg Vorbis data into its PCM data
 			while (PcmBytes != 0)
 			{
-				// Get the next chunk of PCM data, pin these so the GC can't 
 				while (true)
 				{
 					PcmBytes = (oggStream == null) ? oggFile.Read(outBuffer, 0, outBuffer.Length)
@@ -290,11 +288,24 @@ namespace BPCSharedComponent.ExtendedAudio
 				} //if we ran out of data
 				if (PcmBytes == 0 && loop)
 				{
+					System.Diagnostics.Trace.WriteLine("Entered loopback");
 					PcmBytes = -1;
+					System.Diagnostics.Trace.WriteLine("pcmBytes is now " + PcmBytes);
+					System.Diagnostics.Trace.WriteLine("Oggfile " + oggFile);
+					System.Diagnostics.Trace.WriteLine("Oggfile position" + oggFile.Position);
+					/*
 					if (oggFile != null)
 						oggFile.Position = 0;
+					System.Diagnostics.Trace.WriteLine("Ogg file position is now " + oggFile.Position);
 					if (oggStream != null)
 						oggStream.Position = 0;
+					System.Diagnostics.Trace.WriteLine("Passed ogg stream reset");
+					*/
+					System.Diagnostics.Trace.WriteLine("loopback, Refilling buffers");
+					if (byteStream == null)
+						oggFile = new OggVorbisFileStream(fileNames[playPointer]);
+					else
+						oggStream = new OggVorbisEncodedStream(byteStream);
 				} //if we ran out of data but want to loop back
 			} //while more data
 

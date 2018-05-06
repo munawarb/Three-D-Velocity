@@ -17,10 +17,13 @@ using System.Net.Sockets; //for TcpClient and listener
 using System.Collections; //for ArrayList
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 
-namespace TDVServer {
+namespace TDVServer
+{
 	[Flags]
-	public enum LoginMessages {
+	public enum LoginMessages
+	{
 		none = 0,
 		noCallSign = 1,
 		demo = 2,
@@ -37,25 +40,28 @@ namespace TDVServer {
 		indiscriminate = 0,
 		info = 1,
 		debug = 2,
-		error=4,
+		error = 4,
 		chat = 8,
 		messages = 16
 	}
 
-    	public enum MessageType : byte {
+	public enum MessageType : byte
+	{
 		normal,
 		enterRoom,
 		leaveRoom,
 		critical,
 		privateMessage
 	}
-	public enum Points {
+	public enum Points
+	{
 		wins,
 		losses,
 		valor
 	}
 
-	public enum TeamColors {
+	public enum TeamColors
+	{
 		none = -1,
 		blue = 0,
 		green = 1,
@@ -63,30 +69,36 @@ namespace TDVServer {
 		yellow = 3
 	}
 
-	public enum RoomTypes {
+	public enum RoomTypes
+	{
 		Open,
 		closed,
 		password
 	}
-	public class ChatRoom : IComparable {
+	public class ChatRoom : IComparable
+	{
 		private List<String> ids;
 
-		public String id {
+		public String id
+		{
 			get;
 			set;
 		}
 
-		public RoomTypes type {
+		public RoomTypes type
+		{
 			get;
 			set;
 		}
 
-		public String password {
+		public String password
+		{
 			get;
 			set;
 		}
 
-		public String friendlyName {
+		public String friendlyName
+		{
 			get;
 			set;
 		}
@@ -101,7 +113,8 @@ namespace TDVServer {
 		/// <param name="id1">The id of the host</param>
 		/// <param name="id2">The second participant in a two-person, closed chat, or null. </param>
 		/// <param name="password">The room's password, or null for no password.</param>
-		public ChatRoom(String id, String friendlyName, String id1, String id2, String password) {
+		public ChatRoom(String id, String friendlyName, String id1, String id2, String password)
+		{
 			this.id = id;
 			this.friendlyName = friendlyName;
 			ids = new List<string>();
@@ -120,106 +133,128 @@ namespace TDVServer {
 		}
 
 
-		public void add(String tag) {
+		public void add(String tag)
+		{
 			ids.Add(tag);
 		}
 
-		public bool remove(String tag) {
+		public bool remove(String tag)
+		{
 			ids.Remove(tag);
 			return !alwaysOpen && ids.Count == 0;
 		}
 
-		public List<String> getIds() {
+		public List<String> getIds()
+		{
 			return ids;
 		}
 
-		public override bool Equals(object obj) {
+		public override bool Equals(object obj)
+		{
 			return id.Equals((String)obj);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode()
+		{
 			return base.GetHashCode();
 		}
 
-		public int CompareTo(object obj) {
+		public int CompareTo(object obj)
+		{
 			return id.CompareTo(obj);
 		}
 	}
 
 
 
-	public class Player {
-		public DateTime logOnTime {
+	public class Player
+	{
+		public DateTime logOnTime
+		{
 			get;
 			set;
 		}
 
-		public bool admin {
+		public bool admin
+		{
 			get;
 			set;
 		}
-		public bool firstTick {
-			get;
-			set;
-		}
-
-		public String chatID {
-			get;
-			set;
-		}
-
-		public int valor {
+		public bool firstTick
+		{
 			get;
 			set;
 		}
 
-		public float power {
+		public String chatID
+		{
+			get;
+			set;
+		}
+
+		public int valor
+		{
+			get;
+			set;
+		}
+
+		public float power
+		{
 			get { return wins / (float)losses; }
 		}
 
-		public int wins {
+		public int wins
+		{
 			get;
 			set;
 		}
 
-		public int losses {
+		public int losses
+		{
 			get;
 			set;
 		}
 
-		public int entryMode {
+		public int entryMode
+		{
 			get;
 			set;
 		}
 
-		public TcpClient client {
+		public TcpClient client
+		{
 			get;
 			set;
 		}
 
-		public String name {
+		public String name
+		{
 			get;
 			set;
 		}
 
-		public TeamColors team {
+		public TeamColors team
+		{
 			get;
 			set;
 		}
 		private MemoryStream m_addOnStream;
 
-		public MemoryStream addOnStream {
+		public MemoryStream addOnStream
+		{
 			get { return m_addOnStream; }
 			set { m_addOnStream = value; }
 		}
 		private bool m_host;
 
-		public bool host {
+		public bool host
+		{
 			get { return m_host; }
 			set { m_host = value; }
 		}
 
-		public String tag {
+		public String tag
+		{
 			get;
 			set;
 		}
@@ -232,7 +267,8 @@ namespace TDVServer {
 		/// <param name="name">The player's call sign</param>
 		/// <param name="expired">Whether the account is expired or not</param>
 		/// <param name="admin">The admin flag</param>
-		public Player(String tag, String name, bool admin) {
+		public Player(String tag, String name, bool admin)
+		{
 			this.logOnTime = DateTime.Now;
 			this.tag = tag;
 			this.name = name;
@@ -250,7 +286,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="client">The TcpClient representing the connection</param>
 		public Player(String tag, String name, bool admin, TcpClient client)
-			: this(tag, name, admin) {
+			: this(tag, name, admin)
+		{
 			this.client = client;
 		}
 
@@ -260,7 +297,8 @@ namespace TDVServer {
 		/// <param name="p">The points field to update.</param>
 		/// <param name="value">The value to update the points by. Passing a negative value will decrease the points, and passing a positive value will increase them.</param>
 		/// <returns>The new points value</returns>
-		public int updatePoints(Points p, int value) {
+		public int updatePoints(Points p, int value)
+		{
 			if (p == Points.wins)
 				return wins = wins + value;
 			else if (p == Points.losses)
@@ -274,7 +312,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="loser">The player that lost</param>
 		/// <returns>The amount of valor points the winner received</returns>
-		public int recordWin(Player loser) {
+		public int recordWin(Player loser)
+		{
 			int amount = 10;
 			updatePoints(Points.valor, amount);
 			updatePoints(Points.wins, 1);
@@ -283,8 +322,13 @@ namespace TDVServer {
 		}
 	}
 
-	public static class Server {
+	public static class Server
+	{
+		private static String serverVersion = "";
+		private static int lastProgress;
+		private static bool completedDownload, error;
 		public delegate void gameFinishedHandler(Game sender);
+		private static WebClient webClient;
 		private static List<Player> returns;
 		private static bool testing = false;
 		private static bool crash = false;
@@ -306,16 +350,18 @@ namespace TDVServer {
 		private static Thread inputThread;
 		private static LoggingLevels logLevel = LoggingLevels.indiscriminate;
 
-		public static void Main(String[] args) {
+		public static void Main(String[] args)
+		{
 			lockObject = new object();
 			fileLock = new Object();
 			chatFileLocker = new Object();
 			createLogs();
 			Assembly execAssembly = Assembly.GetCallingAssembly();
 			AssemblyName name = execAssembly.GetName();
-			output(LoggingLevels.indiscriminate, "Running server version " + name.Version.Major.ToString() + "." + name.Version.Minor.ToString());
+			serverVersion = name.Version.Major.ToString() + "." + name.Version.Minor.ToString();
+			output(LoggingLevels.indiscriminate, "Running server version " + serverVersion);
 			int cliTrack = 0;
-			
+
 			while (cliTrack < args.Length) {
 				String arg = args[cliTrack].ToLower();
 				if (arg.Equals("--log")) {
@@ -327,7 +373,7 @@ namespace TDVServer {
 						String newLevels = "";
 						for (int j = 0; j < levels.Length; j++) {
 							String currentLevel = levels[j].Trim();
-							switch(currentLevel) {
+							switch (currentLevel) {
 								case "messages":
 									logLevel |= LoggingLevels.messages;
 									newLevels += "messages, ";
@@ -355,6 +401,17 @@ namespace TDVServer {
 					}
 				}
 				cliTrack++;
+			}
+			if (isUpdating()) {
+				while (!completedDownload)
+					Thread.Sleep(500);
+				if (error)
+					output(LoggingLevels.error, "An error occurred during the download of an update. Could not complete update.");
+				else {
+					output(LoggingLevels.info, "Shutting down server to apply update");
+					System.Diagnostics.Process.Start("Updater.exe", "TDVServer.exe");
+					return;
+				}
 			}
 			dayMsg = "";
 			loadSettings();
@@ -386,7 +443,8 @@ namespace TDVServer {
 					 connections[i]);
 				}
 				checkThread.Start();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				output(LoggingLevels.error, e.Message + e.StackTrace);
 			}
 		} //startServer
@@ -398,7 +456,8 @@ namespace TDVServer {
 		/// and tell the caller we just accepted someone.
 		/// </summary>
 		/// <param name="result">The async callback object</param>
-		private static void whenConnectionMade(IAsyncResult result) {
+		private static void whenConnectionMade(IAsyncResult result)
+		{
 			bool error = false;
 			TcpListener listener = null;
 			TcpClient c = null;
@@ -414,11 +473,13 @@ namespace TDVServer {
 					using (BinaryReader signReader = new BinaryReader(CSCommon.getData(c, 10000, true))) {
 						callSign = signReader.ReadString();
 					} //using
-				} catch (System.TimeoutException e) {
+				}
+				catch (System.TimeoutException e) {
 					output(LoggingLevels.error, "Client never sent sign!" + e.GetBaseException() + " Closed connection.");
 					error = true;
 					return;
-				} catch (System.Net.Sockets.SocketException e) {
+				}
+				catch (System.Net.Sockets.SocketException e) {
 					output(LoggingLevels.error, e.Message + " Closing connection.");
 					return;
 				} //try/catch
@@ -437,9 +498,11 @@ namespace TDVServer {
 					Player p = null;
 					returns.Add(p = new Player(serverTag, callSign, admin, c));
 				} //lock
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				output(LoggingLevels.error, e.Message + e.StackTrace);
-			} finally {
+			}
+			finally {
 				if (error) {
 					c.Close();
 					output(LoggingLevels.error, "Closed due to error.");
@@ -450,7 +513,8 @@ namespace TDVServer {
 			}
 		}
 
-		private static void clientConnected(TcpListener listener) {
+		private static void clientConnected(TcpListener listener)
+		{
 			int port = ((IPEndPoint)listener.LocalEndpoint).Port;
 			listener.BeginAcceptTcpClient(new AsyncCallback(whenConnectionMade),
 			   listener);
@@ -462,7 +526,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="data">The MemoryStream containing data to send</param>
 		/// <param name="exclude">Null if all clients should get this data</param>
-		private static void propogate(MemoryStream stream, TcpClient exclude) {
+		private static void propogate(MemoryStream stream, TcpClient exclude)
+		{
 			foreach (Player p in clientList.Values) {
 				if (p.client != exclude && p.chatID == null)
 					CSCommon.sendData(p.client, stream);
@@ -475,7 +540,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="data">The byte array containing data to send</param>
 		/// <param name="exclude">Null if all clients should get this data</param>
-		private static void propogate(byte[] data, TcpClient exclude) {
+		private static void propogate(byte[] data, TcpClient exclude)
+		{
 			propogate(new MemoryStream(data), exclude);
 		}
 
@@ -483,7 +549,8 @@ namespace TDVServer {
 		/// this method will periodically tick and check if a client has sent data.
 		/// It will run on its own thread, and is the main operation of the server.
 		/// </summary>
-		private static void startMonitoringForData() {
+		private static void startMonitoringForData()
+		{
 			bool loopedThrough = false;
 			const int waitTime = 10;
 			while (true) {
@@ -518,7 +585,8 @@ namespace TDVServer {
 								if (modifiedClientList)
 									break;
 							} //foreach
-						} catch (Exception e) {
+						}
+						catch (Exception e) {
 							output(LoggingLevels.error, "ERROR: startMonitoringForData\n"
 							   + e.Message + e.StackTrace);
 							crash = true;
@@ -542,7 +610,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="client">The TcpClient representing a client's connection.</param>
 		/// <param name="tag">The server tag of the client.</param>
-		private static void performCMDRCV(TcpClient client, String tag) {
+		private static void performCMDRCV(TcpClient client, String tag)
+		{
 			if (!CSCommon.isLiveConnection(client))
 				return;
 			MemoryStream stream = CSCommon.getData(client);
@@ -730,7 +799,8 @@ namespace TDVServer {
 		/// <param name="tag">The player's GUID</param>
 		/// <param name="p">The player</param>
 		/// <param name="keepOnServer">If true, the player will be put in the lobby, otherwise the player instance will be deleted and the connection closed</param>
-		public static void returnFromGame(String tag, Player p, bool keepOnServer) {
+		public static void returnFromGame(String tag, Player p, bool keepOnServer)
+		{
 			try {
 				if (keepOnServer) {
 					p.host = false;
@@ -741,7 +811,8 @@ namespace TDVServer {
 					if (!crash)
 						sendMessage(p.name + " Has returned from a game.", p.client);
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				output(LoggingLevels.error, "ERROR: removeFromGame:\n"
 				+ e.Message + e.StackTrace);
 				crash = true;
@@ -752,7 +823,8 @@ namespace TDVServer {
 		/// Removes the specified player from the server.
 		/// </summary>
 		/// <param name="tag">The tag of the player to remove</param>
-		private static void removeFromServer(String tag) {
+		private static void removeFromServer(String tag)
+		{
 			Player p = getPlayerByID(tag);
 			if (p == null)
 				return;
@@ -775,7 +847,8 @@ namespace TDVServer {
 		/// <param name="tag">The GUID of the player creating the game. If null, the method will create an FFA game.</param>
 		/// <param name="type">The type of game to create</param>
 		/// <returns>The created game instance</returns>
-		private static Game createNewGame(String tag, Game.GameType type) {
+		private static Game createNewGame(String tag, Game.GameType type)
+		{
 			if (tag != null)
 				output(LoggingLevels.debug, "creating game at request of " + tag);
 			else
@@ -796,7 +869,8 @@ namespace TDVServer {
 		/// <summary>
 		/// Creates the FFA game.
 		/// </summary>
-		private static void createFFA() {
+		private static void createFFA()
+		{
 			createNewGame(null, Game.GameType.freeForAll);
 		}
 
@@ -804,7 +878,8 @@ namespace TDVServer {
 		/// An event to notify the server that a game has finished and should be flushed.
 		/// </summary>
 		/// <param name="sender">The game instance to flush</param>
-		private static void gameFinishedEvent(Game sender) {
+		private static void gameFinishedEvent(Game sender)
+		{
 			gameList.Remove(sender.id);
 			output(LoggingLevels.debug, "Game " + sender.id + " ended.");
 			sender.gameFinished -= gameFinishedEvent;
@@ -816,7 +891,8 @@ namespace TDVServer {
 		/// <param name="tag">The GUID of the client to add</param>
 		/// <param name="id">The ID of the game to add to.</param>
 		/// <returns>If the player could be added, returns the name of the game. else NULL.</returns>
-		private static String joinGame(String tag, String id) {
+		private static String joinGame(String tag, String id)
+		{
 			output(LoggingLevels.debug, "Joining game " + id + " using client " + tag);
 			if (!gameList.ContainsKey(id)) {
 				output(LoggingLevels.error, "ERROR: id " + id + " doesn't exist.");
@@ -841,7 +917,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The GUID of the player to add to FFA</param>
 		/// <returns>True on success, false on failure</returns>
-		private static bool joinFFA(String tag) {
+		private static bool joinFFA(String tag)
+		{
 			foreach (Game g in gameList.Values) {
 				if (g.type == Game.GameType.freeForAll) {
 					g.add(clientList[tag]);
@@ -857,7 +934,8 @@ namespace TDVServer {
 		/// Closes the specified client and removes the player from the server.
 		/// </summary>
 		/// <param name="tag">The GUID of the player to remove</param>
-		private static void closeClientConnection(String tag) {
+		private static void closeClientConnection(String tag)
+		{
 			Player p = getPlayerByID(tag);
 			if (p == null)
 				return;
@@ -867,7 +945,8 @@ namespace TDVServer {
 			removeFromServer(tag);
 		}
 
-		public static void outputChat(String text) {
+		public static void outputChat(String text)
+		{
 			if ((logLevel & LoggingLevels.chat) == LoggingLevels.chat) {
 				Console.WriteLine(DateTime.Now.ToString("MMMM/d/yyyy") + ": " + text + " [chat]");
 				lock (chatFileLocker) {
@@ -879,12 +958,12 @@ namespace TDVServer {
 			}
 		}
 
-		public static void output(LoggingLevels l, String text) {
+		public static void output(LoggingLevels l, String text)
+		{
 			if ((logLevel & l) == l) {
-				String outputString = text + ((l != LoggingLevels.indiscriminate)? (" [" + l.ToString() + "]"):"");
+				String outputString = text + ((l != LoggingLevels.indiscriminate) ? (" [" + l.ToString() + "]") : "");
 				System.Console.WriteLine(outputString);
-				lock (fileLock)
-				{
+				lock (fileLock) {
 					theFile.Write(outputString + Environment.NewLine);
 					theFile.Flush();
 				}
@@ -897,7 +976,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="message">The message to send</param>
 		/// <param name="exclude">The TcpClient to exclude in the message sending.</param>
-		private static void sendMessage(String message, TcpClient exclude) {
+		private static void sendMessage(String message, TcpClient exclude)
+		{
 			output(LoggingLevels.messages, message);
 			output(LoggingLevels.debug, "Sending message: " + message);
 			MemoryStream sendStream = CSCommon.buildCMDString(CSCommon.cmd_serverMessage, message);
@@ -909,7 +989,8 @@ namespace TDVServer {
 		/// Sends the message to all clients.
 		/// </summary>
 		/// <param name="message">The message to send.</param>
-		private static void sendMessage(String message) {
+		private static void sendMessage(String message)
+		{
 			sendMessage(message, null);
 		}
 
@@ -918,7 +999,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="d">The collection to check against to make sure this ID doesn't exist</param>
 		/// <returns>An unused ID</returns>
-		private static String getID(IDictionary d) {
+		private static String getID(IDictionary d)
+		{
 			Random r = new Random();
 			bool validID = false;
 			String theID = null;
@@ -947,7 +1029,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The GUID of the player to get the power ratio for</param>
 		/// <returns>The power ratio.</returns>
-		public static double getPowerRatio(String tag) {
+		public static double getPowerRatio(String tag)
+		{
 			return clientList[tag].power;
 		}
 
@@ -956,7 +1039,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="target">The GUID of the player who is to receive the message</param>
 		/// <param name="message">The message to send</param>
-		private static void sendPrivateChatMessage(String target, String message) {
+		private static void sendPrivateChatMessage(String target, String message)
+		{
 			Player p = getPlayerByID(target);
 			if (p != null)
 				CSCommon.sendData(p.client, CSCommon.buildCMDString(CSCommon.cmd_chat, (byte)MessageType.privateMessage, message));
@@ -969,7 +1053,8 @@ namespace TDVServer {
 		/// <param name="message">The message to send</param>
 		/// <param name="type">The message type</param>
 		/// <param name="fromServer">True if the message is generated by the server (with no name prefix), and false otherwise</param>
-		private static void sendChatMessage(String sender, String message, MessageType type, bool fromServer) {
+		private static void sendChatMessage(String sender, String message, MessageType type, bool fromServer)
+		{
 			ChatRoom room = null;
 			String chatId = null;
 			Player p = null;
@@ -1014,13 +1099,15 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The server tag.</param>
 		/// <returns>The player object associated with the tag, or null if not found.</returns>
-		private static Player getPlayerByID(String tag) {
+		private static Player getPlayerByID(String tag)
+		{
 			Player p = null;
 			clientList.TryGetValue(tag, out p);
 			return p;
 		}
 
-		private static void createChatRoom(String friendlyName, String tag1, String tag2, String password) {
+		private static void createChatRoom(String friendlyName, String tag1, String tag2, String password)
+		{
 			String id = getID(chatRooms);
 			chatRooms.Add(id, new ChatRoom(id, friendlyName, tag1, tag2, password));
 			if (tag2 != null)
@@ -1035,7 +1122,8 @@ namespace TDVServer {
 		/// Creates a new chat room with no participants. This room will always be open.
 		/// </summary>
 		/// <param name="friendlyName">The display name</param>
-		private static void createChatRoom(String friendlyName) {
+		private static void createChatRoom(String friendlyName)
+		{
 			createChatRoom(friendlyName, null, null, null);
 		}
 
@@ -1043,7 +1131,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag1">The person who created the room</param>
 		/// <param name="tag2">The other participant in a two-way closed chat</param>
-		private static void createChatRoom(String tag1, String tag2) {
+		private static void createChatRoom(String tag1, String tag2)
+		{
 			createChatRoom(null, tag1, tag2, null);
 		}
 
@@ -1051,7 +1140,8 @@ namespace TDVServer {
 		///Creates a chat room with the friendly name, host (null for no host), and password (null for no password).
 		///</summary>
 		/// <param name="password">The password, or null for open</param>
-		private static void createChatRoom(String friendlyName, String tag, String password) {
+		private static void createChatRoom(String friendlyName, String tag, String password)
+		{
 			createChatRoom(friendlyName, tag, null, password);
 		}
 
@@ -1062,7 +1152,8 @@ namespace TDVServer {
 		/// <param name="id">The id of the room to join</param>
 		/// <param name="password">Any password, null for no password. If the chatroom requires no password this parameter will be ignored</param>
 		/// <returns>True if the join was successful, false otherwise</returns>
-		private static bool joinChatRoom(String tag, String id, String password) {
+		private static bool joinChatRoom(String tag, String id, String password)
+		{
 			ChatRoom room = null;
 			if (!chatRooms.TryGetValue(id, out room))
 				return false;
@@ -1080,7 +1171,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="tag">The tag of the player wanting to leave</param>
 		/// <param name="playerAlive">True if the player is still on the server, false otherwise</param>
-		private static void leaveRoom(String tag, bool playerAlive) {
+		private static void leaveRoom(String tag, bool playerAlive)
+		{
 			ChatRoom room = null;
 			Player p = getPlayerByID(tag);
 			if (p == null)
@@ -1104,7 +1196,8 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="id">The id of the room</param>
 		/// <param name="data">The MemoryStream containing the data</param>
-		private static void sendToRoom(String id, MemoryStream data) {
+		private static void sendToRoom(String id, MemoryStream data)
+		{
 			ChatRoom c;
 			Player p;
 			if (chatRooms.TryGetValue(id, out c)) {
@@ -1121,14 +1214,16 @@ namespace TDVServer {
 		/// </summary>
 		/// <param name="id">The id to check</param>
 		/// <returns>True if protected, false otherwise</returns>
-		private static bool isPassworded(String id) {
+		private static bool isPassworded(String id)
+		{
 			ChatRoom room = null;
 			if (!chatRooms.TryGetValue(id, out room))
 				return false;
 			return room.type == RoomTypes.password;
 		}
 
-		private static void cleanUp() {
+		private static void cleanUp()
+		{
 			try {
 				output(LoggingLevels.debug, "Cleaning up...");
 				foreach (Game g in gameList.Values)
@@ -1149,12 +1244,14 @@ namespace TDVServer {
 					theChatFile.Flush();
 					theChatFile.Close();
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				output(LoggingLevels.error, e.Message + e.StackTrace);
 			}
 		}
 
-		private static bool prepareForReboot() {
+		private static bool prepareForReboot()
+		{
 			if (rebooting) {
 				if (elapsedRebootTime == -1) {
 					elapsedRebootTime = 0;
@@ -1164,7 +1261,7 @@ namespace TDVServer {
 				int current = d.Subtract(totalRebootTime).Minutes;
 				if (current < 5 && current != elapsedRebootTime) {
 					int remainder = 5 - current;
-					sendCriticalMessage("Server shutting down in " + remainder+ ((remainder > 1)?" minutes.":" minute."));
+					sendCriticalMessage("Server shutting down in " + remainder + ((remainder > 1) ? " minutes." : " minute."));
 					elapsedRebootTime = current;
 				}
 				return current == 5;
@@ -1176,7 +1273,8 @@ namespace TDVServer {
 		/// Sends the critical server message to everyone.
 		/// </summary>
 		/// <param name="message">The message to send</param>
-		private static void sendCriticalMessage(String message) {
+		private static void sendCriticalMessage(String message)
+		{
 			output(LoggingLevels.messages, message);
 			sendChatMessage(null, message, MessageType.critical, true);
 			foreach (ChatRoom room in chatRooms.Values)
@@ -1185,7 +1283,8 @@ namespace TDVServer {
 				g.queueCriticalMessage(message);
 		}
 
-		public static void createLogs() {
+		public static void createLogs()
+		{
 			if (theFile != null) {
 				lock (fileLock) {
 					theFile.Flush();
@@ -1204,25 +1303,30 @@ namespace TDVServer {
 			output(LoggingLevels.info, "New log created on " + DateTime.Now.ToString("MMMM/d/yyyy"));
 		}
 
-		private static void nextDay() {
+		private static void nextDay()
+		{
 			createLogs();
 		}
 
-		private static void setMessage(String msg) {
+		private static void setMessage(String msg)
+		{
 			dayMsg = msg;
 			output(LoggingLevels.info, "Message of the day now set to " + dayMsg);
 		}
 
-		private static void sendMessageOfTheDay(String tag) {
+		private static void sendMessageOfTheDay(String tag)
+		{
 			if (!dayMsg.Equals(""))
 				CSCommon.sendData(clientList[tag].client, CSCommon.buildCMDString(CSCommon.cmd_chat, (byte)MessageType.normal, "[Message of the day]: " + dayMsg));
 		}
 
-		private static void clearDayMsg() {
+		private static void clearDayMsg()
+		{
 			dayMsg = "";
 		}
 
-		private static void sendConnectResponse(TcpClient c, LoginMessages l, params String[] args) {
+		private static void sendConnectResponse(TcpClient c, LoginMessages l, params String[] args)
+		{
 			String serverTag = args[0];
 			String messageOfTheDay = args[1];
 			if ((l & LoginMessages.unauthorized) != LoginMessages.unauthorized) {
@@ -1231,8 +1335,8 @@ namespace TDVServer {
 					writer.Write((int)l);
 					if ((l & LoginMessages.serverAssignedTag) == LoginMessages.serverAssignedTag)
 						writer.Write(serverTag);
-						writer.Write(messageOfTheDay); // Could be empty string
-						CSCommon.sendData(c, writer);
+					writer.Write(messageOfTheDay); // Could be empty string
+					CSCommon.sendData(c, writer);
 					if ((l & LoginMessages.wrongCredentials) == LoginMessages.wrongCredentials
 						|| (l & LoginMessages.badVersion) == LoginMessages.badVersion)
 						c.Close();
@@ -1242,7 +1346,8 @@ namespace TDVServer {
 				c.Close();
 		}
 
-		private static void inputHandler() {
+		private static void inputHandler()
+		{
 			String input = "";
 			while (!input.Equals("exit") && !input.Equals("shutdown")) {
 				System.Console.WriteLine("Enter message to set a message of the day, options to change options, shutdown to shutdown the server with a five minute warning to all players, and exit to shutdown the server immediately.");
@@ -1279,7 +1384,8 @@ namespace TDVServer {
 			}
 		}
 
-		private static int menu(String prompt, params String[] options) {
+		private static int menu(String prompt, params String[] options)
+		{
 			while (!crash) {
 				System.Console.WriteLine(prompt);
 				int i = 0;
@@ -1298,14 +1404,16 @@ namespace TDVServer {
 			return 0;
 		}
 
-		private static void saveSettings() {
+		private static void saveSettings()
+		{
 			BinaryWriter s = new BinaryWriter(new FileStream("settings", FileMode.Create));
 			s.Write(dayMsg);
 			s.Write(CSCommon.secondsTimeout);
 			s.Close();
 		}
 
-		private static void loadSettings() {
+		private static void loadSettings()
+		{
 			if (!File.Exists("settings"))
 				return;
 			BinaryReader s = new BinaryReader(new FileStream("settings", FileMode.Open));
@@ -1314,5 +1422,90 @@ namespace TDVServer {
 			s.Close();
 		}
 
-	} 	 //class
+		/// <summary>
+		/// Indicates whether this version is updating or not. If it is, the file will have already started
+		/// downloading when this method returns.
+		/// </summary>
+		/// <returns>True if updating, false otherwise</returns>
+		private static bool isUpdating()
+		{
+			DateTime now = DateTime.Now;
+			String updatever = getPageContent("https://raw.githubusercontent.com/munawarb/Three-D-Velocity/master/version");
+			if (updatever.Equals("failed"))
+				return false;
+			float newVersion = float.Parse(updatever, CultureInfo.InvariantCulture.NumberFormat);
+			float oldVersion = float.Parse(serverVersion, CultureInfo.InvariantCulture.NumberFormat);
+			if (oldVersion < newVersion) {
+				Console.Write("Three-D Velocity version " + newVersion + " is available. You are running version " + oldVersion + ". Would you like to download version " + newVersion + " now? (y/n):");
+				String input = System.Console.ReadLine().Trim().ToLower();
+				if (input.Equals("y")) {
+					updateTo(serverVersion, updatever, null);
+					return true;
+				} else
+					return false;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Asks the user to confirm an update.
+		/// </summary>
+		/// <param name="from">The currently running version</param>
+		/// <param name="to">The version to which the user will be updated</param>
+		/// <param name="comments">Any comments such as update history. Can be null</param>
+		private static void updateTo(String from, String to, String comments)
+		{
+			output(LoggingLevels.indiscriminate, "Downloading update...");
+			downloadUpdate("https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip", "Three-D-Velocity-Binaries-master.zip");
+		}
+
+		/// <summary>
+		/// Downloads an update
+		/// </summary>
+		/// <param name="url">The URL of the file to download. The domain is prepended</param>
+		/// <param name="localPath">The file name to store the update in. It will be housed in the program data directory</param>
+		private static void downloadUpdate(String url, String localPath)
+		{
+			if (webClient == null)
+				webClient = new WebClient();
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+			webClient.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(downloadComplete);
+			webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(progressUpdated);
+			webClient.DownloadFileAsync(new Uri(url), localPath);
+		}
+
+		private static void progressUpdated(Object sender, DownloadProgressChangedEventArgs e)
+		{
+			if (e.ProgressPercentage != lastProgress && e.ProgressPercentage % 5 == 0) {
+				lastProgress = e.ProgressPercentage;
+				output(LoggingLevels.indiscriminate, e.ProgressPercentage + " percent complete");
+			}
+		}
+
+		private static void downloadComplete(Object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+		{
+			if (e.Error != null)
+				error = true;
+			completedDownload = true;
+		}
+
+		private static String
+				getPageContent(String url)
+		{
+			try {
+				if (webClient == null)
+					webClient = new WebClient();
+				byte[] output = webClient.DownloadData(url);
+				StringBuilder str = new StringBuilder();
+				foreach (byte b in output)
+					str.Append(
+						(char)b);
+				return str.ToString();
+			}
+			catch (System.Net.WebException) {
+				return "failed";
+			}
+		}
+
+	}    //class
 } //namespace

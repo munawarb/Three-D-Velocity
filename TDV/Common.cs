@@ -164,7 +164,7 @@ namespace TDV
 		[STAThread]
 		public static void Main(String[] args)
 		{
-			System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(Addendums.File.appPath + "\\trace.log"));
+			//System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(Addendums.File.appPath + "\\trace.log"));
 
 			/*
 			Mission.writeToFile();

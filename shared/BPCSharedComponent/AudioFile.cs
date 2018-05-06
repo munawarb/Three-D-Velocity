@@ -9,7 +9,6 @@ using System;
 using System.IO;
 using SharpDX;
 using SharpDX.Multimedia;
-using System.Windows.Forms;
 namespace BPCSharedComponent.ExtendedAudio
 {
 	/// <summary>
@@ -37,21 +36,11 @@ namespace BPCSharedComponent.ExtendedAudio
 		//Loads a file from a Stream class.
 		public AudioFile(Stream s)
 		{
-			try
-			{
-				stream = new BinaryReader(s);
-				stream.BaseStream.Position = 0;
-				prepareForProcessing();
-				//everything is ready now.
-				getData(true); //get the raw wave data
-			}
-			catch (Exception e)
-			{
-				MessageBox.Show(e.Message + "\n" + e.StackTrace,
-							   "Error in BPCShared Component.dll.",
-							  MessageBoxButtons.OK,
-							 MessageBoxIcon.Error);
-			}
+			stream = new BinaryReader(s);
+			stream.BaseStream.Position = 0;
+			prepareForProcessing();
+			//everything is ready now.
+			getData(true); //get the raw wave data
 		}
 
 		//Loads a file from a byte array.

@@ -1,6 +1,14 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
+##### Version 2.16, released on 05/06/2018
+
+###### Added
+- TDV now has an auto updater, and has been upgraded to .NET Framework 4.6. The server and TDV will check for updates when they are first launched ([#36](../../issues/36))
+
+##### Fixed
+- Implemented a new method for looping background sounds that avoids the memory access violation that started to happen after the project was upgraded to .NET Framework 4.6 from 3.5 ([#38](../../issues/38))
+
 ##### Version 2.15, released on 05/04/2018
 
 ###### Added

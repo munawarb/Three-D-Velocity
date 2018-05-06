@@ -7,7 +7,6 @@
 */
 using System;
 using System.IO;
-using System.Windows.Forms;
 namespace BPCSharedComponent.Security
 {
 	/// <summary>
@@ -43,7 +42,6 @@ namespace BPCSharedComponent.Security
 				theFile.Write("Error base exception: {0}{1}Error Description: {2}{3}Stack trace: {4}", e.GetBaseException(), Environment.NewLine, e.Message, Environment.NewLine, e.StackTrace);
 				theFile.Flush();
 				theFile.Close();
-				MessageBox.Show("An error has occured. A log has been generated.", "BPCSharedComponent.dll - Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return null;
 			}
 		}

@@ -16,6 +16,8 @@ using BPCSharedComponent.ExtendedAudio;
 using SharpDX.DirectInput;
 using System.Collections;
 using System.Reflection;
+using System.Globalization;
+using System.Security.Authentication;
 
 namespace TDV
 {
@@ -313,7 +315,7 @@ namespace TDV
 			if (Common.firstTimeLoad)
 				startGame(true);
 			if (shutDownAndInstall) {
-				System.Diagnostics.Process.Start(Addendums.File.commonAppPath + "\\update.exe", "/silent");
+				System.Diagnostics.Process.Start("Updater.exe");
 				SapiSpeech.enableJAWSHook();
 				Environment.Exit(0);
 			}
@@ -1101,11 +1103,12 @@ namespace TDV
 		{
 			if (webClient == null)
 				webClient = new WebClient();
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 			webClient.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(downloadComplete);
 			webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(progressUpdated);
-			System.Diagnostics.Trace.WriteLine("Downloading from http://www.bpcprograms.com/" + url);
-			System.Diagnostics.Trace.WriteLine("and saving to " + Addendums.File.commonAppPath + "\\" + localPath);
-			webClient.DownloadFileAsync(new Uri("http://www.bpcprograms.com/" + url), Addendums.File.commonAppPath + "\\" + localPath);
+			System.Diagnostics.Trace.WriteLine("Downloading from " + url);
+			System.Diagnostics.Trace.WriteLine("and saving to " + localPath);
+			webClient.DownloadFileAsync(new Uri(url), localPath);
 		}
 
 		private void progressUpdated(Object sender, DownloadProgressChangedEventArgs e)
@@ -1119,6 +1122,8 @@ namespace TDV
 		private void downloadComplete(Object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
 			Common.fadeMusic();
+			if (e.Error != null)
+				error = true;
 			completedDownload = true;
 		}
 
@@ -1224,23 +1229,21 @@ namespace TDV
 		{
 			DateTime now = DateTime.Now;
 			if (now.Hour != Options.hour || now.Day != Options.day || now.Year != Options.year) {
-				String updatever = getPageContent("http://bpcprograms.com/updates/tdv2.txt");
+				String updatever = getPageContent("https://raw.githubusercontent.com/munawarb/Three-D-Velocity/master/version");
 				System.Diagnostics.Trace.WriteLine(updatever);
 				if (updatever.Equals("failed"))
 					return false;
-				String[] updates = updatever.Split('&');
-				String[] updateCurrent = null;
-				foreach (String update in updates) {
-					if (update.Contains(Common.applicationVersion)) {
-						updateCurrent = update.Split(':');
-						if (updateCurrent[0].Equals(Common.applicationVersion)) {
-							System.Diagnostics.Trace.WriteLine("Updating to " + updateCurrent[1]);
-							updateTo(Common.applicationVersion, updateCurrent[1], null);
-							return true;
-						}
-					} //if a section is found with the current version
-				} //foreach update entry
-			} //if different time
+				float newVersion = float.Parse(updatever, CultureInfo.InvariantCulture.NumberFormat);
+				float oldVersion = float.Parse(Common.applicationVersion, CultureInfo.InvariantCulture.NumberFormat);
+				if (oldVersion < newVersion) {
+					int download = Common.GenerateMenu("Three-D Velocity version " + newVersion + " is available. You are running version " + oldVersion + ". Would you like to download version " + newVersion + " now?", new String[] { "No", "Yes" });
+					if (download > 0) {
+						updateTo(Common.applicationVersion, updatever, null);
+						return true;
+					} else
+						return false;
+				}
+			}
 			return false;
 		}
 
@@ -1255,7 +1258,7 @@ namespace TDV
 			SapiSpeech.speak("Downloading update...", SapiSpeech.SpeakFlag.noInterrupt);
 			Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms5.ogg");
 			Common.music.play(true);
-			downloadUpdate(String.Format("updates/tdvupdate{0}.exe", to), "update.exe");
+			downloadUpdate("https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip", "Three-D-Velocity-Binaries-master.zip");
 		}
 
 		public void copyMessage()
