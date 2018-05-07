@@ -383,15 +383,17 @@ namespace TDVServer
 						} //switch
 					} //if explicit command
 					else {
-						byte[] buffer = new byte[rcvData.ReadInt32()];
+						byte[] buffer = new byte[rcvData.ReadUInt32()];
 						string id = rcvData.ReadString();
 						bool updateBot = false;
 						int botIndex = 0;
 						if (c == 3) {
 							if ((botIndex = getBot(id)) > -1) {
-								rcvData.ReadInt16(); //passed numArgs
+								rcvData.ReadUInt16(); //passed numArgs
+								// Next, get bot's damage value
 								while (rcvData.ReadSByte() != 1) ;
-								if (rcvData.ReadInt32() > 0)
+								int botDamage = rcvData.ReadInt32();
+								if (botDamage > 0)
 									updateBot = true;
 								else
 									removeBot(botIndex);

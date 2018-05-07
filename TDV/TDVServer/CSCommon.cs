@@ -133,13 +133,16 @@ namespace TDV
 			bool success = false;
 			data.Position = 0;
 			NetworkStream stream = client.GetStream();
-			byte[] buffer = data.ToArray();
+			// We need to make room for the data, + how ever many bytes are required to store the size of the payload.
+			byte[] buffer = new byte[data.Length + sizeof(uint)];
+			data.Read(buffer, sizeof(uint), (int)data.Length);
+			byte[] size = BitConverter.GetBytes((uint)data.Length);
+			for (int i = 0; i < sizeof(uint); i++)
+				buffer[i] = size[i];
 			try {
 #if SERVER
-				stream.BeginWrite(BitConverter.GetBytes(buffer.Length), 0, 4, new AsyncCallback(writeEnded), stream);
 				stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(writeEnded), stream);
 #else
-				stream.Write(BitConverter.GetBytes(buffer.Length), 0, 4);
 				stream.Write(buffer, 0, buffer.Length);
 #endif
 				success = true;
@@ -149,8 +152,7 @@ namespace TDV
 			return success;
 		}
 
-		private static void writeEnded(IAsyncResult r) {
-			try {
+		private static void writeEnded(IAsyncResult r) {			try {
 				NetworkStream stream = (NetworkStream)r.AsyncState;
 				stream.EndWrite(r);
 			} catch (IOException) {
@@ -233,7 +235,7 @@ namespace TDV
 
 				int size = 0; //How many bytes we read.
 				int totalSize = 0; //Total bytes read from the stream
-				int sizeToRead = BitConverter.ToInt32(sizeBuffer, 0); //How many bytes ultimately make up this packet?
+				uint sizeToRead = BitConverter.ToUInt32(sizeBuffer, 0); //How many bytes ultimately make up this packet?
 
 				byte[] buffer = new byte[sizeToRead];
 				do {

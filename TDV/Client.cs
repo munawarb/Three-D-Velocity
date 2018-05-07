@@ -553,12 +553,12 @@ namespace TDV
 				writer.Write((sbyte)2);
 			writer.Flush();
 			long pos = mem.Position;
-			writer.Write((int)0);
+			writer.Write((uint)0);
 			writer.Write(source.id);
 			writer.Flush();
 			long numArgs = mem.Position;
-			writer.Write((short)0);
-			short size = 2;
+			writer.Write((ushort)0);
+			ushort size = 2;
 			writer.Write((sbyte)1);
 			writer.Write(source.damage);
 			writer.Write((sbyte)2);
@@ -624,7 +624,7 @@ namespace TDV
 			mem.Position = numArgs;
 			writer.Write(size);
 			mem.Position = pos;
-			writer.Write((int)mem.Length);
+			writer.Write((uint)mem.Length);
 			writer.Flush();
 			mem.Position = 0;
 			return mem;

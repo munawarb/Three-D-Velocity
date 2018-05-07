@@ -80,7 +80,17 @@ namespace TDV
 		cmd_test = 38,
 		cmd_addMember = 39,
 		cmd_removeMember = 40;
-		private const int maxDemoTime = 15;
+		private static int m_secondsTimeout = 5;
+		public static int secondsTimeout { get { return m_secondsTimeout; } }
+
+		/// <summary>
+		/// Initializes options.
+		/// </summary>
+		/// <param name="secondsTimeout">Number of seconds before timing out</param>
+		public static void initialize(int secondsTimeout)
+		{
+			m_secondsTimeout = secondsTimeout;
+		}
 		/* Returns a valid commandstring
 		 * to the caller, in the format cmd:command|arg1&arg2&...&argN
 		 * */
@@ -90,10 +100,8 @@ namespace TDV
 			BinaryWriter b = new BinaryWriter(m = new MemoryStream());
 			b.Write((sbyte)1);
 			b.Write(command);
-			if (args != null && args.Length > 0)
-			{
-				foreach (Object s in args)
-				{
+			if (args != null && args.Length > 0) {
+				foreach (Object s in args) {
 					if (s is long)
 						b.Write((long)s);
 					else if (s is bool)
@@ -129,21 +137,21 @@ namespace TDV
 			bool success = false;
 			data.Position = 0;
 			NetworkStream stream = client.GetStream();
-			byte[] buffer = data.ToArray();
-			try
-			{
+			// We need to make room for the data, + how ever many bytes are required to store the size of the payload.
+			byte[] buffer = new byte[data.Length + sizeof(uint)];
+			data.Read(buffer, sizeof(uint), (int)data.Length);
+			byte[] size = BitConverter.GetBytes((uint)data.Length);
+			for (int i = 0; i < sizeof(uint); i++)
+				buffer[i] = size[i];
+			try {
 #if SERVER
-				stream.BeginWrite(BitConverter.GetBytes(buffer.Length), 0, 4, new AsyncCallback(writeEnded), stream);
-				Server.output("" + BitConverter.ToInt32(BitConverter.GetBytes(buffer.Length), 0), true);
 				stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(writeEnded), stream);
 #else
-				stream.Write(BitConverter.GetBytes(buffer.Length), 0, 4);
 				stream.Write(buffer, 0, buffer.Length);
 #endif
 				success = true;
 			}
-			catch
-			{ //disconnected
+			catch { //disconnected
 				success = false;
 			}
 			return success;
@@ -151,21 +159,17 @@ namespace TDV
 
 		private static void writeEnded(IAsyncResult r)
 		{
-			try
-			{
+			try {
 				NetworkStream stream = (NetworkStream)r.AsyncState;
 				stream.EndWrite(r);
 			}
-			catch (IOException)
-			{
+			catch (IOException) {
 			}
-			catch (ObjectDisposedException)
-			{
+			catch (ObjectDisposedException) {
 			}
-			catch
-			{
+			catch (Exception e) {
 #if SERVER
-				Server.output(e.Message + e.StackTrace);
+				Server.output(LoggingLevels.error, e.Message + e.StackTrace);
 #endif
 			}
 		}
@@ -190,8 +194,7 @@ namespace TDV
 
 		public static bool sendData(TcpClient client, bool data)
 		{
-			using (BinaryWriter w = new BinaryWriter(new MemoryStream()))
-			{
+			using (BinaryWriter w = new BinaryWriter(new MemoryStream())) {
 				w.Write(data);
 				return sendData(client, (MemoryStream)w.BaseStream);
 			}
@@ -211,10 +214,8 @@ namespace TDV
 			MemoryStream s = null;
 			SslStream secureStream = null;
 
-			if (wait && !stream.DataAvailable)
-			{
-				while (!stream.DataAvailable)
-				{
+			if (wait && !stream.DataAvailable) {
+				while (!stream.DataAvailable) {
 					Thread.Sleep(5);
 					msWaited += 5;
 					if (ms != -1 && msWaited > ms)
@@ -223,23 +224,19 @@ namespace TDV
 				} //while
 			} //if we want to wait for data
 
-			if (stream.DataAvailable)
-			{
-				if (ssl)
-				{
+			if (stream.DataAvailable) {
+				if (ssl) {
 					secureStream = new SslStream(stream, true);
 
-					try
-					{
+					try {
 						secureStream.AuthenticateAsServer(new X509Certificate2("bpcprograms.p12"));
 					}
-					catch (Exception)
-					{
+					catch (Exception e) {
 #if SERVER
-						Server.output("While authenticating" + e.Message, true);
-						Server.output(e.StackTrace, true);
+						Server.output(LoggingLevels.error, "While authenticating" + e.Message);
+						Server.output(LoggingLevels.error, e.StackTrace);
 						if (e.InnerException != null)
-							Server.output(e.InnerException.Message, true);
+							Server.output(LoggingLevels.error, e.InnerException.Message);
 #endif
 						throw;
 					}
@@ -247,51 +244,29 @@ namespace TDV
 
 				byte[] sizeBuffer = new byte[4];
 				int sizeSize = 0; //how many bytes of the first int we read
-#if SERVER
-					Server.output("sizesize: " + sizeSize, true);
-#else
-				System.Diagnostics.Trace.WriteLine("sizesize: " + sizeSize);
-#endif
-				do
-				{
-					sizeSize += (ssl) ? secureStream.Read(sizeBuffer, 0, sizeBuffer.Length - sizeSize) : stream.Read(sizeBuffer, sizeSize, sizeBuffer.Length - sizeSize);
+				do {
+					sizeSize += (ssl) ? secureStream.Read(sizeBuffer, sizeSize, sizeBuffer.Length - sizeSize) : stream.Read(sizeBuffer, sizeSize, sizeBuffer.Length - sizeSize);
 				} while (sizeSize < 4);
+
 
 				int size = 0; //How many bytes we read.
 				int totalSize = 0; //Total bytes read from the stream
-				foreach (byte b in sizeBuffer)
-#if SERVER
-					Server.output("" + b + " ");
-#else
-					System.Diagnostics.Trace.Write("" + b + " ");
-#endif
-
-				int sizeToRead = BitConverter.ToInt32(sizeBuffer, 0); //How many bytes ultimately make up this packet?
-				System.Diagnostics.Trace.WriteLine("Need to read " + sizeToRead + " bytes");
+				uint sizeToRead = BitConverter.ToUInt32(sizeBuffer, 0); //How many bytes ultimately make up this packet?
 
 				byte[] buffer = new byte[sizeToRead];
-
-				do
-				{
-#if SERVER
-					Server.output("Read " + totalSize + " bytes", true);
-#else
-					System.Diagnostics.Trace.WriteLine("Read " + totalSize + " bytes");
-#endif
-					if (!stream.DataAvailable)
-					{
+				do {
+					if (!ssl && !stream.DataAvailable) {
 						DateTime startTime = DateTime.Now;
-						do
-						{
-#if SERVER
-					Server.output(String.Format("No data, waited {0} seconds", DateTime.Now.Subtract(startTime).Seconds), true);
-#else
-							System.Diagnostics.Trace.WriteLine("Read " + totalSize + " bytes");
-#endif
-
+						do {
 							Thread.Sleep(0);
-							if (DateTime.Now.Subtract(startTime).TotalSeconds > 5)
+							if (DateTime.Now.Subtract(startTime).TotalSeconds > secondsTimeout) {
+#if SERVER
+								Server.output(LoggingLevels.debug, "Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.");
+#else
+				System.Diagnostics.Trace.WriteLine("Waited " + secondsTimeout + " seconds. No payload arrived. Returning null.");
+#endif
 								return null;
+							}
 						} while (!stream.DataAvailable);
 					}
 					if (ssl)
@@ -338,21 +313,6 @@ namespace TDV
 				return false;
 			return true;
 		}
-
-#if SERVER
-		/// <summary>
-		/// Determines whether or not demo time has expired for this player. It is up to
-		/// the server to remove the player.
-		/// </summary>
-		/// <param name="p">The Player object to check.</param>
-		/// <returns>True if time is up, false if time is not up, or this is not a demo client.</returns>
-		public static bool isDemoUp(Player p)
-		{
-			if (!p.isDemo)
-				return false;
-			return DateTime.Now.Subtract(p.logOnTime).Minutes >= maxDemoTime;
-		}
-#endif
 
 		public static void sendResponse(TcpClient client, MemoryStream data)
 		{
