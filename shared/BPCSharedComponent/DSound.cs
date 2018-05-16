@@ -115,21 +115,20 @@ namespace BPCSharedComponent.ExtendedAudio
 			m_isFromResource = m;
 		}
 
+		/// <summary>
+		/// Sets up XAudio2 for Ogg playback.
+		/// </summary>
+		/// <returns>True on success and false on failure. Failure is likely the cause of XAudio2 missing from the system.</returns>
 		public static bool initializeOgg()
 		{
-			try
-			{
+			try {
 				sizeOfBuffer = BufferSize.medium;
 				xAudio2Device = new XAudio2();
+				masteringVoice = new MasteringVoice(xAudio2Device);
+				return true;
+			} catch (Exception e) {
+				return false;
 			}
-			catch (SharpDXException err)
-			{
-				if (err.Message.Contains("REGDB_E_CLASSNOTREG"))
-					return (false);
-			}
-
-			masteringVoice = new MasteringVoice(xAudio2Device);
-			return (true);
 		}
 
 

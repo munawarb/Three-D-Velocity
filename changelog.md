@@ -1,12 +1,20 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
+##### Version 2.17, released on mm/dd/yyyy
+
+###### Added
+- TDV now shows a user-friendly message at startup if XAudio2 is not installed ([#40](../../issues/40))
+
+###### Fixed
+- While on the server, TDV would send the size of the payload as an async request along with the payload. This meant that sometimes the size of the payload would arrive before the payload (the expected behavior) and sometimes the size of the payload would arrive after the payload (unexpected behavior.) In the latter case, the client or server would assume the first four bytes of the freshly arrived payload would be the size of the  payload. Naturally, sometimes this would fail, since the ordering of the size header and payload were not guaranteed. This would cause errors in read operations. Now, the size of the payload is attached to the front of the payload and sent as one write operation to the network stream, guaranteeing its order ([#39](../../issues/39))
+
 ##### Version 2.16, released on 05/06/2018
 
 ###### Added
 - TDV now has an auto updater, and has been upgraded to .NET Framework 4.6. The server and TDV will check for updates when they are first launched ([#36](../../issues/36))
 
-##### Fixed
+###### Fixed
 - Implemented a new method for looping background sounds that avoids the memory access violation that started to happen after the project was upgraded to .NET Framework 4.6 from 3.5 ([#38](../../issues/38))
 
 ##### Version 2.15, released on 05/04/2018

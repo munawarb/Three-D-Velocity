@@ -82,13 +82,7 @@ namespace TDV
 			Common.onlineMusicVol = Common.currentMusicVol;
 			dxInput.DInputInit(this);
 			if (!DSound.initializeOgg()) {
-				MessageBox.Show("You do not have XAudio installed." +
-	"You can download XAudio by running the SharpDX installer from the following address:\r\n" +
-	"http://www.bpcprograms.com/programs/utilities/," +
-" or by running the DirectX Web Installer directly from Microsoft at the following address: \r\nhttp://www.microsoft.com/directx.",
-	"Prerequisites",
-	MessageBoxButtons.OK,
-	MessageBoxIcon.Error);
+				MessageBox.Show("You do not have XAudio installed. Visit http://github.com/munawarb/Three-D-Velocity and download the DirectX Web Installer from the Dependencies section. The game will now close.", "Prerequisites", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Environment.Exit(0);
 			}
 			this.Deactivate += new EventHandler(GUI_Deactivate);
