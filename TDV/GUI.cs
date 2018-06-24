@@ -309,7 +309,7 @@ namespace TDV
 			if (Common.firstTimeLoad)
 				startGame(true);
 			if (shutDownAndInstall) {
-				System.Diagnostics.Process.Start("Updater.exe");
+				System.Diagnostics.Process.Start("Updater.exe", "tdv.exe");
 				SapiSpeech.enableJAWSHook();
 				Environment.Exit(0);
 			}
