@@ -1,7 +1,7 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
-##### Version 2.17, released on 05/19/2018
+##### Version 2.17, released on 06/24/2018
 
 ###### Added
 - TDV now shows a user-friendly message at startup if XAudio2 is not installed ([#40](../../issues/40))
