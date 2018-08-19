@@ -78,7 +78,7 @@ namespace TDV
 			m_input = new DirectInput();
 			//get the default keyboard.
 			diDev = new Keyboard(input);
-			diDev.SetCooperativeLevel(Handle, CooperativeLevel.Foreground | CooperativeLevel.NonExclusive);
+			diDev.SetCooperativeLevel(Handle.Handle, CooperativeLevel.Foreground | CooperativeLevel.NonExclusive);
 			diDev.Acquire();
 		}
 

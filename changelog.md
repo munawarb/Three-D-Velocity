@@ -1,6 +1,11 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
+##### Version 2.18, released on 08/19/2018
+
+###### Added
+- TDV now uses NuGet Package Manager to link against SharpDX instead of hard-coded references. Also, there is only one solution in the TDV folder now that will open all four projects (TDV, TDVServer, Updater, and BPCSharedComponent) inside one solution ([#45](../../issues/45))
+
 ##### Version 2.17, released on 06/24/2018
 
 ###### Added

@@ -109,20 +109,22 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>..\..\TDV\Three-D-Velocity-Binaries\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <FileAlignment>4096</FileAlignment>
     <DebugType>Full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\</OutputPath>
-    <DefineConstants>TRACE;x86</DefineConstants>
+    <OutputPath>..\..\TDV\Three-D-Velocity-Binaries\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <WarningLevel>0</WarningLevel>
     <FileAlignment>4096</FileAlignment>
     <DebugType>pdbonly</DebugType>
@@ -132,10 +134,10 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseX64|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\ReleaseX64\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\..\TDV\Three-D-Velocity-Binaries\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <WarningLevel>0</WarningLevel>
     <FileAlignment>4096</FileAlignment>
     <DebugType>pdbonly</DebugType>
@@ -145,25 +147,28 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="OggVorbisDecoder, Version=1.1.3578.30785, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="OggVorbisDecoder">
+      <HintPath>..\OggVorbisDecoder.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\TDV\packages\SharpDX.4.1.0\lib\net45\SharpDX.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.DirectInput, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\TDV\packages\SharpDX.DirectInput.4.0.1\lib\net45\SharpDX.DirectInput.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DirectSound, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.DirectSound, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\TDV\packages\SharpDX.DirectSound.4.0.1\lib\net45\SharpDX.DirectSound.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SharpDX.DirectSound.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.XAudio2, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Mathematics, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\TDV\packages\SharpDX.Mathematics.4.0.1\lib\net45\SharpDX.Mathematics.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SharpDX.XAudio2.dll</HintPath>
     </Reference>
-    <Reference Include="SlimDX, Version=2.0.6.40, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86">
+    <Reference Include="SharpDX.XAudio2, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\TDV\packages\SharpDX.XAudio2.4.0.1\lib\net45\SharpDX.XAudio2.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SlimDX.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -187,9 +192,13 @@
     <Import Include="System.Diagnostics" />
     <Import Include="System.Resources" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties Reactor_Output="" Reactor_Configuration="ALL" Reactor_Project="" Reactor_Commands="" Reactor_Enabled="0" />
+      <UserProperties Reactor_Enabled="0" Reactor_Commands="" Reactor_Project="" Reactor_Configuration="ALL" Reactor_Output="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

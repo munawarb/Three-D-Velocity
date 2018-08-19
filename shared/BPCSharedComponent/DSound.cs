@@ -127,6 +127,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				masteringVoice = new MasteringVoice(xAudio2Device);
 				return true;
 			} catch (Exception e) {
+				System.Diagnostics.Debug.WriteLine(e.Message + e.StackTrace);
 				return false;
 			}
 		}

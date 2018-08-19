@@ -40,5 +40,6 @@ using System.Runtime.InteropServices;
 #if BETA
 [assembly: AssemblyVersion("2.20.5.*")]
 #else
-[assembly: AssemblyVersion("2.17.1.*")]
+[assembly: AssemblyVersion("2.18.0.*")]
+[assembly: AssemblyFileVersion("2.18.0.0")]
 #endif
