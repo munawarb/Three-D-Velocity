@@ -8,6 +8,9 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 - Configuration files are now loaded from and saved to the `data` directory under the directory where the TDV executable is located, instead of in `%appdata%\BPCPrograms\TDV2`. This allows TDV to be easily portable since players can take the entire TDV directory which will contain the state of the game ([#52](../../issues/52))
 - During a brawl, players can now press h to get their health and t to get their opponent's health. The documentation has been updated accordingly ([#43](../../issues/43))
 
+###### Fixed
+- If the player destroyed either the mid air refueler or aircraft carrier, TDV would behave in an undefined manner due to a race condition, so while the game was handling this situation, its execution was inconsistent, sometimes resulting in a crash. The race condition is resolved and the game will behave consistently when destroying these objects ([#41](../../issues/41))
+
 ##### Version 2.18, released on 08/19/2018
 
 ###### Added

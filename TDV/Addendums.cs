@@ -6,6 +6,7 @@
 * Copyright (C) Munawar Bijani
 */
 using System;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -17,14 +18,14 @@ namespace TDV.Addendums
 		{
 			get
 			{
-				return Assembly.GetExecutingAssembly().Location + "\\data";
+				return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data";
 			}
 		}
 		public static String commonAppPath
 		{
 			get
 			{
-				return Assembly.GetExecutingAssembly().Location + "\\data";
+				return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\data";
 			}
 		}
 		/// <summary>
