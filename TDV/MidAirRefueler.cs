@@ -119,7 +119,7 @@ speed //this gives total hours
 			else if (minutes >= 2 && minutes <= 9)
 				playMessage(DSound.SoundPath + String.Format("\\rf{0}.wav", minutes));
 			else
-				playMessage(DSound.SoundPath + "\\rf10.wav");
+				SelfVoice.NLS("#" + minutes + "&mius.wav", true, true); //playMessage(DSound.SoundPath + "\\rf10.wav");
 		}
 
 		public void uncall()
