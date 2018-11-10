@@ -1626,15 +1626,15 @@ namespace TDV
 					foreach (Furniture f in furnishing)
 						person.things.Add(f);
 				}
-
-
-				#region GameLoop
 				foreach (Person p in people)
 					p.move();
-				#endregion
 				lost = player.damage <= 0;
 				if (!lost)
 					won = opp.damage <= 0;
+				if (dxInput.isFirstPress(Key.H, false))
+					SelfVoice.NLS("#" + player.getHealthPercentage() + "&p.wav", true, true);
+				if (dxInput.isFirstPress(Key.T, false))
+					SelfVoice.NLS("#" + opp.getHealthPercentage() + "&p.wav", true, true);
 				Thread.Sleep(5);
 			} //while
 			Common.fadeMusic();

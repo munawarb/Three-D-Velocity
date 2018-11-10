@@ -46,6 +46,15 @@ namespace TDV
 		}
 
 		/// <summary>
+		/// Gets the remaining health of this object.
+		/// </summary>
+		/// <returns>The health expressed as a percent</returns>
+		public int getHealthPercentage()
+		{
+			return (int)((double)damage / maxDamage * 100);
+		}
+
+		/// <summary>
 		/// Gets the distance between this object and another object.
 		/// </summary>
 		/// <param name="f">The other object</param>
