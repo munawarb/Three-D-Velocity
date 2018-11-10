@@ -17,18 +17,14 @@ namespace TDV.Addendums
 		{
 			get
 			{
-				return Environment.GetFolderPath(
-					Environment.SpecialFolder.ApplicationData)
-					+ "\\BPCPrograms\\TDV2";
+				return Assembly.GetExecutingAssembly().Location + "\\data";
 			}
 		}
 		public static String commonAppPath
 		{
 			get
 			{
-				return Environment.GetFolderPath(
-					Environment.SpecialFolder.CommonApplicationData)
-					+ "\\BPCPrograms\\TDV";
+				return Assembly.GetExecutingAssembly().Location + "\\data";
 			}
 		}
 		/// <summary>
