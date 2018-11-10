@@ -1,6 +1,11 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
+##### Version 2.20, released on 
+
+###### Added
+- Configuration files are now loaded from and saved to the `data` directory under the directory where the TDV executable is located, instead of in `%appdata%\BPCPrograms\TDV2`. This allows TDV to be easily portable since players can take the entire TDV directory which will contain the state of the game ([#52](../../issues/52))
+
 ##### Version 2.18, released on 08/19/2018
 
 ###### Added
@@ -31,9 +36,9 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 
 ###### Fixed
 - In a Death Match game online, if you created a bot, the bot would not be counted as a player in the game, so even if it was just you and one or more bots, you would not be permitted to start the game. Now, bots are enrolled as part of the player count in an online Death Match game ([#28](../../issues/28))
-- When many weapons were fired, the server would experience a lag. The server now consumes data faster which greatly increases response time. This fixed an issue where sometimes bots would not clear from the server immediately upon destruction ([27](../../issues/27))
+- When many weapons were fired, the server would experience a lag. The server now consumes data faster which greatly increases response time. This fixed an issue where sometimes bots would not clear from the server immediately upon destruction ([#27](../../issues/27))
 - On the server, players are no longer permitted to send private messages to themselves when in the hangar ([#26](../../issues/26))
-- When presented with an input prompt, such as when asked to type an IP address to connect to, CPU usage would suddenly spike. This was caused by a blocking thread which was waiting for input from this prompt, and has been corrected ([25](../../issues/25))
+- When presented with an input prompt, such as when asked to type an IP address to connect to, CPU usage would suddenly spike. This was caused by a blocking thread which was waiting for input from this prompt, and has been corrected ([#25](../../issues/25))
 - When TDV prompted for an IP address or domain to connect to, pressing ESCAPE to back out of the prompt would not work. Now, players can exit this prompt by pressing ESCAPE. This also works for the call sign prompt  ([#34](../../issues/34))
 - When loading a game from the main menu while multiplayer mode was selected, the game would load but context would immediately switch to online mode. Now, TDV loads games properly and doesn't try to connect to a multiplayer server ([#19](../../issues/19))
 
