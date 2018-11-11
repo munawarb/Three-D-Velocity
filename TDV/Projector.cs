@@ -344,22 +344,9 @@ namespace TDV
 		}
 		public virtual void move()
 		{
-			double tempZ = z;
 			Degrees.moveObject(ref x, ref y, ref z,
 						 direction,
 						 new Range(getHorizontalSpeed(1.0), getVerticalSpeed(1.0)), Common.intervalMS);
-			float w = 0.0f;
-			if ((w = getWeightRatio()) >= 80.0f)
-			{
-				tempZ = Math.Abs(z - tempZ);
-				if (w >= 70.0f && w <= 80.0f)
-					tempZ *= 0.25;
-				else if (w > 80.0f && w <= 90.0f)
-					tempZ *= 0.50;
-				else
-					tempZ *= 0.75;
-				Interlocked.Exchange(ref z, z - tempZ);
-			}
 		}
 
 		//Below, accelerate and decelerate cast the acceleration speed value to miles per hour--
@@ -974,7 +961,7 @@ namespace TDV
 		}
 
 		/// <summary>
-		/// Gets the current weight of this object. Each child class should implements its own getWeight() method to make sure all weights are totalled.
+		/// Gets the current weight of this object. Each child class should implements its own getWeight() method to make sure all weights are totaled.
 		/// </summary>
 		/// <returns>The weight of the object, not accounting fuel.</returns>
 		protected virtual int getWeight()
@@ -1029,21 +1016,8 @@ namespace TDV
 			dirty = true;
 		}
 
-		protected float getWeightRatio()
-		{
-			return (float)Math.Round(getTotalWeight() / getMaxWeight() * 100.0f, 1);
-		}
-
-
 		protected double getMaxSpeedPercentage()
 		{
-			if (!Options.isPlayingOnline)
-				return 0.0;
-			float w = getWeightRatio();
-			if (w >= 90.0f && w < 100.0f)
-				return m_matchSpeed * 0.25;
-			else if (w > 100.0f)
-				return m_matchSpeed * 0.75;
 			return 0.0;
 		}
 
