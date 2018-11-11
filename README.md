@@ -46,8 +46,10 @@ No. It's open source, not abandonware. I'll be working on it as time permits. If
 #### Documentation
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
-#### What's new?
+#### What's new in version 2.20, 11/11/2018?
 If you'd like to check out a list of the latest features, you can view the [change log here](changelog.md). When you pull the Master branch or download the latest binary distribution, you're always getting the most recent version noted in the change log.
+
+TDV comes with an auto updater. If you're running an older version, the game will download and install the latest update for you. For this reason, we advise against extracting TDV to a write-protected directory.
 
 #### Downloading The Game
 There are several ways to download TDV, depending on your situation and what you want.
@@ -55,7 +57,7 @@ There are several ways to download TDV, depending on your situation and what you
 ##### Dependencies
 TDV relies on XAudio2 for some of its sound rendering. If you don't have XAudio2 installed, you'll get a semi-cryptic message at startup with the word "xaudio2" in it. If this happens, download and run the [Microsoft DirectX Web Installer](https://www.microsoft.com/en-us/download/details.aspx?id=35).
 
-Also, make sure to delete your previous configuration of TDV if you've ever had TDV on your computer, or this version might not work. You can find TDV config files in %APPDATA%\BPCPrograms
+Also, make sure to delete your previous configuration of TDV if you've ever had TDV on your computer, or this version might not work. You can find TDV config files in tdv_root/data, as of version 2.20.
 
 If you find any bugs or have any suggestions, please post them on the [Issues Page.](https://github.com/munawarb/Three-D-Velocity/issues)
 
