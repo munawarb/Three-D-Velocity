@@ -83,7 +83,7 @@ Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual
 Note that because of a bug in SharpDX, Three-D Velocity links against SharpDX 4.1.0, and the 4.0.1 versions of DirectSound, DirectInput, Mathematics, and XAudio2. So, if you need to manually install SharpDX as opposed to using NuGet, use the versions just mentioned or the solution might not run.
 
 #### The Multiplayer Server
-Yes, you read that correctly! TDV contains a multiplayer server so you can fight other aircraft online. If you want to run the server, run the file TDVServer.exe in the binary distribution. For those of you who have the source code, the source code for the server is located in TDV/TDVServer. If you compile the server, the executable will be placed in TDV/TDVServer/bin/Debug.
+Yes, you read that correctly! TDV contains a multiplayer server so you can fight other aircraft online. If you want to run the server, run the file TDVServer.exe in the binary distribution. For those of you who have the source code, the source code for the server is located in TDV/TDVServer. If you compile the server, the executable will be placed in TDV/three-d-velocity-binaries.
 
 To connect to someone else's server, launch the game and select "Multiplayer Mode" from the "Mode Selection" menu. You'll be asked for the IP address or domain to connect to, along with the call sign you wish to use on the server. You should allow ports 4444 and 4445 through your firewall, since these are the ports TDV will attempt to connect on.
 
