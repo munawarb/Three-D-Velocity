@@ -1501,9 +1501,12 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			String[] rooms = null;
 			using (BinaryReader r = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewChatRooms)))
 			{
-				args = new ChatRoomArgs[r.ReadInt16()];
-				rooms = new String[args.Length];
-				for (int i = 0; i < args.Length; i++)
+				short numberOfRooms = r.ReadInt16();
+				if (numberOfRooms == 0)
+					return;
+				args = new ChatRoomArgs[numberOfRooms];
+				rooms = new String[numberOfRooms];
+				for (int i = 0; i < numberOfRooms; i++)
 				{
 					args[i] = new ChatRoomArgs(r.ReadString(), r.ReadString(), r.ReadBoolean());
 					rooms[i] = args[i].friendlyName;
