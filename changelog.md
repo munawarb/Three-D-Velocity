@@ -1,7 +1,7 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
-##### Version 2.20, released on 
+##### Version 2.20, released on 11/11/2018
 
 ###### Added
 - If the refuel tanker is more than ten minutes out, the generic message no longer plays, and an accurate time is now given ([#48](../../issues/48))
@@ -10,6 +10,7 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 
 ###### Fixed
 - TDV would crash with an arithmetic overflow exception during Mission Mode during the Power Plant strike ([#51](../../issues/51))
+- Locks are no longer allowed to be broken on the landing beacon or aircraft carrier. By design, these objects don't appear on radar, so once the lock was broken it was not possible to reestablish them ([#55](../../issues/55))
 - If there were no open rooms on the server, pressing ENTER on "join chat room" would freeze TDV ([#42](../../issues/42))
 - If the player destroyed either the mid air refueler or aircraft carrier, TDV would behave in an undefined manner due to a race condition, so while the game was handling this situation, its execution was inconsistent, sometimes resulting in a crash. The race condition is now resolved and the game will behave consistently when destroying these objects ([#41](../../issues/41))
 - TDV would crash with a null reference exception if a game was loaded during an active game in Mission Mode ([#53](../../issues/53))
