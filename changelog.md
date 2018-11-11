@@ -11,6 +11,7 @@ On this page you'll find a list of all updates made to Three-D Velocity since it
 ###### Fixed
 - If there were no open rooms on the server, pressing ENTER on "join chat room" would freeze TDV ([#42](../../issues/42))
 - If the player destroyed either the mid air refueler or aircraft carrier, TDV would behave in an undefined manner due to a race condition, so while the game was handling this situation, its execution was inconsistent, sometimes resulting in a crash. The race condition is now resolved and the game will behave consistently when destroying these objects ([#41](../../issues/41))
+- TDV would sometimes crash on startup when trying to disable a certain screen reader's keyboard hook ([#54](../../issues/54))
 
 ##### Version 2.18, released on 08/19/2018
 

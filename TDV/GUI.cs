@@ -258,7 +258,8 @@ namespace TDV
 
 				if (SapiSpeech.source == SapiSpeech.SpeechSource.notSet)
 					SapiSpeech.setSource(SapiSpeech.SpeechSource.auto);
-				SapiSpeech.disableJAWSHook();
+				// This might throw MissingMethodException. It won't harm anything, so ignore it.
+				try {SapiSpeech.disableJAWSHook();} catch(MissingMethodException) {}
 
 
 				if (Options.enabled == Options.Device.gameController)
@@ -821,7 +822,7 @@ namespace TDV
 		{
 			Common.gameHasFocus = true;
 			if (!Common.error)
-				SapiSpeech.disableJAWSHook();
+				try { SapiSpeech.disableJAWSHook(); } catch (MissingMethodException) { }
 			if (!wasPaused) //We paused the game when we lost focus, it wasn't an in game event.
 				Options.isPaused = false;
 			wasPaused = false;
@@ -1015,7 +1016,7 @@ namespace TDV
 			Text = Name;
 			Focus();
 			Common.repop();
-			SapiSpeech.disableJAWSHook();
+			try { SapiSpeech.disableJAWSHook(); } catch (MissingMethodException) { }
 		}
 
 		public void startChat(String caption)
@@ -1046,7 +1047,7 @@ namespace TDV
 				Application.DoEvents();
 				Thread.Sleep(10);
 			}
-			SapiSpeech.disableJAWSHook();
+			try { SapiSpeech.disableJAWSHook(); } catch (MissingMethodException) { }
 			dxInput.diDev.Acquire();
 			while (dxInput.isKeyHeldDown(Key.Escape))
 				Thread.Sleep(5);
