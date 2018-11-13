@@ -60,7 +60,7 @@ Three-D Velocity picks up after the first attempt failed. The player acts as Lie
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
 ##### What's new
-The latest version is 2.20, released on 11/11/2018. If you'd like to check out a list of the latest features, you can view the [change log here](changelog.md). When you pull the Master branch or download the latest binary distribution, you're always getting the most recent version noted in the change log.
+The latest version is 2.21, released on 11/13/2018. If you'd like to check out a list of the latest features, you can view the [change log here](changelog.md). When you pull the Master branch or download the latest binary distribution, you're always getting the most recent version noted in the change log.
 
 TDV comes with an auto updater. If you're running an older version, the game will download and install the latest update for you. For this reason, we advise against extracting TDV to a write-protected directory.
 

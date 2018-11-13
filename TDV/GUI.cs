@@ -18,12 +18,14 @@ using System.Collections;
 using System.Reflection;
 using System.Globalization;
 using System.Security.Authentication;
+using System.Runtime.InteropServices;
 
 namespace TDV
 {
 	public class GUI : System.Windows.Forms.Form
 	{
 		private WebClient webClient;
+		private const int totalSize = 257486848;
 		private int lastProgress = 0;
 		private String chatTitle;
 		private String history;
@@ -49,6 +51,7 @@ namespace TDV
 		private TextBox TxtHistory;
 		private TextBox TxtChat;
 		private ListBox lstWho;
+		private ProgressBar progressBar1;
 		private Thread runner;
 		public bool inputBoxEnabled
 		{
@@ -122,6 +125,7 @@ namespace TDV
 			this.BtnSend = new System.Windows.Forms.Button();
 			this.TxtHistory = new System.Windows.Forms.TextBox();
 			this.TxtChat = new System.Windows.Forms.TextBox();
+			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -130,9 +134,9 @@ namespace TDV
 			this.textBox1.AcceptsReturn = true;
 			this.textBox1.CausesValidation = false;
 			this.textBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.textBox1.Location = new System.Drawing.Point(0, 0);
+			this.textBox1.Location = new System.Drawing.Point(270, 128);
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(100, 20);
+			this.textBox1.Size = new System.Drawing.Size(362, 20);
 			this.textBox1.TabIndex = 0;
 			this.textBox1.TabStop = false;
 			this.textBox1.Visible = false;
@@ -155,7 +159,7 @@ namespace TDV
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 100);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(248, 251);
 			this.tableLayoutPanel1.TabIndex = 4;
 			// 
 			// lstWho
@@ -173,7 +177,7 @@ namespace TDV
 			// 
 			this.BtnLeave.CausesValidation = false;
 			this.BtnLeave.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.BtnLeave.Location = new System.Drawing.Point(103, 3);
+			this.BtnLeave.Location = new System.Drawing.Point(127, 3);
 			this.BtnLeave.Name = "BtnLeave";
 			this.BtnLeave.Size = new System.Drawing.Size(75, 14);
 			this.BtnLeave.TabIndex = 7;
@@ -188,7 +192,7 @@ namespace TDV
 			this.BtnSend.AccessibleDescription = "Send the chat message";
 			this.BtnSend.AccessibleRole = System.Windows.Forms.AccessibleRole.PushButton;
 			this.BtnSend.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.BtnSend.Location = new System.Drawing.Point(3, 43);
+			this.BtnSend.Location = new System.Drawing.Point(3, 118);
 			this.BtnSend.Name = "BtnSend";
 			this.BtnSend.Size = new System.Drawing.Size(75, 14);
 			this.BtnSend.TabIndex = 6;
@@ -201,7 +205,7 @@ namespace TDV
 			// TxtHistory
 			// 
 			this.TxtHistory.CausesValidation = false;
-			this.TxtHistory.Location = new System.Drawing.Point(103, 43);
+			this.TxtHistory.Location = new System.Drawing.Point(127, 118);
 			this.TxtHistory.Multiline = true;
 			this.TxtHistory.Name = "TxtHistory";
 			this.TxtHistory.ReadOnly = true;
@@ -214,11 +218,19 @@ namespace TDV
 			// 
 			this.TxtChat.AccessibleDescription = "";
 			this.TxtChat.AccessibleName = "Message";
-			this.TxtChat.Location = new System.Drawing.Point(3, 83);
+			this.TxtChat.Location = new System.Drawing.Point(3, 233);
 			this.TxtChat.Name = "TxtChat";
 			this.TxtChat.Size = new System.Drawing.Size(94, 20);
 			this.TxtChat.TabIndex = 4;
 			this.TxtChat.Visible = false;
+			// 
+			// progressBar1
+			// 
+			this.progressBar1.Location = new System.Drawing.Point(19, 273);
+			this.progressBar1.Name = "progressBar1";
+			this.progressBar1.Size = new System.Drawing.Size(872, 63);
+			this.progressBar1.TabIndex = 5;
+			this.progressBar1.Visible = false;
 			// 
 			// GUI
 			// 
@@ -228,8 +240,9 @@ namespace TDV
 			this.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
 			this.CancelButton = this.BtnLeave;
 			this.CausesValidation = false;
-			this.ClientSize = new System.Drawing.Size(292, 273);
+			this.ClientSize = new System.Drawing.Size(916, 367);
 			this.ControlBox = false;
+			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.textBox1);
 			this.Cursor = System.Windows.Forms.Cursors.Arrow;
@@ -280,7 +293,7 @@ namespace TDV
 					completedDownload = false;
 
 					if (!error) {
-						Common.GenerateMenu("The update has been downloaded. Press ENTER to shut down TDV and install the update. TDV will restart once the update is complete.", new String[] { "OK" });
+						MessageBox.Show("The update download is complete. Click OK to begin installing. TDV will restart once the update is complete.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 						shutDownAndInstall = true;
 					} else
 						Common.GenerateMenu("Error downloading update. Press ENTER to continue.", new String[] { "Ok" });
@@ -1108,15 +1121,17 @@ namespace TDV
 
 		private void progressUpdated(Object sender, DownloadProgressChangedEventArgs e)
 		{
-			if (e.ProgressPercentage != lastProgress && e.ProgressPercentage % 5 == 0) {
-				lastProgress = e.ProgressPercentage;
-				SapiSpeech.speak(e.ProgressPercentage + " percent complete", SapiSpeech.SpeakFlag.interruptableButStop);
+			int progressPercentage = (int)((double)e.BytesReceived / totalSize * 100);
+			if (progressPercentage != lastProgress) {
+				lastProgress = progressPercentage;
+				progressBar1.Invoke((MethodInvoker)delegate { progressBar1.Value = lastProgress; });
 			}
 		}
 
 		private void downloadComplete(Object sender, System.ComponentModel.AsyncCompletedEventArgs e)
 		{
 			Common.fadeMusic();
+			progressBar1.Invoke((MethodInvoker)delegate { progressBar1.Visible = false; });
 			if (e.Error != null)
 				error = true;
 			completedDownload = true;
@@ -1231,8 +1246,8 @@ namespace TDV
 				float newVersion = float.Parse(updatever, CultureInfo.InvariantCulture.NumberFormat);
 				float oldVersion = float.Parse(Common.applicationVersion, CultureInfo.InvariantCulture.NumberFormat);
 				if (oldVersion < newVersion) {
-					int download = Common.GenerateMenu("Three-D Velocity version " + newVersion + " is available. You are running version " + oldVersion + ". Would you like to download version " + newVersion + " now?", new String[] { "No", "Yes" });
-					if (download > 0) {
+					DialogResult download = MessageBox.Show("Three-D Velocity version " + newVersion + " is available. You are running version " + oldVersion + ". Would you like to download version " + newVersion + " now?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+					if (download == DialogResult.Yes) {
 						updateTo(Common.applicationVersion, updatever, null);
 						return true;
 					} else
@@ -1250,7 +1265,10 @@ namespace TDV
 		/// <param name="comments">Any comments such as update history. Can be null</param>
 		private void updateTo(String from, String to, String comments)
 		{
-			SapiSpeech.speak("Downloading update...", SapiSpeech.SpeakFlag.noInterrupt);
+			this.Invoke((MethodInvoker) delegate {
+				this.Text = "Downloading update, please wait...";
+				this.progressBar1.Visible = true;
+			});
 			Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms5.ogg");
 			Common.music.play(true);
 			downloadUpdate("https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip", "Three-D-Velocity-Binaries-master.zip");
