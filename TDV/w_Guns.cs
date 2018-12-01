@@ -9,6 +9,7 @@ using System;
 using SharpDX.DirectSound;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 namespace TDV
 {
 	public class Guns : WeaponBase
@@ -31,7 +32,7 @@ namespace TDV
 		{
 			direction = weapon.creator.direction;
 			if (!isAI)
-				dxInput.startFireEffect();
+				DXInput.startFireEffect();
 		}
 		public override void onTick()
 		{

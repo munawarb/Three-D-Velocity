@@ -11,6 +11,7 @@ using System.Threading;
 using SharpDX.DirectSound;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 
 namespace TDV
 {
@@ -106,7 +107,7 @@ namespace TDV
 			((Aircraft)Mission.player).restoreDamage(0);
 			while (message.isPlaying())
 			{
-				if ((Environment.TickCount - mark) / 1000 >= 3 && (dxInput.isKeyHeldDown() || dxInput.isJSButtonHeldDown()))
+				if ((Environment.TickCount - mark) / 1000 >= 3 && (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown()))
 					break;
 				Thread.Sleep(50);
 			}

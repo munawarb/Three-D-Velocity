@@ -7,6 +7,7 @@
 */
 using System;
 using System.IO;
+using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
 
 namespace TDV
@@ -312,7 +313,7 @@ namespace TDV
 		{
 			if (keysData[(int)a - 1].modifier > 0)
 			{
-				if (dxInput.isKeyHeldDown((Key)keysData[(int)a - 1].modifier))
+				if (DXInput.isKeyHeldDown((Key)keysData[(int)a - 1].modifier))
 				{
 					return (true);
 				}

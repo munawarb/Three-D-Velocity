@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows.Forms;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
+using BPCSharedComponent.Input;
 using SharpDX.DirectSound;
 using SharpDX.DirectInput;
 
@@ -653,7 +654,7 @@ namespace TDV
 
 		public static void clearData(bool unloadMusic)
 		{
-			dxInput.unloadEffect2(false); //stop effects that should not be stopped in game.
+			DXInput.unloadEffect2(false); //stop effects that should not be stopped in game.
 			clearServerData();
 			terminateAllProjectors(true);
 			Options.demoExpired = false;
@@ -1330,7 +1331,7 @@ namespace TDV
 			while (!endSpectatorMode)
 			{
 				if (m_objectCount > 0 //in case spectator has entered game with 0 players, IE: empty FFA
-					&& (dxInput.isFirstPress(Key.L) || dirtyTrack))
+					&& (DXInput.isFirstPress(Key.L) || dirtyTrack))
 				{
 					String[] names = new String[m_objectCount];
 					String[] ids = new String[names.Length];
@@ -1355,7 +1356,7 @@ namespace TDV
 					dirtyTrack = false;
 				} //if l
 				dirtyTrack = !String.IsNullOrEmpty(currentTrack) && objectAt(currentTrack) == null;
-				if (dxInput.isFirstPress(Key.Escape) || isGameFinished())
+				if (DXInput.isFirstPress(Key.Escape) || isGameFinished())
 					endSpectatorMode = true;
 				Common.executeExtraCommands(Common.getServerItems());
 				Thread.Sleep(50);
@@ -1443,7 +1444,7 @@ namespace TDV
 			if (Client.gameHost)
 			{
 				DSound.playAndWait(DSound.NSoundPath + "\\j.wav");
-				while (dxInput.isKeyHeldDown(Key.Return))
+				while (DXInput.isKeyHeldDown(Key.Return))
 					Thread.Sleep(5);
 			}
 
@@ -1470,7 +1471,7 @@ namespace TDV
 				DSound.PlaySound(go, true, false);
 				while (DSound.isPlaying(go))
 				{
-					if (dxInput.isKeyHeldDown() || dxInput.isJSButtonHeldDown())
+					if (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown())
 						break;
 					Thread.Sleep(10);
 				}
@@ -1631,9 +1632,9 @@ namespace TDV
 				lost = player.damage <= 0;
 				if (!lost)
 					won = opp.damage <= 0;
-				if (dxInput.isFirstPress(Key.H, false))
+				if (DXInput.isFirstPress(Key.H, false))
 					SelfVoice.NLS("#" + player.getHealthPercentage() + "&p.wav", true, true);
-				if (dxInput.isFirstPress(Key.T, false))
+				if (DXInput.isFirstPress(Key.T, false))
 					SelfVoice.NLS("#" + opp.getHealthPercentage() + "&p.wav", true, true);
 				Thread.Sleep(5);
 			} //while

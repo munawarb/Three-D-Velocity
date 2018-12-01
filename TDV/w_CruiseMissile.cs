@@ -10,6 +10,7 @@ using System.IO;
 using SharpDX.DirectSound;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 namespace TDV
 {
 	public class CruiseMissile : WeaponBase
@@ -116,7 +117,7 @@ namespace TDV
 					((Aircraft)origTarget).notifyOf(Notifications.missileLaunch, true);
 				return;
 			}
-			dxInput.startCruiseMissileEffect();
+			DXInput.startCruiseMissileEffect();
 			fox = loadSound(soundPath + "fox3.wav");
 			playSound(fox, true, false);
 		}

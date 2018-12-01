@@ -10,6 +10,7 @@ using System.IO;
 using SharpDX.DirectSound;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 namespace TDV
 {
 	public class Missile : WeaponBase
@@ -94,7 +95,7 @@ namespace TDV
 					missileLaunchSound.Pan = ammunitionNumber / 2 * -2500;
 				fox = loadSound(soundPath + "fox2.wav");
 				playSound(fox, true, false);
-				dxInput.startFireEffect();
+				DXInput.startFireEffect();
 			} //if !AI
 			playSound(missileLaunchSound, true, false);
 			if (origTarget != null)

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Windows.Forms;
 using SharpDX.DirectSound;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
 using System.Collections;
 using System.Reflection;
@@ -83,7 +84,7 @@ namespace TDV
 			Common.currentMusicVol = Common.maxMusicVol / 2.0f;
 			Common.menuMusicVol = Common.currentMusicVol;
 			Common.onlineMusicVol = Common.currentMusicVol;
-			dxInput.DInputInit(this);
+			DXInput.DInputInit(this.Handle);
 			if (!DSound.initializeOgg()) {
 				MessageBox.Show("You do not have XAudio installed. Visit http://github.com/munawarb/Three-D-Velocity and download the DirectX Web Installer from the Dependencies section. The game will now close.", "Prerequisites", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Environment.Exit(0);
@@ -284,7 +285,7 @@ namespace TDV
 
 				introSound = DSound.loadOgg(DSound.SoundPath + "\\tdvl.ogg");
 				introSound.play();
-				while (introSound.isPlaying() && !dxInput.isKeyHeldDown() && !dxInput.isJSButtonHeldDown() && dxInput.JSDirectionalPadIsCenter())
+				while (introSound.isPlaying() && !DXInput.isKeyHeldDown() && !DXInput.isJSButtonHeldDown() && DXInput.JSDirectionalPadIsCenter())
 					Thread.Sleep(100);
 				introSound.stopOgg();
 				if (isUpdating()) {
@@ -333,10 +334,10 @@ namespace TDV
 					if (!KeyMap.readFromFile() && Common.firstTimeLoad) {
 						OggBuffer kError = DSound.loadOgg(DSound.NSoundPath + "\\kme.ogg");
 						kError.play();
-						while (dxInput.isKeyHeldDown())
+						while (DXInput.isKeyHeldDown())
 							Thread.Sleep(10);
 						while (kError.isPlaying()) {
-							if (dxInput.isKeyHeldDown())
+							if (DXInput.isKeyHeldDown())
 								break;
 							Thread.Sleep(10);
 						} //while
@@ -350,7 +351,7 @@ namespace TDV
 						OggBuffer introSound = DSound.loadOgg(DSound.SoundPath + "\\tdvl.ogg");
 						introSound.play();
 						while (introSound.isPlaying()) {
-							if (dxInput.isKeyHeldDown())
+							if (DXInput.isKeyHeldDown())
 								break;
 							Thread.Sleep(100);
 						}
@@ -415,24 +416,24 @@ namespace TDV
 				long time = Environment.TickCount;
 				bool a = false;
 				while ((Environment.TickCount - time) / 1000 < 60) {
-					if (dxInput.isKeyHeldDown(Key.Escape)) {
+					if (DXInput.isKeyHeldDown(Key.Escape)) {
 						Options.requestedShutdown = true;
 						a = true;
 						break;
 					}
-					if (dxInput.isKeyHeldDown(Key.T)) {
+					if (DXInput.isKeyHeldDown(Key.T)) {
 						a = true;
 						Options.autoPlay = false;
 						Options.mode = Options.Modes.testing;
 						break;
 					}
-					if (dxInput.isKeyHeldDown(Key.P)) {
+					if (DXInput.isKeyHeldDown(Key.P)) {
 						a = true;
 						Options.autoPlay = false;
 						Options.mode = Options.Modes.deathMatch;
 						break;
 					}
-					if (dxInput.isKeyHeldDown(Key.J))
+					if (DXInput.isKeyHeldDown(Key.J))
 						showDevices();
 					Thread.Sleep(100);
 				} //while
@@ -446,7 +447,7 @@ namespace TDV
 				bool exitMenu = false;
 				int index = 0;
 				while (!exitMenu) {
-					index = Common.sVGenerateMenu(dxInput.JSDevice == null ? "mainmenu_i.wav" : "mainmenu_ijs.wav", m1, index, Common.getIncDecVol());
+					index = Common.sVGenerateMenu(DXInput.JSDevice == null ? "mainmenu_i.wav" : "mainmenu_ijs.wav", m1, index, Common.getIncDecVol());
 					switch (index) {
 						case 0: //start game
 							if (Options.mode == Options.Modes.none) { //start flight with no mode selected
@@ -564,7 +565,7 @@ namespace TDV
 			int dO = 0; //keyboard by default
 						//Only display the menu below if we have a joystick connected,
 						//else skip it and assume keyboard mapping.
-			if (dxInput.JSDevice != null) {
+			if (DXInput.JSDevice != null) {
 				string[] devices = {"mainmenu_5_1_1.wav",
 					  "mainmenu_5_1_2.wav"};
 				dO = Common.sVGenerateMenu("mainmenu_5_1_i.wav",
@@ -617,16 +618,16 @@ namespace TDV
 							r = null;
 							OggBuffer prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp1.ogg");
 							prompt.play();
-							while (dxInput.isKeyHeldDown()) {
+							while (DXInput.isKeyHeldDown()) {
 								//wait till the user lets up on enter.
 								Application.DoEvents();
 							}
 							while (m == null) {
-								if (dxInput.isKeyHeldDown(Key.Escape)) {
+								if (DXInput.isKeyHeldDown(Key.Escape)) {
 									canceledCurrent = true;
 									break;
 								}
-								m = dxInput.getKeys();
+								m = DXInput.getKeys();
 								Application.DoEvents();
 							}
 							prompt.stopOgg();
@@ -635,13 +636,13 @@ namespace TDV
 							if (!canceledCurrent) {
 								prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp2.ogg");
 								prompt.play();
-								while (dxInput.isKeyHeldDown()) {
+								while (DXInput.isKeyHeldDown()) {
 									//wait till the user lets up on enter.
 									Application.DoEvents();
 								}
 								//Next, get a key
 								while (r == null) {
-									r = dxInput.getKeys();
+									r = DXInput.getKeys();
 									Application.DoEvents();
 								}
 								prompt.stopOgg();
@@ -674,16 +675,16 @@ namespace TDV
 							//joystick
 							OggBuffer prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp3.ogg");
 							prompt.play();
-							while (dxInput.isJSButtonHeldDown()) {
+							while (DXInput.isJSButtonHeldDown()) {
 								Application.DoEvents();
 							}
 							while (jsKey == null) {
-								jsKey = dxInput.getJSKeys();
+								jsKey = DXInput.getJSKeys();
 								Application.DoEvents();
 							}
 							prompt.stopOgg();
 							prompt = null;
-							KeyMap.addKey((Aircraft.Action)index, dxInput.getJSKeys()[0]);
+							KeyMap.addKey((Aircraft.Action)index, DXInput.getJSKeys()[0]);
 						}
 						//joystick
 					} //if index < .length
@@ -733,9 +734,9 @@ namespace TDV
 		{
 			IEnumerable dList = null; //holds keyboards
 			IEnumerable dList2 = null; //holds game controllers
-			dList = dxInput.input.GetDevices(DeviceClass.Keyboard,
+			dList = DXInput.input.GetDevices(DeviceClass.Keyboard,
 						 DeviceEnumerationFlags.AttachedOnly); //enumerator for keyboards
-			dList2 = dxInput.input.GetDevices(DeviceClass.GameControl,
+			dList2 = DXInput.input.GetDevices(DeviceClass.GameControl,
 						 DeviceEnumerationFlags.AttachedOnly); //enumerator for all game controllers
 															   //Check to see if we have any controlers attached.
 															   //dList2 itself will not be null, but the enumerator could be null which means no joysticks.
@@ -777,7 +778,7 @@ namespace TDV
 				if (success && !silentMode)
 					DSound.playAndWait(DSound.NSoundPath + "\\gce.wav");
 			} else {
-				dxInput.unacquireJoystick(true);
+				DXInput.unacquireJoystick(true);
 				KeyMap.readFromFile();
 				Options.enabled = Options.Device.keyboard;
 			} //if chose keyboard
@@ -796,37 +797,37 @@ namespace TDV
 			//silentMode means that the device was configged but this is the first time loading the game
 			//so we'll automatically enable the joystick
 			if (!silentMode)
-				dxInput.DInputInit(Common.guiHandle, guid);
+				DXInput.DInputInit(Common.guiHandle, guid);
 
 			if (!File.Exists(Addendums.File.appPath
 						 + "\\dev_" + guid.ToString() + ".tdv")) {
 				if (silentMode)
 					return false;
-				dxInput.JSXCenter = dxInput.JSState.X;
-				dxInput.JSYCenter = dxInput.JSState.Y;
-				dxInput.JSZCenter = dxInput.JSState.Z;
-				dxInput.JSRZCenter = dxInput.JSState.RotationZ;
+				DXInput.JSXCenter = DXInput.JSState.X;
+				DXInput.JSYCenter = DXInput.JSState.Y;
+				DXInput.JSZCenter = DXInput.JSState.Z;
+				DXInput.JSRZCenter = DXInput.JSState.RotationZ;
 				BinaryWriter s = new BinaryWriter(
 								new FileStream(Addendums.File.appPath
 								+ "\\dev_" + guid.ToString() + ".tdv",
 								FileMode.Create));
-				s.Write(dxInput.JSXCenter);
-				s.Write(dxInput.JSYCenter);
-				s.Write(dxInput.JSZCenter);
-				s.Write(dxInput.JSRZCenter);
+				s.Write(DXInput.JSXCenter);
+				s.Write(DXInput.JSYCenter);
+				s.Write(DXInput.JSZCenter);
+				s.Write(DXInput.JSRZCenter);
 				s.Close();
 			} else {
 				BinaryReader s = new BinaryReader(new FileStream(Addendums.File.appPath
 								+ "\\dev_" + guid.ToString() + ".tdv", FileMode.Open));
-				dxInput.JSXCenter = s.ReadInt32();
-				dxInput.JSYCenter = s.ReadInt32();
-				dxInput.JSZCenter = s.ReadInt32();
-				dxInput.JSRZCenter = s.ReadInt32();
+				DXInput.JSXCenter = s.ReadInt32();
+				DXInput.JSYCenter = s.ReadInt32();
+				DXInput.JSZCenter = s.ReadInt32();
+				DXInput.JSRZCenter = s.ReadInt32();
 				s.Close();
 				//If we're in silent mode the joystick object wasn't created yet,
 				//since we told it not to unless we're sure it's been configged before.
 				if (silentMode)
-					dxInput.DInputInit(Common.guiHandle, guid);
+					DXInput.DInputInit(Common.guiHandle, guid);
 			}
 			return true;
 		}
@@ -1053,7 +1054,7 @@ namespace TDV
 			pwd = password;
 			SapiSpeech.enableJAWSHook();
 			pressedEnter = false;
-			dxInput.diDev.Unacquire();
+			DXInput.diDev.Unacquire();
 
 			textBox1.Invoke(new getInputHandler(this.getInput));
 			while (!pressedEnter) {
@@ -1061,8 +1062,8 @@ namespace TDV
 				Thread.Sleep(10);
 			}
 			try { SapiSpeech.disableJAWSHook(); } catch (MissingMethodException) { }
-			dxInput.diDev.Acquire();
-			while (dxInput.isKeyHeldDown(Key.Escape))
+			DXInput.diDev.Acquire();
+			while (DXInput.isKeyHeldDown(Key.Escape))
 				Thread.Sleep(5);
 			return input;
 		}
@@ -1141,7 +1142,7 @@ namespace TDV
 		{
 			IEnumerable dList2 = null;
 
-			dList2 = dxInput.input.GetDevices(DeviceClass.GameControl,
+			dList2 = DXInput.input.GetDevices(DeviceClass.GameControl,
 			DeviceEnumerationFlags.AttachedOnly);
 			ArrayList d = new ArrayList();
 			//enumerator for all game controllers
@@ -1174,7 +1175,7 @@ namespace TDV
 			int choice = 0;
 			for (int i = 0; i < choices.Length; i++)
 				choices[i] = "s" + (i + 1) + ".wav";
-			String intro = (dxInput.JSDevice == null) ? "mainmenu_6_i.wav" : "mainmenu_6_ij.wav";
+			String intro = (DXInput.JSDevice == null) ? "mainmenu_6_i.wav" : "mainmenu_6_ij.wav";
 			SecondarySoundBuffer clip = null;
 			do {
 				choice = Common.sVGenerateMenu(intro, choices, choice, Common.getIncDecVol());
@@ -1182,10 +1183,10 @@ namespace TDV
 				if (choice != -1) {
 					clip = DSound.LoadSound(DSound.SoundPath + "\\" + s[choice]);
 					DSound.PlaySound(clip, true, false);
-					while (dxInput.isKeyHeldDown() || dxInput.isJSButtonHeldDown())
+					while (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown())
 						Thread.Sleep(50);
 					while (DSound.isPlaying(clip)) {
-						if (dxInput.isKeyHeldDown() || dxInput.isJSButtonHeldDown())
+						if (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown())
 							break;
 						Thread.Sleep(50);
 					}
@@ -1224,7 +1225,7 @@ namespace TDV
 
 		private void BtnLeave_Click(object sender, EventArgs e)
 		{
-			while (dxInput.isKeyHeldDown(Key.Escape))
+			while (DXInput.isKeyHeldDown(Key.Escape))
 				Thread.Sleep(5);
 			hideChat();
 			Client.sendCommand(CSCommon.cmd_leaveChatRoom);

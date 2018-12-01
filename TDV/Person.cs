@@ -14,6 +14,7 @@ using SharpDX.DirectSound;
 using SharpDX.DirectInput;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 
 namespace TDV
 {
@@ -333,30 +334,30 @@ namespace TDV
 			}
 			else
 			{ //if not AI
-				if (dxInput.isFirstPress(Key.Space))
+				if (DXInput.isFirstPress(Key.Space))
 					punchSomeone(null, 100);
 
-				if (dxInput.isKeyHeldDown(Key.LeftShift))
+				if (DXInput.isKeyHeldDown(Key.LeftShift))
 					block();
 				else
 					stopBlocking();
 
-				if (dxInput.isKeyHeldDown(Key.LeftAlt))
+				if (DXInput.isKeyHeldDown(Key.LeftAlt))
 					grabSomeone(null);
 				else if (grabTarget != null)
 					tossTarget();
 
-				if (dxInput.isKeyHeldDown(Key.Up))
-					move(Person.MovementDirection.north, dxInput.isFirstPress(Key.Up));
-				else if (dxInput.isKeyHeldDown(Key.Right))
-					move(Person.MovementDirection.east, dxInput.isFirstPress(Key.Right));
-				else if (dxInput.isKeyHeldDown(Key.Down))
-					move(Person.MovementDirection.south, dxInput.isFirstPress(Key.Down));
-				else if (dxInput.isKeyHeldDown(Key.Left))
-					move(Person.MovementDirection.west, dxInput.isFirstPress(Key.Left));
-				if (dxInput.isFirstPress(Key.F6))
+				if (DXInput.isKeyHeldDown(Key.Up))
+					move(Person.MovementDirection.north, DXInput.isFirstPress(Key.Up));
+				else if (DXInput.isKeyHeldDown(Key.Right))
+					move(Person.MovementDirection.east, DXInput.isFirstPress(Key.Right));
+				else if (DXInput.isKeyHeldDown(Key.Down))
+					move(Person.MovementDirection.south, DXInput.isFirstPress(Key.Down));
+				else if (DXInput.isKeyHeldDown(Key.Left))
+					move(Person.MovementDirection.west, DXInput.isFirstPress(Key.Left));
+				if (DXInput.isFirstPress(Key.F6))
 					decreaseMusicVolume();
-				if (dxInput.isFirstPress(Key.F7))
+				if (DXInput.isFirstPress(Key.F7))
 					increaseMusicVolume();
 			}
 			if (swinging && (DateTime.Now - startSwingTime).TotalMilliseconds > 200)

@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using SharpDX.DirectSound;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
 
 namespace TDV
@@ -328,10 +329,10 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				menuSelectSound = DSound.LoadSound(DSound.SoundPath + "\\mc3.wav");
 			}
 			bool wrap = false;
-			while (dxInput.isKeyHeldDown(Key.Return)
-						 || dxInput.isKeyHeldDown(Key.Escape)
-						 || dxInput.isJSButtonHeldDown(0)
-						 || dxInput.isJSButtonHeldDown(1))
+			while (DXInput.isKeyHeldDown(Key.Return)
+						 || DXInput.isKeyHeldDown(Key.Escape)
+						 || DXInput.isJSButtonHeldDown(0)
+						 || DXInput.isJSButtonHeldDown(1))
 				Thread.Sleep(5);
 
 			SecondarySoundBuffer ISound = null;
@@ -356,7 +357,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 					while (DSound.isPlaying(ISound))
 					{
-						if (dxInput.isKeyHeldDown() || dxInput.isJSButtonHeldDown() || !dxInput.JSDirectionalPadIsCenter())
+						if (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown() || !DXInput.JSDirectionalPadIsCenter())
 							break;
 						Thread.Sleep(5);
 					}
@@ -367,9 +368,9 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					SapiSpeech.speak(intro, SapiSpeech.SpeakFlag.interruptable);
 			} //if intro not null
 
-			dxInput.resetJSDP();
-			dxInput.resetKeys();
-			dxInput.resetJSB();
+			DXInput.resetJSDP();
+			DXInput.resetKeys();
+			DXInput.resetJSB();
 			//prevents menu from starting on blank option
 			while (menu[menuPos].Equals(""))
 			{
@@ -380,16 +381,16 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				//+ ".");
 			}
 
-			while (!dxInput.isFirstPress(Key.Return) && !dxInput.isFirstPressJSB(0))
+			while (!DXInput.isFirstPress(Key.Return) && !DXInput.isFirstPressJSB(0))
 			{
-				dxInput.updateJSState();
-				if (exitMenus || dxInput.isFirstPress(Key.Escape, false) || dxInput.isFirstPressJSB(1))
+				DXInput.updateJSState();
+				if (exitMenus || DXInput.isFirstPress(Key.Escape, false) || DXInput.isFirstPressJSB(1))
 				{
 					SapiSpeech.purge();
 					SelfVoice.purge(true);
 					return -1;
 				}
-				if (dxInput.isFirstPress(Key.Up, false) || dxInput.isFirstPress(Key.Left, false) || dxInput.isFirstPressJSDP(dxInput.DirectionalPadPositions.up) || dxInput.isFirstPressJSDP(dxInput.DirectionalPadPositions.left))
+				if (DXInput.isFirstPress(Key.Up, false) || DXInput.isFirstPress(Key.Left, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.up) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.left))
 				{
 					menuPos--;
 					if (menuPos < 0)
@@ -409,7 +410,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					HasSaid = false;
 				}
 
-				if (dxInput.isFirstPress(Key.Down, false) || dxInput.isFirstPress(Key.Right, false) || dxInput.isFirstPressJSDP(dxInput.DirectionalPadPositions.down) || dxInput.isFirstPressJSDP(dxInput.DirectionalPadPositions.right))
+				if (DXInput.isFirstPress(Key.Down, false) || DXInput.isFirstPress(Key.Right, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.down) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.right))
 				{
 					wrap = (menuPos = (menuPos + 1) % length) == 0;
 
@@ -418,7 +419,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					HasSaid = false;
 				}
 
-				if (dxInput.isFirstPress(Key.Home, false))
+				if (DXInput.isFirstPress(Key.Home, false))
 				{
 					menuPos = 0;
 					while (menu[menuPos].Equals(""))
@@ -426,7 +427,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					HasSaid = false;
 				}
 
-				if (dxInput.isFirstPress(Key.End, false))
+				if (DXInput.isFirstPress(Key.End, false))
 				{
 					menuPos = max;
 					while (menu[menuPos].Equals(""))
@@ -633,7 +634,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				DSound.xAudio2Device.Dispose();
 			}
 			DSound.cleanUp();
-			dxInput.cleanUp();
+			DXInput.cleanUp();
 			onlineMenuNotifier.Set();
 			menuNotifier.Set();
 			System.Environment.Exit(0);
@@ -827,7 +828,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						}
 					} //if doesn't want spectator
 
-					if (dxInput.isFirstPress(Key.Escape))
+					if (DXInput.isFirstPress(Key.Escape))
 						exitOnline = true;
 
 					if (!Client.spectatorPending)
@@ -1424,8 +1425,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				keyInfo = KeyMap.getKey(e.action);
 				if (keyInfo == null)
 					continue; //no key assigned
-				if ((keyInfo[0] == -1 && dxInput.isFirstPress((Key)keyInfo[1]))
-					|| (keyInfo[0] != -1 && dxInput.isFirstPress((Key)keyInfo[0]) && dxInput.isFirstPress((Key)keyInfo[1])))
+				if ((keyInfo[0] == -1 && DXInput.isFirstPress((Key)keyInfo[1]))
+					|| (keyInfo[0] != -1 && DXInput.isFirstPress((Key)keyInfo[0]) && DXInput.isFirstPress((Key)keyInfo[1])))
 					e.extraItemProc();
 			}
 		}
@@ -1451,24 +1452,24 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		public static void playUntilKeyPress(String file, int wait, bool block)
 		{
 			int elapsed = 0;
-			bool cameInPressed = dxInput.isKeyHeldDown() || dxInput.isJSButtonHeldDown();
+			bool cameInPressed = DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown();
 			OggBuffer buffer = DSound.loadOgg(file);
 			buffer.play();
 			while (buffer.isPlaying())
 			{
 				if (block)
 				{
-					if ((elapsed += 10) > wait && (dxInput.isKeyHeldDown(Key.Return)))
+					if ((elapsed += 10) > wait && (DXInput.isKeyHeldDown(Key.Return)))
 						break;
 				}
 				else
 				{
-					if (!cameInPressed && (dxInput.isKeyHeldDown(Key.Return)))
+					if (!cameInPressed && (DXInput.isKeyHeldDown(Key.Return)))
 						break;
 					if (cameInPressed && (elapsed += 10) / 1000 > wait)
 						break;
 					if (cameInPressed)
-						cameInPressed = dxInput.isKeyHeldDown(Key.Return);
+						cameInPressed = DXInput.isKeyHeldDown(Key.Return);
 				}
 				Thread.Sleep(10);
 			}

@@ -10,6 +10,7 @@ using System.IO;
 using SharpDX.DirectSound;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
 namespace TDV
 {
 	public class MissileInterceptor : WeaponBase
@@ -106,7 +107,7 @@ namespace TDV
 			z = origTarget.z;
 			playSound(launchSound, true, false);
 			if (!isAI)
-				dxInput.startFireEffect();
+				DXInput.startFireEffect();
 		}
 
 	}
