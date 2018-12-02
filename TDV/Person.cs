@@ -70,8 +70,7 @@ namespace TDV
 				missiles = new PersonMissile[1];
 			else if (juliusLevel() == 3)
 				missiles = new PersonMissile[4];
-			if (juliusLevel() == 3)
-			{
+			if (juliusLevel() == 3) {
 				shootSound = loadSound("l3s.wav");
 				lockSound = loadSound("l3a.wav");
 			}
@@ -164,8 +163,7 @@ namespace TDV
 			List<FightObjectFeeler> l = getFurnitureInRange(3);
 			Furniture furniture = null;
 			bool dest = false;
-			if (l != null)
-			{
+			if (l != null) {
 				furniture = l[0].furniture;
 				dest = furniture.hit(500);
 				updateCoordinates(l[0].x, l[0].y);
@@ -246,8 +244,7 @@ namespace TDV
 		/// <param name="force">True if the person should move regardless of whether the step sound is playing or not; false otherwise.</param>
 		public void move(MovementDirection movementDirection, bool force)
 		{
-			if (lastStepSound != null)
-			{
+			if (lastStepSound != null) {
 				if (!force && DSound.isPlaying(lastStepSound))
 					return;
 				lastStepSound.Stop();
@@ -263,10 +260,8 @@ namespace TDV
 				ly--;
 			else
 				lx--;
-			foreach (FightObject o in things)
-			{
-				if (o.isBlocked(lx, ly))
-				{
+			foreach (FightObject o in things) {
+				if (o.isBlocked(lx, ly)) {
 					o.playCrashSound(lx, ly);
 					return;
 				}
@@ -279,8 +274,7 @@ namespace TDV
 
 		public void move()
 		{
-			if (isAI)
-			{
+			if (isAI) {
 				throwMissile(Interaction.player);
 				lockOnPerson(Interaction.player);
 				if (shootTarget != null)
@@ -289,51 +283,38 @@ namespace TDV
 			}
 			if (beingGrabbed)
 				return;
-			if (isStunned())
-			{
+			if (isStunned()) {
 				playSound(stunSound, false, true);
 				return;
-			}
-			else if (DSound.isPlaying(stunSound))
+			} else if (DSound.isPlaying(stunSound))
 				stunSound.Stop();
-			if (isAI)
-			{
+			if (isAI) {
 				if (!isInPanicMode && (double)(damage / maxDamage) * 100 <= 40)
 					isInPanicMode = true;
-				if (isInPanicMode)
-				{
+				if (isInPanicMode) {
 					if (Common.getRandom(1, 100) <= 2)
 						seekRandomCoordinates();
 				}
-				if (isInRange(Interaction.player))
-				{
-					if (grabTarget == null)
-					{
+				if (isInRange(Interaction.player)) {
+					if (grabTarget == null) {
 						punchSomeone(Interaction.player, 50);
-						if (!seeking && !Interaction.player.isStunned())
-						{
+						if (!seeking && !Interaction.player.isStunned()) {
 							if (grabSomeone(Interaction.player))
 								seekRandomFurniture();
 						}
-					}
-					else if (!seeking)
-					{ //If someone's already being held.
+					} else if (!seeking) { //If someone's already being held.
 						if (Common.getRandom(1, 100) < 30)
 							letGoOfTarget();
-						else
-						{
+						else {
 							tossTarget();
 							if (Common.getRandom(1, 2) == 1)
 								seekRandomCoordinates();
 						}
 					}
-				}
-				else //if not in range
+				} else //if not in range
 					startSeeking(Interaction.player);
 				seek();
-			}
-			else
-			{ //if not AI
+			} else { //if not AI
 				if (DXInput.isFirstPress(Key.Space))
 					punchSomeone(null, 100);
 
@@ -375,8 +356,7 @@ namespace TDV
 		/// <param name="target">The target to seek.</param>
 		public void startSeeking(FightObject target)
 		{
-			if (!seeking)
-			{
+			if (!seeking) {
 				seeking = true;
 				startSeekTime = DateTime.Now;
 				path = MapNode.getCachedPathTo(new Vector2(x, y), (target is Furniture) ? ((Furniture)target).getClosestCorner(x, y) : new Vector2(target.x, target.y));
@@ -394,8 +374,7 @@ namespace TDV
 		/// <param name="y">The y coordinate to seek.</param>
 		public void startSeeking(int x, int y)
 		{
-			if (!seeking)
-			{
+			if (!seeking) {
 				seeking = true;
 				target = null;
 				seekX = x;
@@ -412,21 +391,17 @@ namespace TDV
 				return;
 			if ((DateTime.Now - startSeekTime).TotalMilliseconds < 600)
 				return;
-			if (pathIndex == path.Count)
-			{
+			if (pathIndex == path.Count) {
 				if (target != null && !(target is Furniture))
 					move(seek(target), false);
-			}
-			else
-			{
+			} else {
 				MovementDirection m = seek(path[pathIndex]);
 				if (m != MovementDirection.none)
 					move(m, false);
 				else
 					pathIndex++;
 			}
-			if ((target != null && !(target is Furniture) && isInRange(target)) || pathIndex == path.Count)
-			{
+			if ((target != null && !(target is Furniture) && isInRange(target)) || pathIndex == path.Count) {
 				seeking = false;
 				target = null;
 			}
@@ -435,11 +410,9 @@ namespace TDV
 		private void doPunch()
 		{
 			FightObject f = punchTarget;
-			if (punchTarget == null)
-			{
+			if (punchTarget == null) {
 				List<FightObject> fs = getObjectInRange();
-				if (fs == null)
-				{
+				if (fs == null) {
 					swinging = false;
 					return;
 				}
@@ -450,8 +423,7 @@ namespace TDV
 			punchTarget = null;
 			//Next, there are cases where there is quick punch and grab in succession.
 			//So we block grabs for x amount of seconds after a punch.
-			if (isAI)
-			{
+			if (isAI) {
 				lastGrabTime = DateTime.Now;
 				stopGrabTime = 2;
 			}
@@ -466,10 +438,8 @@ namespace TDV
 		{
 			if (grabTarget != null)
 				return false;
-			if (missiles != null)
-			{
-				foreach (PersonMissile m in missiles)
-				{
+			if (missiles != null) {
+				foreach (PersonMissile m in missiles) {
 					if (m != null && !m.isFinished())
 						return false;
 				}
@@ -477,8 +447,7 @@ namespace TDV
 			if (isAI && (DateTime.Now - lastGrabTime).TotalSeconds < stopGrabTime)
 				return false;
 
-			if (f == null)
-			{
+			if (f == null) {
 				List<Person> fs = getObjectInRangeByType<Person>();
 				if (fs == null)
 					return false;
@@ -521,8 +490,7 @@ namespace TDV
 		private void seekRandomCoordinates()
 		{
 			int x = 0, y = 0;
-			do
-			{
+			do {
 				x = Common.getRandom(0, MapNode.maxX);
 				y = Common.getRandom(0, MapNode.maxY);
 			} while (isBlockedByObject(x, y));
@@ -532,8 +500,7 @@ namespace TDV
 		private void seekRandomFurniture()
 		{
 			FightObject f = null;
-			do
-			{
+			do {
 				f = things[Common.getRandom(0, things.Count - 1)];
 			} while (!(f is Furniture));
 			startSeeking(f);
@@ -584,14 +551,11 @@ namespace TDV
 				speed = Common.getRandom(1000, 2000);
 			else if (juliusLevel() == 3)
 				speed = Common.getRandom(1000, 1400);
-			if ((DateTime.Now - lastMissileTime).TotalSeconds >= missileTime)
-			{
+			if ((DateTime.Now - lastMissileTime).TotalSeconds >= missileTime) {
 				lastMissileTime = DateTime.Now;
 				missileTime = Common.getRandom(10, 60);
-				for (int i = 0; i < missiles.Length; i++)
-				{
-					if (missiles[i] == null || missiles[i].isFinished())
-					{
+				for (int i = 0; i < missiles.Length; i++) {
+					if (missiles[i] == null || missiles[i].isFinished()) {
 						missiles[i] = new PersonMissile(this, target, speed, 100);
 						break;
 					}
@@ -601,47 +565,38 @@ namespace TDV
 
 		public override void cleanUp()
 		{
-			if (missiles != null)
-			{
-				foreach (PersonMissile p in missiles)
-				{
+			if (missiles != null) {
+				foreach (PersonMissile p in missiles) {
 					if (p == null)
 						continue;
 					p.cleanUp();
 				}
 			}
-			if (stepSound != null)
-			{
+			if (stepSound != null) {
 				for (int i = 0; i < stepSound.Length; i++)
 					DSound.unloadSound(ref stepSound[i]);
 			}
-			if (swingSound != null)
-			{
+			if (swingSound != null) {
 				for (int i = 0; i < swingSound.Length; i++)
 					DSound.unloadSound(ref swingSound[i]);
 			}
-			if (swingVoice != null)
-			{
+			if (swingVoice != null) {
 				for (int i = 0; i < swingVoice.Length; i++)
 					DSound.unloadSound(ref swingVoice[i]);
 			}
-			if (punchedSound != null)
-			{
+			if (punchedSound != null) {
 				for (int i = 0; i < punchedSound.Length; i++)
 					DSound.unloadSound(ref punchedSound[i]);
 			}
-			if (gruntSound != null)
-			{
+			if (gruntSound != null) {
 				for (int i = 0; i < gruntSound.Length; i++)
 					DSound.unloadSound(ref gruntSound[i]);
 			}
-			if (tossSound != null)
-			{
+			if (tossSound != null) {
 				for (int i = 0; i < tossSound.Length; i++)
 					DSound.unloadSound(ref tossSound[i]);
 			}
-			if (tossVoice != null)
-			{
+			if (tossVoice != null) {
 				for (int i = 0; i < tossVoice.Length; i++)
 					DSound.unloadSound(ref tossVoice[i]);
 			}
@@ -661,8 +616,7 @@ namespace TDV
 			if (missiles == null)
 				return;
 			System.Diagnostics.Trace.WriteLine("Missiles not null; traversing.");
-			foreach (PersonMissile m in missiles)
-			{
+			foreach (PersonMissile m in missiles) {
 				if (m != null)
 					m.move();
 			}
@@ -700,15 +654,13 @@ namespace TDV
 				return;
 			if (DSound.isPlaying(lockSound))
 				return;
-			if (shootTime == 0)
-			{
+			if (shootTime == 0) {
 				lastShootTime = DateTime.Now;
 				shootTime = Common.getRandom(1, 3000);
 			}
 			System.Diagnostics.Trace.WriteLine("Shoot: Got passed init");
 			System.Diagnostics.Trace.WriteLine(String.Format("Shoot: shootTime {0}; diff {1}", shootTime, (DateTime.Now - lastShootTime).TotalMilliseconds));
-			if ((DateTime.Now - lastShootTime).TotalMilliseconds > shootTime)
-			{
+			if ((DateTime.Now - lastShootTime).TotalMilliseconds > shootTime) {
 				DSound.PlaySound3d(shootSound, true, false, shootX, 0, shootY);
 				if (Degrees.getDistanceBetween(shootX, shootY, shootTarget.x, shootTarget.y) <= 2)
 					shootTarget.hitAndGrunt(300);
@@ -723,31 +675,23 @@ namespace TDV
 		#region MusicControls
 		private void increaseMusicVolume()
 		{
-			if (Common.music.volume < Common.maxMusicVol)
-			{
-				Common.music.volume += 0.10f;
-				if (Options.isPlayingOnline)
-					Common.onlineMusicVol = Common.music.volume;
-				else
-					Common.currentMusicVol = Common.music.volume;
-				Options.writeToFile();
-				DSound.masterMusicVolume = Common.music.volume;
-			}
+			Common.music.volume += Common.volumeIncrementValue;
+			if (Options.isPlayingOnline)
+				Common.onlineMusicVol = Common.music.volume;
+			else
+				Common.currentMusicVol = Common.music.volume;
+			Options.writeToFile();
+			DSound.masterMusicVolume = Common.music.volume;
 		}
 		private void decreaseMusicVolume()
 		{
-			if (Common.music.volume > 0.0f)
-			{
-				Common.music.volume -= 0.10f;
-				if (Common.music.volume < 0.0f)
-					Common.music.volume = 0.0f;
-				if (Options.isPlayingOnline)
-					Common.onlineMusicVol = Common.music.volume;
-				else
-					Common.currentMusicVol = Common.music.volume;
-				Options.writeToFile();
-				DSound.masterMusicVolume = Common.music.volume;
-			}
+			Common.music.volume -= Common.volumeIncrementValue;
+			if (Options.isPlayingOnline)
+				Common.onlineMusicVol = Common.music.volume;
+			else
+				Common.currentMusicVol = Common.music.volume;
+			Options.writeToFile();
+			DSound.masterMusicVolume = Common.music.volume;
 		}
 		#endregion
 

@@ -24,6 +24,8 @@ namespace TDV
 	public class Common
 	{
 		public static String applicationVersion = Assembly.GetExecutingAssembly().GetName().Version.Major + "." + Assembly.GetExecutingAssembly().GetName().Version.Minor;
+		public static int volumeIncrementValue { get { return 100; } }
+		public static int volumeFadeValue{get{return 200; } }
 		public static bool error
 		{
 			get;
@@ -62,9 +64,7 @@ namespace TDV
 			////Returns true if this object is destroyed, false otherwise
 		}
 
-		//This class provides some constant/variable values that will be used throughout the program.
-		//All methods in this class are static, thus an explicit instantiation of this class is not required for these methods and properties to be accessible by any class within this program.
-		public static float currentMusicVol, menuMusicVol, onlineMusicVol;
+		public static int currentMusicVol, menuMusicVol, onlineMusicVol;
 		private static SecondarySoundBuffer menuWrapSound, menuMoveSound, menuSelectSound;
 		private static bool m_previousFileVersion;
 
@@ -102,7 +102,7 @@ namespace TDV
 			set { m_gameHasFocus = value; }
 		}
 
-		public static float maxMusicVol
+		public static int maxMusicVol
 		{
 			get { return (DSound.maxMusicVol); }
 			set { DSound.maxMusicVol = value; }
@@ -172,14 +172,12 @@ namespace TDV
 			if (1 == 1)
 				return;
 			 */
-			try
-			{
+			try {
 				SharpDX.Configuration.EnableObjectTracking = true;
 				if (args != null && args.Length == 1)
 
 					cmdLine = args[0];
-				if (Common.cmdLine != null && Common.cmdLine.Equals("reset"))
-				{
+				if (Common.cmdLine != null && Common.cmdLine.Equals("reset")) {
 					DialogResult r =
 						MessageBox.Show(@"Would you like to remove your mission data? Answering 'Yes' will not remove your saved game; it will only remove your simulation records.
 
@@ -197,12 +195,10 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 																 "Remove Settings",
 																 MessageBoxButtons.YesNo,
 																 MessageBoxIcon.Question);
-					if (r == DialogResult.Yes)
-					{
+					if (r == DialogResult.Yes) {
 						File.Delete(Addendums.File.appPath + "\\settings.tdv");
 						String[] files = Directory.GetFiles(Addendums.File.appPath);
-						foreach (String f in files)
-						{
+						foreach (String f in files) {
 							if (f.Contains("dev_"))
 								File.Delete(f);
 						}
@@ -215,8 +211,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					Application.Exit();
 					return;
 				} //if reset
-				else
-				{
+				else {
 					if (!Directory.Exists(Addendums.File.appPath))
 						Directory.CreateDirectory(Addendums.File.appPath);
 					if (!Directory.Exists(Addendums.File.commonAppPath))
@@ -239,8 +234,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					Application.Run(new GUI());
 				} //if no command lines
 			}
-			catch (Exception e)
-			{
+			catch (Exception e) {
 				handleError(e);
 				System.Environment.Exit(0);
 			}
@@ -278,7 +272,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		public static string convertToWordNumber(int number)
 		{
 			string[] numbers = { "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"
-    };
+	};
 			return (numbers[number - 1]);
 		}
 
@@ -321,9 +315,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		public static int sVGenerateMenu(string intro, string[] menu, int menuPos, String nPath, ExtraItem[] keys, bool sapi)
 		{
 			bool justEntered = true; //used for screen reader menus so
-			//the prompt isn't cut off
-			if (menuWrapSound == null)
-			{
+									 //the prompt isn't cut off
+			if (menuWrapSound == null) {
 				menuWrapSound = DSound.LoadSound(DSound.SoundPath + "\\menumove.wav");
 				menuMoveSound = DSound.LoadSound(DSound.SoundPath + "\\mc" + getRandom(1, 2) + ".wav");
 				menuSelectSound = DSound.LoadSound(DSound.SoundPath + "\\mc3.wav");
@@ -343,10 +336,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			int length = menu.Length;
 			int max = length - 1;
 			SelfVoice.nStop = false;
-			if (!string.IsNullOrEmpty(intro))
-			{
-				if (!sapi)
-				{
+			if (!string.IsNullOrEmpty(intro)) {
+				if (!sapi) {
 					if (intro.IndexOf("\\") >= 0)
 						ISound = DSound.LoadSound(intro);
 					else
@@ -355,16 +346,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					ISound.Frequency = (int)MenuRate;
 					DSound.PlaySound(ISound, true, false);
 
-					while (DSound.isPlaying(ISound))
-					{
+					while (DSound.isPlaying(ISound)) {
 						if (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown() || !DXInput.JSDirectionalPadIsCenter())
 							break;
 						Thread.Sleep(5);
 					}
 
 					DSound.unloadSound(ref ISound);
-				}
-				else // if SAPI
+				} else // if SAPI
 					SapiSpeech.speak(intro, SapiSpeech.SpeakFlag.interruptable);
 			} //if intro not null
 
@@ -372,8 +361,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			DXInput.resetKeys();
 			DXInput.resetJSB();
 			//prevents menu from starting on blank option
-			while (menu[menuPos].Equals(""))
-			{
+			while (menu[menuPos].Equals("")) {
 				menuPos++;
 				//if (menuPos > max)
 				//throw new IndexOutOfRangeException("The menu was overrun while looking for a nonblank option. "
@@ -381,28 +369,22 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				//+ ".");
 			}
 
-			while (!DXInput.isFirstPress(Key.Return) && !DXInput.isFirstPressJSB(0))
-			{
+			while (!DXInput.isFirstPress(Key.Return) && !DXInput.isFirstPressJSB(0)) {
 				DXInput.updateJSState();
-				if (exitMenus || DXInput.isFirstPress(Key.Escape, false) || DXInput.isFirstPressJSB(1))
-				{
+				if (exitMenus || DXInput.isFirstPress(Key.Escape, false) || DXInput.isFirstPressJSB(1)) {
 					SapiSpeech.purge();
 					SelfVoice.purge(true);
 					return -1;
 				}
-				if (DXInput.isFirstPress(Key.Up, false) || DXInput.isFirstPress(Key.Left, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.up) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.left))
-				{
+				if (DXInput.isFirstPress(Key.Up, false) || DXInput.isFirstPress(Key.Left, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.up) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.left)) {
 					menuPos--;
-					if (menuPos < 0)
-					{
+					if (menuPos < 0) {
 						menuPos = max;
 						wrap = true;
 					}
 
-					while (menu[menuPos].Equals(""))
-					{
-						if (--menuPos < 0)
-						{
+					while (menu[menuPos].Equals("")) {
+						if (--menuPos < 0) {
 							menuPos = max;
 							wrap = true;
 						}
@@ -410,8 +392,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					HasSaid = false;
 				}
 
-				if (DXInput.isFirstPress(Key.Down, false) || DXInput.isFirstPress(Key.Right, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.down) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.right))
-				{
+				if (DXInput.isFirstPress(Key.Down, false) || DXInput.isFirstPress(Key.Right, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.down) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.right)) {
 					wrap = (menuPos = (menuPos + 1) % length) == 0;
 
 					while (menu[menuPos].Equals(""))
@@ -419,16 +400,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					HasSaid = false;
 				}
 
-				if (DXInput.isFirstPress(Key.Home, false))
-				{
+				if (DXInput.isFirstPress(Key.Home, false)) {
 					menuPos = 0;
 					while (menu[menuPos].Equals(""))
 						menuPos++;
 					HasSaid = false;
 				}
 
-				if (DXInput.isFirstPress(Key.End, false))
-				{
+				if (DXInput.isFirstPress(Key.End, false)) {
 					menuPos = max;
 					while (menu[menuPos].Equals(""))
 						menuPos--;
@@ -442,8 +421,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				if (menuPos > max)
 					menuPos = max;
 
-				if (!HasSaid)
-				{
+				if (!HasSaid) {
 					SelfVoice.purge(true);
 					//Purge resets the alternate path, which is bad in case we're reading each menu item as several strung sound files. See Aircraft.weaponsRadar();
 					if (wrap)
@@ -451,16 +429,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					wrap = false;
 					DSound.PlaySound(menuMoveSound, true, false);
 
-					if (!sapi)
-					{
+					if (!sapi) {
 						if (nPath != null)
 							SelfVoice.setPathTo(nPath);
 						if (menu[menuPos].IndexOf("\\") >= 0)
 							SelfVoice.NLS(menu[menuPos], true, true);
 						else
 							SelfVoice.NLS(DSound.NSoundPath + "\\" + menu[menuPos], true, true);
-					}
-					else //if sapi
+					} else //if sapi
 						SapiSpeech.speak(menu[menuPos], (justEntered) ? SapiSpeech.SpeakFlag.interruptable : SapiSpeech.SpeakFlag.interruptableButStop);
 					justEntered = false;
 					HasSaid = true;
@@ -542,8 +518,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			Projector[] projectors = new Projector[objArray.ToArray().Length];
 			int i = 0;
-			for (i = 0; i <= projectors.Length - 1; i++)
-			{
+			for (i = 0; i <= projectors.Length - 1; i++) {
 				projectors[i] = (Projector)objArray[i];
 			}
 			return (projectors);
@@ -554,21 +529,17 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			Aircraft[] finalArray = null;
 			int nullCounter = 0;
 			int i = 0;
-			for (i = 0; i <= vehicles.Length - 1; i++)
-			{
+			for (i = 0; i <= vehicles.Length - 1; i++) {
 				if (objArray[i] is Aircraft)
 					vehicles[i] = (Aircraft)objArray[i];
-				else
-				{
+				else {
 					vehicles[i] = null;
 					nullCounter++;
 				}
 				finalArray = new Aircraft[vehicles.Length - nullCounter];
 				int index = 0;
-				for (i = 0; i < vehicles.Length; i++)
-				{
-					if (vehicles[i] != null)
-					{
+				for (i = 0; i < vehicles.Length; i++) {
+					if (vehicles[i] != null) {
 						finalArray[index] = vehicles[i];
 						index++;
 					}
@@ -610,8 +581,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		}
 		public static void shutdown()
 		{
-			if (!Options.requestedShutdown)
-			{
+			if (!Options.requestedShutdown) {
 				Options.requestedShutdown = true;
 				sThread = new Thread(shutdownThread);
 				sThread.Start();
@@ -623,15 +593,12 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			Interaction.terminateAllProjectors(true);
 			SapiSpeech.cleanUp();
 			System.Diagnostics.Trace.WriteLine("Ended all projectors.");
-			if (music != null)
-			{
+			if (music != null) {
 				music.stopOgg();
 				music = null;
 				DSound.unloadSound(ref menuWrapSound);
 				DSound.unloadSound(ref menuMoveSound);
 				DSound.unloadSound(ref menuSelectSound);
-				DSound.masteringVoice.Dispose();
-				DSound.xAudio2Device.Dispose();
 			}
 			DSound.cleanUp();
 			DXInput.cleanUp();
@@ -645,22 +612,19 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		 * */
 		public static void repop()
 		{
-			if (Options.isPlayingOnline)
-			{
+			if (Options.isPlayingOnline) {
 				onlineMenuNotifier.Set();
 				if (Options.abortGame)
 					Client.sendCommand(CSCommon.cmd_disconnectMe);
 				else if (!Options.serverEndedGame && !Client.closed) //Don't send a command if the server shut down.
 					Client.sendCommand(CSCommon.cmd_deleteFromGame); //if serverEndedGame, client has already been removed from game so no need to send delete command, or player may be removed from server since game removes player anyway.
-			}
-			else //if not playing online.
+			} else //if not playing online.
 				menuNotifier.Set();
 		}
 
 		public static void startGame()
 		{
-			if (Options.isPlayingOnline)
-			{
+			if (Options.isPlayingOnline) {
 				/* We will add the player's craft here by requesting a create, but all subsequent adds will be done by Client.
 				 * Once all adds are complete, client will receive a startGame command from the server.
 				 * */
@@ -680,24 +644,20 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				Options.ipOrDomain = ip;
 				Options.callSign = callSign;
 				Options.writeToFile();
-					DSound.playAndWait(DSound.NSoundPath + "\\c1.wav");
-					connected = Client.connect(ip, callSign, 4444);
-					failedConnect = !connected;
-					if (!connected)
-					{
-						if ((Client.getMessages() & Client.LoginMessages.wrongCredentials) != Client.LoginMessages.wrongCredentials)
-							DSound.playAndWait(DSound.NSoundPath + "\\c2.wav");
-					}
-					else
-					{ //connected
-						fadeMusic();
-						buildOnlineMenu();
-					} //if connected
+				DSound.playAndWait(DSound.NSoundPath + "\\c1.wav");
+				connected = Client.connect(ip, callSign, 4444);
+				failedConnect = !connected;
+				if (!connected) {
+					if ((Client.getMessages() & Client.LoginMessages.wrongCredentials) != Client.LoginMessages.wrongCredentials)
+						DSound.playAndWait(DSound.NSoundPath + "\\c2.wav");
+				} else { //connected
+					fadeMusic();
+					buildOnlineMenu();
+				} //if connected
 				if (Options.requestedShutdown)
 					return;
 				//If got down here, wants to exit menu or the connection failed
-				if (connected)
-				{
+				if (connected) {
 					Client.closeConnection();
 					fadeMusic(); //hangar music
 					DSound.playAndWait(DSound.NSoundPath + "\\c4.wav");
@@ -713,8 +673,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			DSound.masterMusicVolume = currentMusicVol;
 			Track t = null;
 			int i = 0;
-			if (!Mission.isMission)
-			{
+			if (!Mission.isMission) {
 				t = new Track(Options.currentTrack);
 				Holder h = Interaction.holderAt(0);
 				for (i = 1;
@@ -722,8 +681,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				 ((Options.mode == Options.Modes.testing || Options.mode == Options.Modes.training) ? 1 :
 				 getRandom(5,
 				 (Options.autoPlay) ? 7 : 5));
-				 i++)
-				{
+				 i++) {
 					string name = null;
 					if (i == 1)
 						name = "o";
@@ -738,25 +696,20 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					if (name == "o")
 						Mission.player = (MissionObjectBase)Interaction.objectAt(v.id);
 				}
-			}
-			else if (!Options.loadedFromMainMenu)
-			{ //if mission mode
-				//If loading mission from main menu, all objects already exist. This code will create duplicate players otherwise.
-				if (Options.mode == Options.Modes.racing)
-				{
+			} else if (!Options.loadedFromMainMenu) { //if mission mode
+													  //If loading mission from main menu, all objects already exist. This code will create duplicate players otherwise.
+				if (Options.mode == Options.Modes.racing) {
 					SelfVoice.nStop = false;
 					SelfVoice.NLS(DSound.NSoundPath + "\\race.wav&#" + (Mission.racesComplete + 1));
 					SelfVoice.nStop = true;
 					Common.mainGUI.selectTrack();
 					t = new Track(Options.currentTrack);
 					Holder h = Interaction.holderAt(0);
-					for (i = 1; i <= Common.getRandom(2, 7); i++)
-					{
+					for (i = 1; i <= Common.getRandom(2, 7); i++) {
 						string name = null;
 						if (i == 1)
 							name = "o";
-						else
-						{
+						else {
 							name = "r" + (i - 1);
 							Mission.pointsWorth++;
 						}
@@ -767,20 +720,17 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					} //for random projector count
 				} //if mode=racing
 
-				if (Options.mode == Options.Modes.deathMatch)
-				{
+				if (Options.mode == Options.Modes.deathMatch) {
 					SelfVoice.nStop = false;
 					SelfVoice.NLS(DSound.NSoundPath + "\\deathmatch.wav&#" + (Mission.deathMatchesComplete + 1));
 					SelfVoice.nStop = true;
 					t = new Track(Options.currentTrack);
 					Holder h = Interaction.holderAt(0);
-					for (i = 1; i <= Common.getRandom(2, 7); i++)
-					{
+					for (i = 1; i <= Common.getRandom(2, 7); i++) {
 						string name = null;
 						if (i == 1)
 							name = "o";
-						else
-						{
+						else {
 							name = "f" + (i - 1);
 							Mission.pointsWorth++;
 						}
@@ -810,16 +760,12 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			bool exitOnline = false;
 			bool startedMusic = false;
 			int choice = 0;
-			while (!exitOnline)
-			{
+			while (!exitOnline) {
 				Interaction.clearData(false);
 
-				while (!exitOnline)
-				{
-					if (!Client.askForSpectator())
-					{
-						if (!startedMusic)
-						{
+				while (!exitOnline) {
+					if (!Client.askForSpectator()) {
+						if (!startedMusic) {
 							Common.music.stopOgg();
 							DSound.masterMusicVolume = menuMusicVol;
 							Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms6.ogg", menuMusicVol);
@@ -832,15 +778,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						exitOnline = true;
 
 					if (!Client.spectatorPending)
-						choice = sVGenerateMenu(menuIntro, new string[] { "menuc_1.wav", "menuc_2.wav", "menuc_3.wav", 
+						choice = sVGenerateMenu(menuIntro, new string[] { "menuc_1.wav", "menuc_2.wav", "menuc_3.wav",
 				  (Options.preorder) ? "menuc_4.wav":"",
 						(Options.preorder) ? "menuc_5.wav":"", "menuc_6.wav", "menuc_7.wav"
-                        }, getServerItems());
+						}, getServerItems());
 					else
 						choice = 0; //enter FFA
 					menuIntro = null; //Only say menu prompt first time user enters hangar
-					switch (choice)
-					{
+					switch (choice) {
 						case 0: //join FFA
 							Client.joinFFA();
 							break;
@@ -848,8 +793,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						case 1: //Join an open game	
 							BinaryReader gResp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_requestGameList));
 							int listLength = gResp.ReadInt16();
-							if (listLength == 0)
-							{
+							if (listLength == 0) {
 								DSound.playAndWait(DSound.NSoundPath + "\\ng.wav");
 								break;
 							}
@@ -858,8 +802,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 							//the ID is sent by the client to the server but is irrelevant to the user.
 							String[] menu = new String[listLength];
 							GameInfoArgs[] gamesList = new GameInfoArgs[listLength];
-							for (int k = 0; k < listLength; k++)
-							{
+							for (int k = 0; k < listLength; k++) {
 								gamesList[k] = new GameInfoArgs(gResp.ReadString(), gResp.ReadString(), gResp.ReadInt32());
 								menu[k] = gamesList[k].getDescription();
 							}
@@ -874,20 +817,17 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 								break;
 							int team = -1;
 							BinaryReader resp = null;
-							if (Options.mode == Options.Modes.teamDeath)
-							{ //if not spectator
-								if (entryMode != 1)
-								{ //if not spectator
+							if (Options.mode == Options.Modes.teamDeath) { //if not spectator
+								if (entryMode != 1) { //if not spectator
 									team = sVGenerateMenu("menuc_3_2_i.wav", new String[] { "menuc_3_2_1.wav", "menuc_3_2_2.wav",
-                          "menuc_3_2_3.wav", "menuc_3_2_4.wav"}, getServerItems());
+						  "menuc_3_2_3.wav", "menuc_3_2_4.wav"}, getServerItems());
 									if (team == -1)
 										break;
 									Options.team = (Projector.TeamColors)team;
 								} //if ! spectator
 								resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinGame, (byte)3, gamesList[option].getId(), team, entryMode));
-							}
-							else // no team death
-								// The server will return true if the player has been added to the game.
+							} else // no team death
+								   // The server will return true if the player has been added to the game.
 								resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinGame, (byte)2, gamesList[option].getId(), entryMode));
 							if (resp.ReadBoolean())
 								Interaction.inOnlineGame = true;
@@ -899,8 +839,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 							if (t == -1)
 								break;
 							bool inGame = true;
-							switch (t)
-							{
+							switch (t) {
 								case 0: //create one-on-one game
 									Options.mode = Options.Modes.oneOnOne;
 									Client.sendData(CSCommon.buildCMDString(CSCommon.cmd_createGame, (byte)1, (int)Options.Modes.oneOnOne));
@@ -909,9 +848,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 								case 1: //create team death
 									Options.mode = Options.Modes.teamDeath;
 									int color = sVGenerateMenu("menuc_3_2_i.wav", new String[] { "menuc_3_2_1.wav", "menuc_3_2_2.wav",
-                          "menuc_3_2_3.wav", "menuc_3_2_4.wav"}, getServerItems());
-									if (color == -1)
-									{
+						  "menuc_3_2_3.wav", "menuc_3_2_4.wav"}, getServerItems());
+									if (color == -1) {
 										inGame = false;
 										break;
 									}
@@ -926,23 +864,19 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						case 3: //store
 							String[] sOptions = new String[] { "menuc_4_1.wav", "menuc_4_2.wav" };
 							int sIndex = 0;
-							while ((sIndex = sVGenerateMenu(null, sOptions)) != -1)
-							{
-								switch (sIndex)
-								{
+							while ((sIndex = sVGenerateMenu(null, sOptions)) != -1) {
+								switch (sIndex) {
 									case 0: //view add-ons
 										ViewAddOnArgs[] vA = null;
 										String[] vA2 = null;
 										String vPrompt = null;
-										using (BinaryReader viewAddOns = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewAddOns)))
-										{
+										using (BinaryReader viewAddOns = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewAddOns))) {
 											vA = new ViewAddOnArgs[viewAddOns.ReadInt16()];
 											if (vA.Length == 0)
 												break;
 											vPrompt = String.Format("You have {0} valor points to spend", viewAddOns.ReadInt32());
 											vA2 = new String[vA.Length];
-											for (int vI = 0; vI < vA.Length; vI++)
-											{
+											for (int vI = 0; vI < vA.Length; vI++) {
 												vA[vI] = new ViewAddOnArgs(viewAddOns.ReadInt32(), viewAddOns.ReadString());
 												vA2[vI] = vA[vI].getDescription();
 											}
@@ -950,8 +884,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 										int vO = GenerateMenu(vPrompt, vA2, getServerItems());
 										if (vO == -1)
 											break;
-										using (BinaryReader vResp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_buyAddOn, vA[vO].getId())))
-										{
+										using (BinaryReader vResp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_buyAddOn, vA[vO].getId()))) {
 											if (!vResp.ReadBoolean())
 												SapiSpeech.speak(vResp.ReadString(), SapiSpeech.SpeakFlag.noInterrupt);
 										} //using
@@ -961,16 +894,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 										ViewAddOnArgs[] vMA = null;
 										String[] vMA2 = null;
 										short myAddonsLength = 0;
-										using (BinaryReader vMReader = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewMyAddOns)))
-										{
+										using (BinaryReader vMReader = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewMyAddOns))) {
 											myAddonsLength = vMReader.ReadInt16();
 											if (myAddonsLength == 0)
 												break;
 
 											vMA = new ViewAddOnArgs[myAddonsLength];
 											vMA2 = new String[vMA.Length];
-											for (int vMI = 0; vMI < vMA.Length; vMI++)
-											{
+											for (int vMI = 0; vMI < vMA.Length; vMI++) {
 												vMA[vMI] = new ViewAddOnArgs(vMReader.ReadInt32(), vMReader.ReadString(), vMReader.ReadBoolean(), vMReader.ReadBoolean(), vMReader.ReadBoolean(), vMReader.ReadBoolean());
 												vMA2[vMI] = vMA[vMI].getDescription();
 											}
@@ -982,8 +913,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 										String[] vMA3 = new String[] { "", "" };
 										if (vMA[vMO].isEnabledOrDisabledType())
 											vMA3[0] = (vMA[vMO].showEnableText()) ? "a4.wav" : "a3.wav";
-										else
-										{
+										else {
 											if (vMA[vMO].showDecrement())
 												vMA3[0] = "a1.wav";
 											if (vMA[vMO].showIncrement())
@@ -1003,12 +933,10 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 							} //while in store
 							break;
 						case 4: //stats
-							using (BinaryReader statReader = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_getStats)))
-							{
+							using (BinaryReader statReader = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_getStats))) {
 								if (!statReader.ReadBoolean())
 									SapiSpeech.speak("No stats available.", SapiSpeech.SpeakFlag.noInterrupt);
-								else
-								{
+								else {
 									String stats = String.Format("You have {0} valor points. Your power ratio is {1}, with {2} wins and {3} losses.",
 									statReader.ReadInt32(), Math.Round(statReader.ReadSingle(), 1), statReader.ReadInt32(), statReader.ReadInt32());
 									SapiSpeech.speak(stats, SapiSpeech.SpeakFlag.noInterrupt);
@@ -1029,8 +957,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 							exitOnline = true;
 							break;
 					} //switch choice
-					if (Interaction.inOnlineGame || Interaction.inChat)
-					{
+					if (Interaction.inOnlineGame || Interaction.inChat) {
 						fadeMusic();
 						startMusic();
 						startedMusic = false;
@@ -1046,8 +973,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					if (Client.closed || Options.requestedShutdown)
 						exitOnline = true;
 				} //while loop for menu
-				//Condition below won't be hit in the above loop if we're in a game and ALT+F4 is pressed to close it, so we need it
-				//here in case the child loop breaks so we will still hit this condition.
+				  //Condition below won't be hit in the above loop if we're in a game and ALT+F4 is pressed to close it, so we need it
+				  //here in case the child loop breaks so we will still hit this condition.
 				if (Client.closed || Options.requestedShutdown)
 					exitOnline = true;
 			} //parent loop to control data clearing
@@ -1058,9 +985,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			if (music == null)
 				return;
-			while (music.volume > ((stop) ? 0.0f : 0.30f))
-			{ //don't completely fade if not stopping
-				music.volume -= 0.05f;
+			while (music.volume > ((stop) ? -10000 : -5000)) { //don't completely fade if not stopping
+				music.volume -= volumeFadeValue;
 				Thread.Sleep(100);
 			}
 			if (stop)
@@ -1073,11 +999,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			fadeMusic(true);
 		}
 
-		public static void restoreMusic(float restoreVolume)
+		public static void restoreMusic(int restoreVolume)
 		{
-			while (music.volume < restoreVolume)
-			{
-				music.volume += 0.05f;
+			while (music.volume < restoreVolume) {
+				if ((music.volume + volumeFadeValue) >= restoreVolume)
+					music.volume = restoreVolume;
+				else
+					music.volume += volumeFadeValue;
 				Thread.Sleep(100);
 			}
 		}
@@ -1124,71 +1052,60 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			bool changedMusic = false;
 			DSound.masterMusicVolume = currentMusicVol; //menus which let player change music volume will
-			//have set their own masterMusicVolumes.
-			if (Options.mode == Options.Modes.racing)
-			{
+														//have set their own masterMusicVolumes.
+			if (Options.mode == Options.Modes.racing) {
 				music = DSound.loadOgg(currentMusicVol,
 					DSound.SoundPath + "\\ms2-1.ogg",
 					DSound.SoundPath + "\\ms2-2.ogg");
 				changedMusic = true;
 			}
-			if (Options.mode == Options.Modes.deathMatch || Options.mode == Options.Modes.testing)
-			{
+			if (Options.mode == Options.Modes.deathMatch || Options.mode == Options.Modes.testing) {
 				music = DSound.loadOgg(DSound.SoundPath + "\\ms3.ogg", currentMusicVol);
 				changedMusic = true;
 			}
-			if (Options.mode == Options.Modes.freeForAll || Options.mode == Options.Modes.oneOnOne || Options.mode == Options.Modes.teamDeath)
-			{
+			if (Options.mode == Options.Modes.freeForAll || Options.mode == Options.Modes.oneOnOne || Options.mode == Options.Modes.teamDeath) {
 				music = DSound.loadOgg(DSound.SoundPath + "\\ms7.ogg", onlineMusicVol);
 				changedMusic = true;
 			}
-			if (Options.mode == Options.Modes.mission)
-			{
-				if (Mission.isJuliusFight)
-				{
+			if (Options.mode == Options.Modes.mission) {
+				if (Mission.isJuliusFight) {
 					if (Options.isLoading)
 						fadeMusic();
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms4-3.ogg", currentMusicVol);
 					changedMusic = true;
 				}
 				if (!changedMusic
-					&& Mission.missionNumber == Mission.Stage.discovery)
-				{
+					&& Mission.missionNumber == Mission.Stage.discovery) {
 					if (Options.isLoading)
 						fadeMusic();
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms8.ogg", Common.currentMusicVol);
 					changedMusic = true;
 				}
-				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight1)
-				{
+				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight1) {
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms8.ogg", Common.currentMusicVol);
 					changedMusic = true;
 				}
 
-				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight2)
-				{
+				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight2) {
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms9.ogg", Common.currentMusicVol);
 					changedMusic = true;
 				}
 
-				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight3)
-				{
+				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight3) {
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms10.ogg", Common.currentMusicVol);
 					changedMusic = true;
 				}
 
 
 				if (!changedMusic
-					&& Mission.missionNumber <= Mission.Stage.powerPlant)
-				{
+					&& Mission.missionNumber <= Mission.Stage.powerPlant) {
 					if (Options.isLoading)
 						fadeMusic();
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms4-1.ogg", currentMusicVol);
 					changedMusic = true;
 				}
 				if (!changedMusic
-					&& Mission.missionNumber >= Mission.Stage.chopperFight)
-				{
+					&& Mission.missionNumber >= Mission.Stage.chopperFight) {
 					if (Options.isLoading)
 						fadeMusic();
 					music = DSound.loadOgg(DSound.SoundPath + "\\ms4-2.ogg", currentMusicVol);
@@ -1228,8 +1145,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			Options.isLoading = true;
 			Options.initializingLoad = true;
 			Holder h = Interaction.holderAt(1);
-			if (h.isRunning())
-			{ //could be loading from main menu
+			if (h.isRunning()) { //could be loading from main menu
 				System.Diagnostics.Trace.WriteLine("Weapons holder running");
 				while (!h.haulted)
 					Thread.Sleep(100);
@@ -1263,26 +1179,21 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			int numObj = inFile.ReadInt32();
 			System.Diagnostics.Trace.WriteLine("Objects to load is " + numObj);
 			Interaction.resetObjectCount();
-			for (int i = 1; i <= numObj; i++)
-			{
+			for (int i = 1; i <= numObj; i++) {
 				name = inFile.ReadString();
 				System.Diagnostics.Trace.WriteLine("Loading " + name);
 				Projector p = null;
-				if (!Options.loadedFromMainMenu)
-				{
+				if (!Options.loadedFromMainMenu) {
 					/*If this is an in-game load, we will not reload the player object,
 					 * otherwise this will break object references since the player calls load. We don't want
 					 * a ghost object.
 					 * */
-					if (name.Equals("o"))
-					{
+					if (name.Equals("o")) {
 						Mission.player.load();
 						p = Mission.player;
-					}
-					else //Not player
+					} else //Not player
 						p = Mission.createNewObject(name);
-				}
-				else //Loading from mainmenu, so we can recreate all objects safely.
+				} else //Loading from mainmenu, so we can recreate all objects safely.
 					p = Mission.createNewObject(name);
 				if (p == null)
 					throw new NullReferenceException("Null object during load, name = " + name);
@@ -1314,8 +1225,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				return (str.ToString());
 			char[] strchr = sec.ToCharArray();
 			int index = 0;
-			while (index < sec.Length)
-			{
+			while (index < sec.Length) {
 				if (strchr[index] != ',')
 					str.Append("&" + DSound.NSoundPath + "\\s_"
 						+ strchr[index] + ".wav");
@@ -1371,8 +1281,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			int max = choices.Length - 1;
 			String choice = null;
 			int item = 0;
-			do
-			{
+			do {
 				choice = choices[item = getRandom(0, max)];
 			} while (choice.Equals(""));
 			return item;
@@ -1380,31 +1289,23 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 		public static void increaseMenuMusicVolume()
 		{
-			if (Common.music.volume < Common.maxMusicVol)
-			{
-				Common.music.volume += 0.10f;
-				if (Options.entryMode == 1)
-					onlineMusicVol = music.volume;
-				else
-					menuMusicVol = music.volume;
-				DSound.masterMusicVolume = music.volume;
-				Options.writeToFile();
-			}
+			Common.music.volume += volumeIncrementValue;
+			if (Options.entryMode == 1)
+				onlineMusicVol = music.volume;
+			else
+				menuMusicVol = music.volume;
+			DSound.masterMusicVolume = music.volume;
+			Options.writeToFile();
 		}
 		public static void decreaseMenuMusicVolume()
 		{
-			if (music.volume > 0.10f)
-			{
-				music.volume -= 0.10f;
-				if (music.volume < 0.10f)
-					music.volume = 0.10f;
-				if (Options.entryMode == 1)
-					onlineMusicVol = music.volume;
-				else
-					menuMusicVol = music.volume;
-				DSound.masterMusicVolume = music.volume;
-				Options.writeToFile();
-			}
+			music.volume -= volumeIncrementValue;
+			if (Options.entryMode == 1)
+				onlineMusicVol = music.volume;
+			else
+				menuMusicVol = music.volume;
+			DSound.masterMusicVolume = music.volume;
+			Options.writeToFile();
 		}
 
 		private static void serverChat()
@@ -1420,8 +1321,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (keys == null)
 				return;
 			long[] keyInfo = null;
-			foreach (ExtraItem e in keys)
-			{
+			foreach (ExtraItem e in keys) {
 				keyInfo = KeyMap.getKey(e.action);
 				if (keyInfo == null)
 					continue; //no key assigned
@@ -1455,15 +1355,11 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			bool cameInPressed = DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown();
 			OggBuffer buffer = DSound.loadOgg(file);
 			buffer.play();
-			while (buffer.isPlaying())
-			{
-				if (block)
-				{
+			while (buffer.isPlaying()) {
+				if (block) {
 					if ((elapsed += 10) > wait && (DXInput.isKeyHeldDown(Key.Return)))
 						break;
-				}
-				else
-				{
+				} else {
 					if (!cameInPressed && (DXInput.isKeyHeldDown(Key.Return)))
 						break;
 					if (cameInPressed && (elapsed += 10) / 1000 > wait)
@@ -1500,15 +1396,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			ChatRoomArgs[] args = null;
 			String[] rooms = null;
-			using (BinaryReader r = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewChatRooms)))
-			{
+			using (BinaryReader r = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_viewChatRooms))) {
 				short numberOfRooms = r.ReadInt16();
 				if (numberOfRooms == 0)
 					return;
 				args = new ChatRoomArgs[numberOfRooms];
 				rooms = new String[numberOfRooms];
-				for (int i = 0; i < numberOfRooms; i++)
-				{
+				for (int i = 0; i < numberOfRooms; i++) {
 					args[i] = new ChatRoomArgs(r.ReadString(), r.ReadString(), r.ReadBoolean());
 					rooms[i] = args[i].friendlyName;
 				} //for
@@ -1517,8 +1411,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (choice == -1)
 				return;
 			BinaryReader resp = null;
-			if (args[choice].passworded)
-			{
+			if (args[choice].passworded) {
 				SecondarySoundBuffer enterPassword = DSound.LoadSound(DSound.NSoundPath + "\\pw1.wav");
 				DSound.PlaySound(enterPassword, true, false);
 				String pwd = mainGUI.receiveInput();
@@ -1526,17 +1419,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				if (pwd == null)
 					return;
 				resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinChatRoom, args[choice].id, pwd));
-			}
-			else
+			} else
 				resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinChatRoom, args[choice].id));
-			using (resp)
-			{
+			using (resp) {
 				bool entered = resp.ReadBoolean();
-				if (entered)
-				{
+				if (entered) {
 					int count = resp.ReadInt16();
-					if (count > 0)
-					{
+					if (count > 0) {
 						for (int i = 0; i < count; i++)
 							Client.addMember(resp.ReadString(), resp.ReadString());
 						Client.commitMembers();
@@ -1565,18 +1454,15 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			int pwd = sVGenerateMenu("pw3.wav", new String[] { "kd3.wav", "kd4.wav" }, getServerItems());
 			if (pwd == -1)
 				return;
-			if (pwd == 1)
-			{
+			if (pwd == 1) {
 				enr = DSound.LoadSound(DSound.NSoundPath + "\\pw1.wav");
-				do
-				{
+				do {
 					DSound.PlaySound(enr, true, false);
 					password = mainGUI.receiveInput();
 					enr.Stop();
 				} while (password == null);
 			}
-			using (BinaryWriter w = new BinaryWriter(new MemoryStream()))
-			{
+			using (BinaryWriter w = new BinaryWriter(new MemoryStream())) {
 				if (password == null)
 					w.Write((byte)0);
 				else

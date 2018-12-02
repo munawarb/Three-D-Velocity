@@ -67,14 +67,11 @@ TDV comes with an auto updater. If you're running an older version, the game wil
 ##### Downloading The Game
 There are several ways to download TDV, depending on your situation and what you want.
 
-###### Dependencies
-TDV relies on XAudio2 for some of its sound rendering. If you don't have XAudio2 installed, you'll get a semi-cryptic message at startup with the word "xaudio2" in it. If this happens, download and run the [Microsoft DirectX Web Installer](https://www.microsoft.com/en-us/download/details.aspx?id=35).
-
-Also, make sure to delete your previous configuration of TDV if you've ever had TDV on your computer, or this version might not work. You can find TDV config files in tdv_root/data, as of version 2.20.
-
 If you find any bugs or have any suggestions, please post them on the [Issues Page.](https://github.com/munawarb/Three-D-Velocity/issues)
 
 While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
+
+As of version 2.22, TDV no longer relies on XAudio2 from the XNA framework for music playback. I've rewritten the Ogg Vorbis player to use DirectSound instead, since XNA was deprecated by Microsoft a long time ago. As a result, the DirectX Web Installer linked in previous versions is no longer necessary.
 
 ###### I just want to play it
 If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip).

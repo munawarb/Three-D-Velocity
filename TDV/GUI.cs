@@ -81,14 +81,10 @@ namespace TDV
 			Common.mainGUI = this;
 			Common.guiHandle = this.Handle;
 			DSound.initialize(this.Handle, Addendums.File.commonAppPath);
-			Common.currentMusicVol = Common.maxMusicVol / 2.0f;
+			Common.currentMusicVol = -500;
 			Common.menuMusicVol = Common.currentMusicVol;
 			Common.onlineMusicVol = Common.currentMusicVol;
 			DXInput.DInputInit(this.Handle);
-			if (!DSound.initializeOgg()) {
-				MessageBox.Show("You do not have XAudio installed. Visit http://github.com/munawarb/Three-D-Velocity and download the DirectX Web Installer from the Dependencies section. The game will now close.", "Prerequisites", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Environment.Exit(0);
-			}
 			this.Deactivate += new EventHandler(GUI_Deactivate);
 			this.Activated += new EventHandler(GUI_Activated);
 			this.FormClosing += new FormClosingEventHandler(GUI_FormClosing);
@@ -544,13 +540,10 @@ namespace TDV
 				return;
 			switch (choice) {
 				case 0:
-					Options.bufferSize = DSound.BufferSize.large;
 					break;
 				case 1:
-					Options.bufferSize = DSound.BufferSize.medium;
 					break;
 				case 2:
-					Options.bufferSize = DSound.BufferSize.small;
 					break;
 			}
 			Options.writeToFile();

@@ -157,12 +157,6 @@ namespace TDV
 			set { m_enabled = value; }
 		}
 
-		public static DSound.BufferSize bufferSize
-		{
-			get { return (DSound.sizeOfBuffer); }
-			set { DSound.sizeOfBuffer = value; }
-		}
-
 		public static bool isLoading
 		{
 			get { return (m_isLoading); }
@@ -296,7 +290,6 @@ namespace TDV
 			s.Write(announceCourseChange);
 			s.Write(RPAutoTrigger);
 			s.Write(verticalRangeAnnounceTime);
-			s.Write((int)bufferSize);
 			s.Write((byte)enabled);
 			s.Write(launchCount);
 			s.Write(Client.port);
@@ -323,16 +316,15 @@ namespace TDV
 				//dump file data into dummy vars so if there's an error, the game options won't contain strange data
 				//caused by the stream erroring out unexpectedly.
 				//if player is running outdated config, don't error out, just ignore the rest
-				float musicVol = s.ReadSingle();
+				int musicVol = s.ReadInt32();
 				bool announceCourse = s.ReadBoolean();
 				bool rp = s.ReadBoolean();
 				int announceV = s.ReadInt32();
-				int bufferS = s.ReadInt32();
 				byte en = s.ReadByte();
 				int launchC = s.ReadInt32();
 				int port = s.ReadInt32();
-				float menuVol = s.ReadSingle();
-				float onlineVol = s.ReadSingle();
+				int menuVol = s.ReadInt32();
+				int onlineVol = s.ReadInt32();
 				int speechSource = s.ReadInt32();
 				int ho = s.ReadInt32();
 				int da = s.ReadInt32();
@@ -344,7 +336,6 @@ namespace TDV
 				announceCourseChange = announceCourse;
 				RPAutoTrigger = rp;
 				verticalRangeAnnounceTime = announceV;
-				bufferSize = (DSound.BufferSize)bufferS;
 				enabled = (Device)en;
 				launchCount = launchC;
 				Client.port = port;

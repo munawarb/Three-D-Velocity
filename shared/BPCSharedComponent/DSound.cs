@@ -13,7 +13,6 @@ using System.Threading;
 using SharpDX;
 using SharpDX.Multimedia;
 using SharpDX.DirectSound;
-using SharpDX.XAudio2;
 using BPCSharedComponent.Security;
 
 
@@ -21,19 +20,9 @@ namespace BPCSharedComponent.ExtendedAudio
 {
 	public class DSound
 	{
-		/// <summary>
-		/// Describes the size of a buffer in Ogg Vorbis playback.
-		/// </summary>
-		public enum BufferSize
-		{
-			large = 20,
-			medium = 10,
-			small = 5
-		}
 		private static String rootDir;
 		private static Object playLock;
-		private static BufferSize m_bufferSize;
-		private static float m_maxMusicVol;
+		private static int m_maxMusicVol;
 		private static string pass;
 		private static bool m_isFromResource;
 		public static bool isFromResource
@@ -49,9 +38,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static DirectSound objDS = null;
 		private static SoundListener3D DSBListener = null;
 		private static PrimarySoundBuffer primaryBuffer;
-		public static XAudio2 xAudio2Device;
-		public static MasteringVoice masteringVoice;
-		public static float masterMusicVolume;
+		public static int masterMusicVolume;
 		//the listener used for 3d sound
 		//used to hold sounds path
 		public static string SoundPath;
@@ -61,17 +48,9 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static string NumPath;
 
 		/// <summary>
-		/// Gets the size of the Ogg Vorbis buffer.
-		/// </summary>
-		public static BufferSize sizeOfBuffer
-		{
-			get { return (m_bufferSize); }
-			set { m_bufferSize = value; }
-		}
-		/// <summary>
 		/// Gets the maximum volume of background music.
 		/// </summary>
-		public static float maxMusicVol
+		public static int maxMusicVol
 		{
 			get { return (m_maxMusicVol); }
 			set { m_maxMusicVol = value; }
@@ -85,7 +64,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static void initialize(IntPtr WinHandle, String root)
 		{
 			playLock = new object();
-			maxMusicVol = 0.80f;
+			maxMusicVol = 0;
 			setRootDirectory(root);
 			SoundPath = "s";
 			NSoundPath = SoundPath + "\\n";
@@ -115,31 +94,12 @@ namespace BPCSharedComponent.ExtendedAudio
 			m_isFromResource = m;
 		}
 
-		/// <summary>
-		/// Sets up XAudio2 for Ogg playback.
-		/// </summary>
-		/// <returns>True on success and false on failure. Failure is likely the cause of XAudio2 missing from the system.</returns>
-		public static bool initializeOgg()
-		{
-			try {
-				sizeOfBuffer = BufferSize.medium;
-				xAudio2Device = new XAudio2();
-				masteringVoice = new MasteringVoice(xAudio2Device);
-				return true;
-			} catch (Exception e) {
-				System.Diagnostics.Debug.WriteLine(e.Message + e.StackTrace);
-				return false;
-			}
-		}
-
-
 		[MethodImplAttribute(MethodImplOptions.Synchronized)]
 		public static SecondarySoundBuffer LoadSound(string FileName)
 		{
 			if (isFromResource)
 				FileName = FileName.Split('.')[0];
-			if (!File.Exists(FileName))
-			{
+			if (!File.Exists(FileName)) {
 				throw (new ArgumentException("The sound " + FileName + " could not be found."));
 			}
 			SoundBufferDescription BufferDesc = new SoundBufferDescription();
@@ -150,8 +110,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				| SharpDX.DirectSound.BufferFlags.ControlPan;
 			//load wave file into DirectSound buffer
 			SecondarySoundBuffer theBuffer = null;
-			if (!isFromResource)
-			{
+			if (!isFromResource) {
 				AudioFile wFile = new AudioFile(new FileStream(FileName, FileMode.Open));
 				byte[] final = wFile.getRawWaveData();
 				BufferDesc.Format = wFile.format();
@@ -159,9 +118,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				theBuffer = new SecondarySoundBuffer(objDS, BufferDesc);
 				theBuffer.Write(final, 0, LockFlags.EntireBuffer);
 				wFile.close();
-			}
-			else
-			{
+			} else {
 				byte[] data = Encrypter.getData(FileName, pass);
 				AudioFile wFile = new AudioFile(data);
 				byte[] final = wFile.getRawWaveData();
@@ -184,8 +141,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			//if this is the first time calling this method,
 			//instantiate the listener,
 			//else just reset its position
-			if (DSBListener == null)
-			{
+			if (DSBListener == null) {
 				SoundBufferDescription BufferDesc = new SoundBufferDescription();
 				BufferDesc.Flags = SharpDX.DirectSound.BufferFlags.PrimaryBuffer
 					| SharpDX.DirectSound.BufferFlags.Control3D;
@@ -193,7 +149,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				//Finally, instantiate the listener using the PrimaryBuffer object
 				DSBListener = new SoundListener3D(primaryBuffer);
 				DSBListener.RolloffFactor = 1.0f; //Apply rolloff
-				//according to realism.
+												  //according to realism.
 				DSBListener.DistanceFactor = 0.3048f;
 			}
 			//To set orientation, a listener3DOrientation object must be passed which contains values for front.x,y,z, Etc.
@@ -212,13 +168,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		{
 			Vector3 front = new Vector3((float)x1, (float)y1, (float)z1);
 			Vector3 top = new Vector3((float)x2, (float)y2, (float)z2);
-			if (l == null)
-			{
+			if (l == null) {
 				DSBListener.FrontOrientation = front;
 				DSBListener.TopOrientation = top;
-			}
-			else
-			{
+			} else {
 				l.FrontOrientation = front;
 				l.TopOrientation = top;
 			}
@@ -238,8 +191,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			if (isFromResource)
 				FileName = FileName.Split('.')[0];
 			SoundBufferDescription BufferDesc = new SoundBufferDescription();
-			if (!File.Exists(FileName))
-			{
+			if (!File.Exists(FileName)) {
 				throw new ArgumentException("The sound " + FileName + " could not be found.");
 			}
 
@@ -247,13 +199,12 @@ namespace BPCSharedComponent.ExtendedAudio
 			BufferDesc.Flags = SharpDX.DirectSound.BufferFlags.Control3D
 						 | SharpDX.DirectSound.BufferFlags.ControlVolume
 						 | SharpDX.DirectSound.BufferFlags.ControlFrequency
-				//| SharpDX.DirectSound.BufferFlags.StickyFocus
+						 //| SharpDX.DirectSound.BufferFlags.StickyFocus
 						 | SharpDX.DirectSound.BufferFlags.Mute3DAtMaxDistance;
 			// if (useFull3DEmulation)
 			//BufferDesc.AlgorithmFor3D = DirectSound3DAlgorithmGuid.FullHrt3DAlgorithm;
 			SecondarySoundBuffer theBuffer = null;
-			if (!isFromResource)
-			{
+			if (!isFromResource) {
 				AudioFile wFile = new AudioFile(new FileStream(FileName, FileMode.Open));
 				byte[] final = wFile.getRawWaveData();
 				BufferDesc.Format = wFile.format();
@@ -261,9 +212,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				theBuffer = new SecondarySoundBuffer(objDS, BufferDesc);
 				theBuffer.Write(final, 0, LockFlags.EntireBuffer);
 				wFile.close();
-			}
-			else
-			{
+			} else {
 				byte[] data = Encrypter.getData(FileName, pass);
 				AudioFile wFile = new AudioFile(data);
 				byte[] final = wFile.getRawWaveData();
@@ -294,30 +243,24 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static void PlaySound(SecondarySoundBuffer Sound, bool bCloseFirst, bool bLoopSound)
 		{
 			//stop currently playing waves?
-			if (bCloseFirst)
-			{
+			if (bCloseFirst) {
 				Sound.Stop();
 				Sound.CurrentPosition = 0;
 			}
 			//loop the sound?
-			if (bLoopSound)
-			{
+			if (bLoopSound) {
 				Sound.Play(0, SharpDX.DirectSound.PlayFlags.Looping);
-			}
-			else
-			{
+			} else {
 				Sound.Play(0, SharpDX.DirectSound.PlayFlags.None);
 			}
 		}
 
 		public static void PlaySound3d(SecondarySoundBuffer Sound, bool bCloseFirst, bool bLoopSound, double x, double y, double z)
 		{
-			lock (playLock)
-			{
+			lock (playLock) {
 				SoundBuffer3D DS3DBuffer = new SoundBuffer3D(Sound);
 				//stop currently playing waves?
-				if (bCloseFirst)
-				{
+				if (bCloseFirst) {
 					Sound.Stop();
 					Sound.CurrentPosition = 0;
 				}
@@ -325,12 +268,9 @@ namespace BPCSharedComponent.ExtendedAudio
 				DS3DBuffer.Position = Get3DVector(x, y, z);
 
 				//loop the sound?
-				if (bLoopSound)
-				{
+				if (bLoopSound) {
 					Sound.Play(0, SharpDX.DirectSound.PlayFlags.Looping);
-				}
-				else
-				{
+				} else {
 					Sound.Play(0, SharpDX.DirectSound.PlayFlags.None);
 				}
 				DS3DBuffer.Dispose();
@@ -344,7 +284,7 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		////Main playOgg function
 		////Base method for most overloaded methods.
-		public static OggBuffer loadOgg(string fileName, float v)
+		public static OggBuffer loadOgg(string fileName, int v)
 		{
 			if (isFromResource)
 				fileName = fileName.Split('.')[0];
@@ -352,17 +292,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				throw (new ArgumentException("The sound " + fileName + " could not be found."));
 
 
-			if (!isFromResource)
-			{
-				return (new OggBuffer(fileName, v,
-					xAudio2Device, (int)sizeOfBuffer));
-			}
-			else
-			{
-				byte[] byteStream = Encrypter.getData(fileName, pass);
-				return (new OggBuffer(byteStream, v,
-					xAudio2Device, (int)sizeOfBuffer));
-			}
+			return (new OggBuffer(fileName, v, objDS));
 		}
 
 		//sets filename, but leaves other parameters
@@ -374,32 +304,15 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		//Used to play consecutive buffers.
 		//Expects balance, volume, and list of files to play
-		public static OggBuffer loadOgg(float v, params string[] fileNames)
+		public static OggBuffer loadOgg(int v, params string[] fileNames)
 		{
-			ArrayList byteStreams = null;
-			for (int i = 0; i < fileNames.Length; i++)
-			{
+			for (int i = 0; i < fileNames.Length; i++) {
 				if (isFromResource)
 					fileNames[i] = fileNames[i].Split('.')[0];
 				if (!File.Exists(fileNames[i]))
 					throw (new ArgumentException("The sound " + fileNames[i] + " could not be found."));
-
-
-				if (!isFromResource)
-					return (new OggBuffer(fileNames, v,
-						xAudio2Device, (int)sizeOfBuffer));
-				else
-				{
-					if (byteStreams == null)
-						byteStreams = new ArrayList();
-					byte[] byteStream = Encrypter.getData(fileNames[i], pass);
-					byteStreams.Add(byteStream);
-				} //if
-
-			} //for
-			return (new OggBuffer(byteStreams, v,
-						 xAudio2Device, (int)sizeOfBuffer
-						 ));
+			}
+			return (new OggBuffer(fileNames, v, objDS));
 		}
 
 		/// <summary>
@@ -409,9 +322,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		[MethodImplAttribute(MethodImplOptions.Synchronized)]
 		public static void unloadSound(ref SecondarySoundBuffer sound)
 		{
-			System.Diagnostics.Trace.WriteLine("In unloadSound, sound is " + ((sound == null)? "null":" not nulll"));
-			if (sound == null || sound.IsDisposed)
-			{
+			System.Diagnostics.Trace.WriteLine("In unloadSound, sound is " + ((sound == null) ? "null" : " not nulll"));
+			if (sound == null || sound.IsDisposed) {
 				sound = null;
 				return;
 			}
