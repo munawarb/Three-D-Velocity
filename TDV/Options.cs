@@ -55,8 +55,14 @@ namespace TDV
 
 		// We need to make these explicit declarations so we can initialize their values. Otherwise,
 		// writing to the options file for the first time will throw an error because these values will be null.
+		private static bool m_playRIO = true;
 		private static String m_ipOrDomain = "";
 		private static String m_callSign = "";
+		public static bool playRIO
+		{
+			get { return m_playRIO; }
+			set { m_playRIO = value; }
+		}
 		public static String ipOrDomain
 		{
 			get { return m_ipOrDomain; }
@@ -301,6 +307,7 @@ namespace TDV
 			s.Write(year);
 			s.Write(ipOrDomain);
 			s.Write(callSign);
+			s.Write(playRIO);
 			s.Flush();
 			s.Close();
 		}
@@ -349,6 +356,8 @@ namespace TDV
 				year = ye;
 				Options.ipOrDomain = ip;
 				Options.callSign = callSign;
+				bool pr = s.ReadBoolean();
+				playRIO = pr;
 			}
 			catch (Exception e)
 			{

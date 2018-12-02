@@ -1,12 +1,6 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution as well as the Master branch incorporate all of the changes noted here; therefore, to get the latest version, either pull the latest Master branch or get the binary distribution.
 
-##### Version 2.22, released on 
-
-###### Added
-- NuGet packages for SharpDX now use the latest stable version, since the XAudio2 bug introduced in SharpDX 4.1.0 that would prevent XAudio2 from initializing was fixed. Also, TDV now points to `BPCSharedComponent.Input` for the `DXInput` class instead of a stand-alone class. The class inside TDV has been moved to `BPCSharedComponent.Input.DXInput` ([#70](../../issues/70))
-- TDV no longer uses XAudio2 for music playback and is instead using DirectSound. This means that the game no longer relies on the XNA framework which has been deprecated by Microsoft for some time. The `SharpDX.XAudio2` NuGet package has been removed. Please note that since DirectSound buffers use integers for volume control instead of floating-point numbers, it is recommended for everyone upgrading to this version to delete their data/settings.tdv file or the menu music might be silenced ([#57](../../issues/57))
-
 ##### Version 2.21, released on 11/13/2018
 
 ###### Added

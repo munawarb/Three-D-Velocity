@@ -985,7 +985,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			if (music == null)
 				return;
-			while (music.volume > ((stop) ? -10000 : -5000)) { //don't completely fade if not stopping
+			while (music.volume > ((stop) ? -5000 : -2000)) { //don't completely fade if not stopping
 				music.volume -= volumeFadeValue;
 				Thread.Sleep(100);
 			}
@@ -1113,7 +1113,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				}
 			}
 			if (changedMusic)
-				music.play(!(Options.mode == Options.Modes.racing)); //don't loop if racing mode.
+				music.play(true);
 		}
 
 		public static void saveGame(int slot)

@@ -71,8 +71,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		//control back to the calling method.
 		public void stopOgg()
 		{
-			stoppedSignal.Set();
 			stopNow = true;
+			stoppedSignal.Set();
 			preparing = false;
 			if (soundBuffer != null)
 				soundBuffer.Stop();
@@ -123,7 +123,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		{
 			preparing = true;
 			SoundBufferDescription desc = new SoundBufferDescription();
-			desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume;
+			desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume | BufferFlags.GetCurrentPosition2;
 			byte[] outBuffer = new Byte[4096];
 			oggFile = new OggVorbisFileStream(fileNames[playPointer]);
 			MemoryStream PcmStream = new MemoryStream();
@@ -156,7 +156,8 @@ namespace BPCSharedComponent.ExtendedAudio
 			// Next, if we have a multi-file situation, we need to wait for the current file to stop playing before starting the next one.
 			// This handler will also fire when a sound is done playing by default so we can explicitly dispose of the soundBuffer.
 			stoppedSignal = new AutoResetEvent(false);
-			NotificationPosition[] n = { new NotificationPosition() { Offset = (int)PcmStream.Length - 1, WaitHandle = stoppedSignal } };
+			NotificationPosition[] n = { new NotificationPosition() { Offset = (int)PcmStream.Length - 1, WaitHandle = new AutoResetEvent(false)} };
+			stoppedSignal = (AutoResetEvent)(n[0].WaitHandle);
 			soundBuffer.SetNotificationPositions(n);
 			Thread t = new Thread(stopEventHandler);
 			t.Start();
