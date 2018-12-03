@@ -89,47 +89,34 @@ namespace TDV
 			try
 			{
 				running = true;
-				System.Diagnostics.Trace.WriteLine("Running thread");
 				while (true)
 				{
-					System.Diagnostics.Trace.WriteLine("Ticking holder...");
 					modifiedProjectorList = false;
 					startMarker = Environment.TickCount;
 					count = 0;
-					System.Diagnostics.Trace.WriteLine("Before holder halt");
 					hault(); //will block here if asked to do so,
-					System.Diagnostics.Trace.WriteLine("Got passed halt");
 					//and then move on when released.
 					lock (lockObject)
 					{
-						System.Diagnostics.Trace.WriteLine("Holder Got lock");
 						foreach (Object o in projectors)
 						{
 							Projector p = (Projector)o;
 							if (!p.isTerminated)
 							{
-								System.Diagnostics.Trace.WriteLine("about to Move " + p.name);
 								p.move();
-								System.Diagnostics.Trace.WriteLine("Done moving " + p.name);
 							}
 							else
 							{
-								System.Diagnostics.Trace.WriteLine("About to free " + p.name);
 								p.freeResources();
-								System.Diagnostics.Trace.WriteLine("Freed " + p.name);
 								remove(p);
 							}
-							System.Diagnostics.Trace.WriteLine("Checking modifiedProjectorList, which is " + modifiedProjectorList);
 							if (modifiedProjectorList) //IE: if object requested another object to be added to this holder
 								break;
 						} //foreach
 					} //lock
 					long executionTime = Environment.TickCount - startMarker;
-					System.Diagnostics.Trace.WriteLine("About to sleep");
 					if (executionTime < Common.intervalMS)
 						Thread.Sleep((int)(Common.intervalMS - executionTime));
-					System.Diagnostics.Trace.WriteLine("done sleeping");
-					System.Diagnostics.Trace.WriteLine("Number of objects to tick is " + projectors.Count);
 
 					/* BUG FIX:
 					 * We need to have the added check below since

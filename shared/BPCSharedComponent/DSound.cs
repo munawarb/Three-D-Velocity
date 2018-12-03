@@ -322,7 +322,6 @@ namespace BPCSharedComponent.ExtendedAudio
 		[MethodImplAttribute(MethodImplOptions.Synchronized)]
 		public static void unloadSound(ref SecondarySoundBuffer sound)
 		{
-			System.Diagnostics.Trace.WriteLine("In unloadSound, sound is " + ((sound == null) ? "null" : " not nulll"));
 			if (sound == null || sound.IsDisposed) {
 				sound = null;
 				return;

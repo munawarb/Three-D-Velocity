@@ -21,23 +21,11 @@ namespace TDV
 	/// </summary>
 	public class SapiSpeech
 	{
-#if x86
 		[DllImport("nvdaControllerClient32.dll", CharSet = CharSet.Unicode)]
-#else
-		[DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Unicode)]
-#endif
 		static extern int nvdaController_speakText(String text);
-#if x86
 		[DllImport("nvdaControllerClient32.dll", CharSet = CharSet.Unicode)]
-#else
-		[DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Unicode)]
-#endif
 		static extern int nvdaController_cancelSpeech();
-#if x86
 		[DllImport("nvdaControllerClient32.dll", CharSet = CharSet.Unicode)]
-#else
-		[DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Unicode)]
-#endif
 		static extern int nvdaController_testIfRunning();
 
 

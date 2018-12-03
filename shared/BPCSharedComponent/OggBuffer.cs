@@ -142,7 +142,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			PlayFlags f = PlayFlags.None;
 			if (p > soundBuffers.Count - 1) {
 				SoundBufferDescription desc = new SoundBufferDescription();
-				desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume | BufferFlags.GetCurrentPosition2;
+				desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume | BufferFlags.GetCurrentPosition2 | BufferFlags.GlobalFocus;
 				byte[] outBuffer = new Byte[4096];
 				oggFile = new OggVorbisFileStream(fileNames[p]);
 				PcmStream = new MemoryStream();

@@ -518,7 +518,6 @@ namespace TDV
 		public SecondarySoundBuffer loadSound(string filename)
 		{
 			SecondarySoundBuffer s = null;
-			System.Diagnostics.Trace.WriteLine("Loading sound " + filename);
 			if (isAI && !autoPlayTarget)
 			{
 				if (!forceStareo)
@@ -528,8 +527,6 @@ namespace TDV
 			}
 			else //Either this is not AI or this is autoPlayTarget
 				s = DSound.LoadSound(filename);
-			if (s == null)
-				System.Diagnostics.Trace.WriteLine(filename + " is a null buffer");
 			return s;
 		}
 

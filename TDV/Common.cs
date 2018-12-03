@@ -173,7 +173,7 @@ namespace TDV
 				return;
 			 */
 			try {
-				SharpDX.Configuration.EnableObjectTracking = true;
+				//SharpDX.Configuration.EnableObjectTracking = true;
 				if (args != null && args.Length == 1)
 
 					cmdLine = args[0];
@@ -985,7 +985,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			if (music == null)
 				return;
-			while (music.volume > ((stop) ? -5000 : -2000)) { //don't completely fade if not stopping
+			while (music.volume > ((stop) ? -5000 : -1000)) { //don't completely fade if not stopping
 				music.volume -= volumeFadeValue;
 				Thread.Sleep(100);
 			}
