@@ -7,6 +7,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SharpDX.Multimedia;
 using SharpDX.DirectSound;
 using OggVorbisDecoder;
@@ -29,7 +30,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		private String[] fileNames = null;
 		private int m_volume;
 		private Boolean stopNow, loop;
-		private SecondarySoundBuffer soundBuffer;
+		private List<SecondarySoundBuffer> soundBuffers;
 		private AutoResetEvent stoppedSignal;
 		public int volume
 		{
@@ -41,6 +42,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		{
 			lockObject = new object();
 			this.fileNames = fileNames;
+			soundBuffers = new List<SecondarySoundBuffer>();
 			m_volume = volume;
 			this.device = device;
 		}
@@ -57,8 +59,8 @@ namespace BPCSharedComponent.ExtendedAudio
 			else if (v < -10000)
 				v = -10000;
 			lock (lockObject) {
-				if (soundBuffer != null)
-					soundBuffer.Volume = v;
+				if (soundBuffers.Count > 0 && soundBuffers[playPointer] != null)
+					soundBuffers[playPointer].Volume = v;
 			}
 			m_volume = v;
 		}
@@ -71,18 +73,20 @@ namespace BPCSharedComponent.ExtendedAudio
 		//control back to the calling method.
 		public void stopOgg()
 		{
+			if (stopNow)
+				return; // Expected behavior: multiple calls should have no affect.
 			stopNow = true;
 			stoppedSignal.Set();
 			preparing = false;
-			if (soundBuffer != null)
-				soundBuffer.Stop();
+			if (soundBuffers.Count > 0 && soundBuffers[playPointer] != null)
+				soundBuffers[playPointer].Stop();
 			freeResources();
 		}
 		public bool isPlaying()
 		{
-			if (soundBuffer == null)
+			if (soundBuffers.Count < 1)
 				return false;
-			return DSound.isPlaying(soundBuffer) || DSound.isLooping(soundBuffer);
+			return DSound.isPlaying(soundBuffers[playPointer]) || DSound.isLooping(soundBuffers[playPointer]);
 		}
 
 		public void play(bool loop)
@@ -110,8 +114,9 @@ namespace BPCSharedComponent.ExtendedAudio
 			stoppedSignal.WaitOne();
 			if (!stopNow) {
 				if (playPointer < fileNames.Length - 1) {
+					SecondarySoundBuffer s = soundBuffers[playPointer];
+					DSound.unloadSound(ref s);
 					playPointer++;
-					DSound.unloadSound(ref soundBuffer);
 					play(loop);
 				}
 				if (!loop) // If the file is explicitly stopped, the stopOgg method will call free resources so we don't have to do it here; instead, this is the case when the file is done playing naturally, so stopOgg is never called.
@@ -121,58 +126,74 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		private void process()
 		{
-			preparing = true;
-			SoundBufferDescription desc = new SoundBufferDescription();
-			desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume | BufferFlags.GetCurrentPosition2;
-			byte[] outBuffer = new Byte[4096];
-			oggFile = new OggVorbisFileStream(fileNames[playPointer]);
-			MemoryStream PcmStream = new MemoryStream();
-			int PcmBytes = -1;
-			WaveFormat waveFormat = new WaveFormat();
-			// Decode the Ogg Vorbis data into its PCM data
-			while (PcmBytes != 0) {
-				PcmBytes = oggFile.Read(outBuffer, 0, outBuffer.Length);
-				PcmStream.Write(outBuffer, 0, PcmBytes);
-			}
-			VorbisInfo info = oggFile.Info;
-			//BlockAlign = info.Channels * (bitsPerSample / 8);
-			//AverageBytesPerSecond = info.Rate * BlockAlign;
+			process(false);
+		}
 
-			//waveFormat.AverageBytesPerSecond = AverageBytesPerSecond;
-			//waveFormat.BitsPerSample = (short)bitsPerSample;
-			//waveFormat.BlockAlignment = (short)BlockAlign;
-			//waveFormat.Channels = (short)info.Channels;
-			//waveFormat.SamplesPerSecond = info.Rate;
-			waveFormat = new WaveFormat(info.Rate, bitsPerSample, info.Channels);
-			//waveFormat.Encoding= WaveFormatEncoding.Pcm;
-			desc.Format = waveFormat;
-			desc.BufferBytes = (int)PcmStream.Length;
-			lock(lockObject) // So we don't lose a simultaneous volume change.
-				soundBuffer = new SecondarySoundBuffer(device, desc);
-			soundBuffer.Volume = m_volume;
-			soundBuffer.Write(PcmStream.ToArray(), 0, LockFlags.EntireBuffer);
-			// In a multi-wave playback, only loop the last track. The preceeding tracks are intros.
-			PlayFlags f = (loop && playPointer == fileNames.Length - 1) ? PlayFlags.Looping : PlayFlags.None;
-			// Next, if we have a multi-file situation, we need to wait for the current file to stop playing before starting the next one.
-			// This handler will also fire when a sound is done playing by default so we can explicitly dispose of the soundBuffer.
-			stoppedSignal = new AutoResetEvent(false);
-			NotificationPosition[] n = { new NotificationPosition() { Offset = (int)PcmStream.Length - 1, WaitHandle = new AutoResetEvent(false)} };
-			stoppedSignal = (AutoResetEvent)(n[0].WaitHandle);
-			soundBuffer.SetNotificationPositions(n);
-			Thread t = new Thread(stopEventHandler);
-			t.Start();
-			soundBuffer.Play(0, f);
-			oggFile.Close();
-			oggFile.Dispose();
-			PcmStream.Close();
-			PcmStream.Dispose();
+		private void process(bool initializeNextTrack)
+		{
+			preparing = true;
+			SecondarySoundBuffer sBuff = null;
+			int p = playPointer;
+			if (initializeNextTrack)
+				p++; // Point to the next track which we will initialize.
+			MemoryStream PcmStream = null;
+			PlayFlags f = PlayFlags.None;
+			if (p > soundBuffers.Count - 1) {
+				SoundBufferDescription desc = new SoundBufferDescription();
+				desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume | BufferFlags.GetCurrentPosition2;
+				byte[] outBuffer = new Byte[4096];
+				oggFile = new OggVorbisFileStream(fileNames[p]);
+				PcmStream = new MemoryStream();
+				int PcmBytes = -1;
+				WaveFormat waveFormat = new WaveFormat();
+				// Decode the Ogg Vorbis data into its PCM data
+				while (PcmBytes != 0) {
+					PcmBytes = oggFile.Read(outBuffer, 0, outBuffer.Length);
+					PcmStream.Write(outBuffer, 0, PcmBytes);
+				}
+				VorbisInfo info = oggFile.Info;
+				waveFormat = new WaveFormat(info.Rate, bitsPerSample, info.Channels);
+				desc.Format = waveFormat;
+				desc.BufferBytes = (int)PcmStream.Length;
+				lock (lockObject) // So we don't lose a simultaneous volume change.
+					soundBuffers.Add(sBuff = new SecondarySoundBuffer(device, desc));
+				sBuff.Write(PcmStream.ToArray(), 0, LockFlags.EntireBuffer);
+				// In a multi-wave playback, only loop the last track. The preceeding tracks are intros.
+				// Next, if we have a multi-file situation, we need to wait for the current file to stop playing before starting the next one.
+				// This handler will also fire when a sound is done playing by default so we can explicitly dispose of the soundBuffer.
+				stoppedSignal = new AutoResetEvent(false);
+				NotificationPosition[] n = { new NotificationPosition() { Offset = (int)PcmStream.Length - 1, WaitHandle = new AutoResetEvent(false) } };
+				stoppedSignal = (AutoResetEvent)(n[0].WaitHandle);
+				sBuff.SetNotificationPositions(n);
+			} else {  // If this buffer has already been initialized ahead of time
+				sBuff = soundBuffers[p];
+			}
+			if (!initializeNextTrack) {
+				Thread t = new Thread(stopEventHandler);
+				t.Start();
+				sBuff.Volume = m_volume;
+				f = (loop && p == fileNames.Length - 1) ? PlayFlags.Looping : PlayFlags.None;
+				sBuff.Play(0, f);
+			}
+			if (PcmStream != null) {
+				oggFile.Close();
+				oggFile.Dispose();
+				PcmStream.Close();
+				PcmStream.Dispose();
+			}
+			if (!initializeNextTrack && playPointer < fileNames.Length - 1) // Prepare the next track.
+				process(true);
 			preparing = false;
 		}
 
 		private void freeResources()
 		{
 			fileNames = null;
-			DSound.unloadSound(ref soundBuffer);
+			SecondarySoundBuffer s = null;
+				foreach (SecondarySoundBuffer buffer in soundBuffers) {
+					s = buffer;
+					DSound.unloadSound(ref s);
+				}
 		}
 
 	}
