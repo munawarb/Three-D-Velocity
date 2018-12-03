@@ -84,6 +84,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		}
 		public bool isPlaying()
 		{
+			if (preparing)
+				return false;
 			if (soundBuffers.Count < 1)
 				return false;
 			return DSound.isPlaying(soundBuffers[playPointer]) || DSound.isLooping(soundBuffers[playPointer]);
