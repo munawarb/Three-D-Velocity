@@ -863,6 +863,7 @@ namespace TDV
 				{
 					if (Mission.isJuliusFight)
 						return;
+					Mission.chopperCount--;
 					if (Mission.chopperCount == 0)
 					{
 						Mission.isSwarm = false;

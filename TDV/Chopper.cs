@@ -59,8 +59,6 @@ namespace TDV
 			}
 			if (firstMove)
 				z = Mission.player.z - 1000.0;
-			if (!isRequestedTerminated && hit()) //Otherwise while chopper is exploding, chopperCount will keep going down.
-				Mission.chopperCount--;
 			base.move();
 			if (Mission.player.z > minAltitude
 					&& Mission.player.z < maxAltitude - 5000.0)
