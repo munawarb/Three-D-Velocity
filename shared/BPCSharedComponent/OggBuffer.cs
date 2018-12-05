@@ -65,30 +65,30 @@ namespace BPCSharedComponent.ExtendedAudio
 			m_volume = v;
 		}
 
-		//stops the ogg file,
-		//and blocks the thread until the
-		//player returns.
-		//Therefore, this method guarantees that
-		//the ogg file is done playing when it passes
-		//control back to the calling method.
 		public void stopOgg()
 		{
-			if (stopNow)
-				return; // Expected behavior: multiple calls should have no affect.
-			stopNow = true;
-			stoppedSignal.Set();
-			preparing = false;
-			if (soundBuffers.Count > 0 && soundBuffers[playPointer] != null)
-				soundBuffers[playPointer].Stop();
-			freeResources();
+			lock (lockObject) {
+				if (stopNow)
+					return; // Expected behavior: multiple calls should have no affect.
+				stopNow = true;
+				stoppedSignal.Set();
+				preparing = false;
+				if (soundBuffers.Count > 0 && soundBuffers[playPointer] != null)
+					soundBuffers[playPointer].Stop();
+				freeResources();
+			}
 		}
 		public bool isPlaying()
 		{
-			if (preparing)
-				return false;
-			if (soundBuffers.Count < 1)
-				return false;
-			return DSound.isPlaying(soundBuffers[playPointer]) || DSound.isLooping(soundBuffers[playPointer]);
+			lock (lockObject) {
+				if (stopNow)
+					return false;
+				if (preparing)
+					return false;
+				if (soundBuffers.Count < 1)
+					return false;
+				return DSound.isPlaying(soundBuffers[playPointer]) || DSound.isLooping(soundBuffers[playPointer]);
+			}
 		}
 
 		public void play(bool loop)
@@ -121,7 +121,7 @@ namespace BPCSharedComponent.ExtendedAudio
 					playPointer++;
 					play(loop);
 				}
-				if (!loop) // If the file is explicitly stopped, the stopOgg method will call free resources so we don't have to do it here; instead, this is the case when the file is done playing naturally, so stopOgg is never called.
+				if (!loop) // If the file is explicitly stopped, the stopOgg method will call free resources so we don't have to do it here; instead, this is the case when the file is done playing naturally, so stopOgg might never be called.
 					freeResources();
 			}
 		}
@@ -190,12 +190,17 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		private void freeResources()
 		{
-			fileNames = null;
-			SecondarySoundBuffer s = null;
+			lock (lockObject) {
+				if (stopNow) // If explicitly stopped, freeResources has already been called.
+					return;
+				stopNow = true;
+				fileNames = null;
+				SecondarySoundBuffer s = null;
 				foreach (SecondarySoundBuffer buffer in soundBuffers) {
 					s = buffer;
 					DSound.unloadSound(ref s);
 				}
+			}
 		}
 
 	}

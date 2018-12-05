@@ -1232,20 +1232,19 @@ namespace TDV
 			String theID = null;
 			while (!validID)
 			{
-				char[] chars = new char[Common.getRandom(1, 9)];
-				int nextIndex = 0;
-				do
+				char[] chars = new char[Common.getRandom(10, 30)];
+				int n = chars.Length;
+				for (int i = 0; i < n; i++)
 				{
 					//If set, we will select a number 0-9,
 					//else a letter
 					bool selectNumber =
 					 Common.getRandom(1, 2) == 2;
 					if (selectNumber)
-						chars[nextIndex] = (char)Common.getRandom('0', '9');
+						chars[i] = (char)Common.getRandom('0', '9');
 					else
-						chars[nextIndex] = (char)Common.getRandom('A', 'Z');
-					nextIndex++;
-				} while (nextIndex < chars.Length);
+						chars[i] = (char)Common.getRandom('A', 'Z');
+				}
 				theID = new String(chars);
 				validID = !theArray.ContainsKey(theID);
 			} //while
