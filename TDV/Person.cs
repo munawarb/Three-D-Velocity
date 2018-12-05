@@ -318,12 +318,12 @@ namespace TDV
 				if (DXInput.isFirstPress(Key.Space))
 					punchSomeone(null, 100);
 
-				if (DXInput.isKeyHeldDown(Key.LeftShift))
+				if (DXInput.isKeyHeldDown(Key.LeftShift) || DXInput.isKeyHeldDown(Key.RightShift))
 					block();
 				else
 					stopBlocking();
 
-				if (DXInput.isKeyHeldDown(Key.LeftAlt))
+				if (DXInput.isKeyHeldDown(Key.LeftControl) || DXInput.isKeyHeldDown(Key.RightControl))
 					grabSomeone(null);
 				else if (grabTarget != null)
 					tossTarget();
