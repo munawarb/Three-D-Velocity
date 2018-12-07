@@ -1,6 +1,20 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+##### Version 2.24, released on 12/07/2018
+
+###### Added
+- NuGet packages for SharpDX now use the latest stable version, since the XAudio2 bug introduced in SharpDX 4.1.0 that would prevent XAudio2 from initializing was fixed. Also, TDV now points to `BPCSharedComponent.Input` for the `DXInput` class instead of a stand-alone class. The class inside TDV has been moved to `BPCSharedComponent.Input.DXInput` ([#70](../../issues/70))
+- TDV no longer uses XAudio2 for music playback and is instead using DirectSound. This means that the game no longer relies on the XNA framework which has been deprecated by Microsoft for some time. The `SharpDX.XAudio2` NuGet package has been removed. Please note that since DirectSound buffers use integers for volume control instead of floating-point numbers, it is recommended for everyone upgrading to this version to delete their data/settings.tdv file or the menu music might be silenced ([#57](../../issues/57))
+- A new option has been added to the in-game options menu to turn off RIO messages. These messages are on by default ([#62](../../issues/62))
+- TDV now uses left and right CTRL to grab an opponent during CQC instead of using the ALT key. This key configuration is compatible across a wider range of keyboard configurations compared to relying on the ALT key ([#59](../../issues/59))
+
+###### Fixed
+- Background music is properly faded in when the game window regains focus ([#67](../../issues/67))
+- A potential race condition that would prevent the game from moving past the chopper fight in the mission has been corrected ([#65](../../issues/65))
+- Sometimes, when adding objects to the object table, object IDs would be recycled. This would cause problems such as newly spawned fighters in Training Mode to not appear on the radar because they were already tracked. This was due to the new object's ID being the same as the previously destroyed object's ID. Object IDs are longer than they were which will prevent this issue. Previously, an object's ID could range from one to nine characters. The minimum length of an ID is now ten characters ([#74](../../issues/74))
+- In older key-handling code, TDV would sometimes read keyboard input outside of the game environment ([#72](../../issues/72))
+
 ##### Version 2.21, released on 11/13/2018
 
 ###### Added

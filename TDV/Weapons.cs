@@ -348,7 +348,7 @@ namespace TDV
 						}
 						if (!DSound.isPlaying(lockSound))
                         DSound.PlaySound(lockSound, true, false);
-						if (!DSound.isPlaying(lockAlertSound))
+						if (Options.playRIO && !DSound.isPlaying(lockAlertSound))
 							DSound.PlaySound(lockAlertSound, true, false);
                 }
    } //set
