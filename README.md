@@ -71,7 +71,7 @@ If you find any bugs or have any suggestions, please post them on the [Issues Pa
 
 While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
 
-As of version 2.22, TDV no longer relies on XAudio2 from the XNA framework for music playback. I've rewritten the Ogg Vorbis player to use DirectSound instead, since XNA was deprecated by Microsoft a long time ago. As a result, the DirectX Web Installer linked in previous versions is no longer necessary.
+As of version 2.24, TDV no longer relies on XAudio2 from the XNA framework for music playback. I've rewritten the Ogg Vorbis player to use DirectSound instead, since XNA was deprecated by Microsoft a long time ago. As a result, the DirectX Web Installer linked in previous versions is no longer necessary.
 
 ###### I just want to play it
 If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip).
