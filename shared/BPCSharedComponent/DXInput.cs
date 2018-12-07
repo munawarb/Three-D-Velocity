@@ -60,17 +60,26 @@ namespace BPCSharedComponent.Input
 		private static DeviceObjectId jsZId;
 		private static DirectInput m_input;
 
+		/// <summary>
+		/// Gets the DirectInput device.
+		/// </summary>
 		public static DirectInput input
 		{
 			get { return (m_input); }
 		}
 
+		/// <summary>
+		/// Gets the state of the joystick device.
+		/// </summary>
 		public static JoystickState JSState
 		{
 			get { return (JSDevice.GetCurrentState()); }
 		}
 
-		// Initialize DirectInput and the keyboard
+		/// <summary>
+		/// Initializes DirectInput and acquires the default keyboard. The keyboard is set to foreground and nonexclusive.
+		/// </summary>
+		/// <param name="Handle">The handle of the application form. When the specified window loses focus, DirectInput will stop reading from the keyboard.</param>
 		public static void DInputInit(IntPtr Handle)
 		{
 			m_input = new DirectInput();
@@ -154,8 +163,8 @@ namespace BPCSharedComponent.Input
 		/// <param name="device">The device representing the joystick.</param>
 		/// <param name="xAxisOffset">The id of the x axis-providing device.</param>
 		/// <param name="yAxisOffset">The id of the y axis-providing device.</param>
-		/// <param name="numAxes"></param>
-		/// <returns>True if force feedback could be initialized, false otherwise.</returns>
+		/// <param name="numAxes">The number of axes supported by the device. If set to 1, an x-axis is assumed; if anything else, an x and y-axis is assumed.</param>
+		/// <returns>True if force feedback was initialized, false otherwise.</returns>
 		public static bool dInputInitFD(Device device, int xAxisOffset, int yAxisOffset, int numAxes)
 		{
 			try {
@@ -273,7 +282,9 @@ namespace BPCSharedComponent.Input
 		}
 
 
-		// Check to see which keys are pressed
+		/// <summary>
+		/// Checks to see which keys are pressed. Polls the device for fresh data.
+		/// </summary>
 		public static void CheckKeys()
 		{
 			if (!isKeyboardAcquired())
@@ -295,28 +306,40 @@ namespace BPCSharedComponent.Input
 			}
 		}
 
-		// ShutDown the keyboard and DirectInput objects
+		/// <summary>
+		/// Unacquires the keyboard and cleans up DirectInput.
+		/// </summary>
 		public static void Terminate()
 		{
 			diDev.Unacquire();
 		}
 
-		////Overloaded. Expects a key whose state this function will check.
-		////If the key is depressed, the function returns true; otherwise, it returns false.
-
-
+		/// <summary>
+		/// Checks to see if the given key is held down.
+		/// </summary>
+		/// <param name="k">The key to check.</param>
+		/// <param name="acquire">If true, the keyboard is polled for updated data; otherwise, the last update of the keyboard is used.</param>
+		/// <returns>True if the key is held down, false otherwise.</returns>
 		public static bool isKeyHeldDown(Key k, bool acquire)
 		{
 			if ((acquire && !updateKeyboardState()) || !keyboardAcquired)
 				return (false);
 			return (diState.IsPressed(k));
 		}
-		//overloaded. Checks for acquisition
+
+		/// Checks to see if the given key is held down. Will poll the keyboard for fresh data before checking.
+		/// </summary>
+		/// <param name="k">The key to check.</param>
+		/// <returns>True if the key is held down, false otherwise.</returns>
 		public static bool isKeyHeldDown(Key k)
 		{
 			return (isKeyHeldDown(k, true));
 		}
 
+		/// <summary>
+		/// Checks if one of the CTRL keys is held down.
+		/// </summary>
+		/// <returns>True if either the left or right CTRL keys are held down, false otherwise.</returns>
 		public static bool IsControl()
 		{
 			if (isKeyHeldDown(Key.LeftControl) || isKeyHeldDown(Key.RightControl, false)) {
@@ -324,6 +347,11 @@ namespace BPCSharedComponent.Input
 			}
 			return (false);
 		}
+
+		/// <summary>
+		/// Checks if one of the SHIFT keys is held down.
+		/// </summary>
+		/// <returns>True if either the left or right SHIFT keys are held down, false otherwise.</returns>
 		public static bool IsShift()
 		{
 			if (isKeyHeldDown(Key.LeftShift) || isKeyHeldDown(Key.RightShift, false)) {
@@ -331,6 +359,11 @@ namespace BPCSharedComponent.Input
 			}
 			return (false);
 		}
+
+		/// <summary>
+		/// Checks if one of the ALT keys is held down.
+		/// </summary>
+		/// <returns>True if either the left or right ALT keys are held down, false otherwise.</returns>
 		public static bool IsAlt()
 		{
 			if (isKeyHeldDown(Key.LeftAlt) || isKeyHeldDown(Key.RightAlt, false)) {
@@ -342,9 +375,9 @@ namespace BPCSharedComponent.Input
 		/// <summary>
 		/// Checks to see if the press of this key is the first press, and optionallly polls the keyboard for the most up-to-date data.
 		/// </summary>
-		/// <param name="acquire">True if the keyboard should be polled before the key is checked, false otherwise. If false, this will save processing time where there are
-		/// multiple keys to check in sequence.</param>
-		/// <returns>True if this is the first press; else false</returns>
+		/// <param name="k">The key to check.</param>
+		/// <param name="acquire">True if the keyboard should be polled before the key is checked, false otherwise. If false, this will save processing time where there are multiple keys to check in sequence.</param>
+		/// <returns>True if this is the first press, false otherwise.</returns>
 		public static bool isFirstPress(Key k, bool acquire)
 		{
 			if (acquire)
@@ -369,36 +402,11 @@ namespace BPCSharedComponent.Input
 		/// <summary>
 		/// Checks to see if the press of this key is the first press, and polls the keyboard for the most up-to-date data.
 		/// </summary>
-		/// <param name="k">The key to check</param>
+		/// <param name="k">The key to check.</param>
 		/// <returns>True if this is the first press; else false</returns>
 		public static bool isFirstPress(Key k)
 		{
 			return isFirstPress(k, true);
-		}
-
-		//Depricated. Use isFirstPress instead.
-		public static bool DKeyMenu(Key Num)
-		{
-			if (!updateKeyboardState()) {
-				return (false);
-			}
-
-			int i = 0;
-			int result = 0;
-			for (i = 1; i <= 211; i++) {
-				if (diState.IsPressed((Key)i)) {
-					if (TheKeys[i] == false && i == (int)Num) {
-						TheKeys[i] = true;
-						result = (int)Num;
-					}
-					//if false
-				} else {
-					//if key not held down, set flag to false
-					TheKeys[i] = false;
-				}
-				Application.DoEvents();
-			}
-			return (result == (int)Num);
 		}
 
 		//Overloaded. Checks to see if any keys are held down. If they are, this function returns true; otherwise, it returns false.
@@ -415,6 +423,10 @@ namespace BPCSharedComponent.Input
 			return (pressed);
 		}
 
+		/// <summary>
+		/// Checks if only one key is held down.
+		/// </summary>
+		/// <returns>True if only one key is held down, false otherwise.</returns>
 		public static bool isSingleKeyHeldDown()
 		{
 			if (!updateKeyboardState()) {
@@ -427,38 +439,28 @@ namespace BPCSharedComponent.Input
 			return (count == 1);
 		}
 
-		public static void DKeyMenu()
-		{
-			if (!updateKeyboardState())
-				return;
-
-			int I = 0;
-			for (I = 1; I <= 211; I++) {
-				if (diState.IsPressed((Key)I))
-					TheKeys[I] = true;
-				else
-					TheKeys[I] = false;
-			}
-		}
-
-
-		////Overloaded. Expects an array of keys to evaluate.
-		////If none of these keys are held down, this function returns false.
-		////Note: this function is a boolean function.
-		////It does not return the key that is currently held down, only a true/false flag.
+		/// <summary>
+		/// Checks to see if any of the provided keys are held down.
+		/// </summary>
+		/// <param name="KeyList">The keys to check.</param>
+		/// <returns>If any one of the supplied keys are held down, this method returns true. It returns false otherwise.</returns>
 		public static bool isKeyHeldDown(params Key[] KeyList)
 		{
 			if (!updateKeyboardState())
 				return (false);
 			short I = 0;
-			for (I = 0; I <= KeyList.Length - 1; I++) {
+			for (I = 0; I < KeyList.Length; I++) {
 				if (diState.IsPressed(KeyList[I])) {
 					return (true);
 				}
-				Application.DoEvents();
 			}
 			return (false);
 		}
+
+		/// <summary>
+		/// Checks if any commonly used key is held down. These include Q through P, A through L, ENTER, Z through M, LEFT and RIGHT SHIFT, LEFT and RIGHT CONTROL, LEFT and RIGHT ALT, and SPACE.
+		/// </summary>
+		/// <returns>True if any of the common keys are held down, false otherwise.</returns>
 		public static bool IsCommonKeyHeldDown()
 		{
 			return (isKeyHeldDown(Key.Q, Key.W, Key.E, Key.R, Key.T, Key.Y, Key.U, Key.I, Key.O, Key.P,
@@ -467,7 +469,10 @@ namespace BPCSharedComponent.Input
 			Key.LeftAlt, Key.Space, Key.RightControl, Key.RightAlt));
 		}
 
-		//Scans the keyboard and returns an array of type directInput.Key that lists all pressed keys
+		/// <summary>
+		/// Gets an array of all pressed keys.
+		/// </summary>
+		/// <returns>An array containing a list of all keys that are currently pressed, or null if no keys are pressed.</returns>
 		public static Key[] getKeys()
 		{
 			if (!updateKeyboardState())
@@ -496,9 +501,9 @@ namespace BPCSharedComponent.Input
 		}
 
 		/// <summary>
-		/// Presents the list of buttons held down in an ArrayList.
+		/// Presents the list of buttons on a joystick that are held down in an array.
 		/// </summary>
-		/// <returns>An ArrayList containing all the buttons that are held down.</returns>
+		/// <returns>An array containing all the buttons that are held down, or null if no buttons are held down.</returns>
 		public static int[] getJSKeys()
 		{
 			if (JSDevice == null)
@@ -519,6 +524,10 @@ namespace BPCSharedComponent.Input
 			return (null);
 		}
 
+		/// <summary>
+		/// Checks if a modifier is held down. This includes LEFT and RIGHT SHIFT, LEFT and RIGHT CONTROL, and LEFT and RIGHT ALT.
+		/// </summary>
+		/// <returns>True if any of the mentioned keys are held down, false otherwise.</returns>
 		public static bool isModifierHeldDown()
 		{
 			return (isKeyHeldDown(Key.LeftAlt, Key.RightAlt, Key.LeftControl, Key.RightControl, Key.LeftShift, Key.RightShift));
@@ -539,7 +548,6 @@ namespace BPCSharedComponent.Input
 			}
 			return false;
 		}
-
 
 		/// <summary>
 		/// Checks to see if a joystick button is held down.
