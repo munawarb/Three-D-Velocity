@@ -13,6 +13,12 @@ namespace TDV
 {
 	public class Options
 	{
+		public enum VoiceModes: byte
+		{
+			none,
+			selfVoice,
+			screenReader
+		}
 		public enum Device : byte
 		{
 			keyboard,
@@ -36,6 +42,11 @@ namespace TDV
 			oneOnOne,
 			teamDeath,
 			testing
+		}
+		public static VoiceModes voiceMode
+		{
+			get;
+			set;
 		}
 		public static int hour
 		{
@@ -308,6 +319,7 @@ namespace TDV
 			s.Write(ipOrDomain);
 			s.Write(callSign);
 			s.Write(playRIO);
+			s.Write((byte)voiceMode);
 			s.Flush();
 			s.Close();
 		}
@@ -358,6 +370,8 @@ namespace TDV
 				Options.callSign = callSign;
 				bool pr = s.ReadBoolean();
 				playRIO = pr;
+				byte sv = s.ReadByte();
+				voiceMode = sv;
 			}
 			catch (Exception e)
 			{
