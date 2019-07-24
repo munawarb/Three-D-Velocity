@@ -600,8 +600,12 @@ namespace TDV
 						if (mapKeyboard) {
 							m = null;
 							r = null;
-							OggBuffer prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp1.ogg");
-							prompt.play();
+							OggBuffer prompt = null;
+							if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+								DSound.loadOgg(DSound.NSoundPath + "\\kmp1.ogg");
+								prompt.play();
+							} else
+								SapiSpeech.speak("Press the modifier you would like to assign to this action; press ENTER for none.", SapiSpeech.SpeakFlag.interruptable);
 							while (DXInput.isKeyHeldDown()) {
 								//wait till the user lets up on enter.
 								Application.DoEvents();
@@ -614,12 +618,18 @@ namespace TDV
 								m = DXInput.getKeys();
 								Application.DoEvents();
 							}
-							prompt.stopOgg();
-							prompt = null;
+							if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+								prompt.stopOgg();
+								prompt = null;
+							} else
+								SapiSpeech.purge();
 
 							if (!canceledCurrent) {
-								prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp2.ogg");
-								prompt.play();
+								if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+									prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp2.ogg");
+									prompt.play();
+								} else
+									SapiSpeech.speak("Press the key you would like to assign to this action.", SapiSpeech.SpeakFlag.interruptable);
 								while (DXInput.isKeyHeldDown()) {
 									//wait till the user lets up on enter.
 									Application.DoEvents();
@@ -629,22 +639,31 @@ namespace TDV
 									r = DXInput.getKeys();
 									Application.DoEvents();
 								}
-								prompt.stopOgg();
-								prompt = null;
+								if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+									prompt.stopOgg();
+									prompt = null;
+								} else
+									SapiSpeech.purge();
 								bool noModifier = m[0] == Key.Return;
 								if (noModifier)
 									assigned = KeyMap.alreadyAssignedTo(r[0]);
 								else
 									assigned = KeyMap.alreadyAssignedTo(m[0], r[0]);
 								if (KeyMap.isReserved(m[0], r[0])) {
-									DSound.playAndWait(DSound.NSoundPath + "\\kd5.wav");
+									if (Options.menuVoiceMode == Options.VoiceModes.selfVoice)
+										DSound.playAndWait(DSound.NSoundPath + "\\kd5.wav");
+									else
+										SapiSpeech.speak("This key combination is already reserved.", SapiSpeech.SpeakFlag.noInterrupt);
 									break;
 								}
 								if (assigned != 0) {
-									DSound.playAndWait(DSound.NSoundPath + "\\kp1.wav");
-									DSound.playAndWait(DSound.NSoundPath + "\\" + strKeys[assigned - 1]);
-									int overConf = Common.sVGenerateMenu("kp2.wav",
-															new String[] { "kd3.wav", "kd4.wav" }, Common.getIncDecVol());
+									int overConf = 0;
+									if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+										DSound.playAndWait(DSound.NSoundPath + "\\kp1.wav");
+										DSound.playAndWait(DSound.NSoundPath + "\\" + strKeys[assigned - 1]);
+										overConf = Common.sVGenerateMenu("kp2.wav", new String[] { "kd3.wav", "kd4.wav" }, Common.getIncDecVol());
+									} else
+										overConf = Common.GenerateMenu("This command is already assigned to " + strKeys[assigned - 1] + ". In order to assign this command, you will have to reassign the mentioned command. Do you want to continue and assign this action?", new String[] { "No", "Yes" }, Common.getIncDecVol());
 									if (overConf == 0 || overConf == -1)
 										break; //loop over, doesn't want to modify assignment
 								}
