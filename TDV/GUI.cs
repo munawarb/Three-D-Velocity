@@ -555,10 +555,8 @@ namespace TDV
 						//Only display the menu below if we have a joystick connected,
 						//else skip it and assume keyboard mapping.
 			if (DXInput.JSDevice != null) {
-				string[] devices = {"mainmenu_5_1_1.wav",
-					  "mainmenu_5_1_2.wav"};
-				dO = Common.sVGenerateMenu("mainmenu_5_1_i.wav",
-					devices, Common.getIncDecVol());
+				string[] devices = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?new string[]{"mainmenu_5_1_1.wav", "mainmenu_5_1_2.wav"}:new string[] { "Keyboard", "Joystick or flight simulation controller" };
+				dO = Common.sVGenerateMenu("mainmenu_5_1_i.wav", devices, Common.getIncDecVol());
 				if (dO == -1)
 					return;
 			} //if a joystick is connected
@@ -584,22 +582,19 @@ namespace TDV
 				if (mapKeyboard)
 					KeyMap.getKeyStrings(Aircraft.Action.exitGame, Aircraft.Action.switchWeapon,
 						Aircraft.Action.switchToWeapon1,
-									   Aircraft.Action.switchToWeapon2, Aircraft.Action.switchToWeapon3,
-									   Aircraft.Action.switchToWeapon4, Aircraft.Action.switchToWeapon5,
-									   Aircraft.Action.admin, Aircraft.Action.addBot, Aircraft.Action.removeBot,
-									   Aircraft.Action.endStrafe, Aircraft.Action.cloak, Aircraft.Action.deCloak).CopyTo(strKeys, 0);
+						Aircraft.Action.switchToWeapon2, Aircraft.Action.switchToWeapon3,
+						Aircraft.Action.switchToWeapon4, Aircraft.Action.switchToWeapon5,
+						Aircraft.Action.admin, Aircraft.Action.addBot, Aircraft.Action.removeBot,
+						Aircraft.Action.endStrafe, Aircraft.Action.cloak, Aircraft.Action.deCloak
+					).CopyTo(strKeys, 0);
 				else
 					KeyMap.getKeyStrings(Aircraft.Action.throttleUp, Aircraft.Action.throttleDown, Aircraft.Action.turnLeft, Aircraft.Action.turnRight,
-									   Aircraft.Action.bankLeft, Aircraft.Action.bankRight, Aircraft.Action.leftBarrelRoll, Aircraft.Action.rightBarrelRoll, Aircraft.Action.splitS,
-								   Aircraft.Action.ascend, Aircraft.Action.descend, Aircraft.Action.level, Aircraft.Action.togglePointOfView,
-								   Aircraft.Action.increaseMusicVolume, Aircraft.Action.decreaseMusicVolume, Aircraft.Action.exitGame, Aircraft.Action.switchToWeapon1, Aircraft.Action.switchToWeapon2, Aircraft.Action.switchToWeapon3, Aircraft.Action.switchToWeapon4, Aircraft.Action.switchToWeapon5, Aircraft.Action.admin, Aircraft.Action.endStrafe, Aircraft.Action.removeBot, Aircraft.Action.addBot, Aircraft.Action.cloak, Aircraft.Action.deCloak).CopyTo(strKeys, 0);
-
-				strKeys[strKeys.Length - 1] = "kd1.wav";
-				for (int temp = 0; temp < strKeys.Length; temp++)
-					System.Diagnostics.Debug.WriteLine(temp + " " + strKeys[temp]);
-				index = Common.sVGenerateMenu("ki.wav", strKeys,
-																(index == -1) ? 0 : (index - 1),
-																Common.getIncDecVol()) + 1;
+						Aircraft.Action.bankLeft, Aircraft.Action.bankRight, Aircraft.Action.leftBarrelRoll, Aircraft.Action.rightBarrelRoll, Aircraft.Action.splitS,
+						Aircraft.Action.ascend, Aircraft.Action.descend, Aircraft.Action.level, Aircraft.Action.togglePointOfView,
+						Aircraft.Action.increaseMusicVolume, Aircraft.Action.decreaseMusicVolume, Aircraft.Action.exitGame, Aircraft.Action.switchToWeapon1, Aircraft.Action.switchToWeapon2, Aircraft.Action.switchToWeapon3, Aircraft.Action.switchToWeapon4, Aircraft.Action.switchToWeapon5, Aircraft.Action.admin, Aircraft.Action.endStrafe, Aircraft.Action.removeBot, Aircraft.Action.addBot, Aircraft.Action.cloak, Aircraft.Action.deCloak
+					).CopyTo(strKeys, 0);
+				strKeys[strKeys.Length - 1] = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?"kd1.wav":"Restore default keymap";
+				index = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? (Common.sVGenerateMenu("ki.wav", strKeys, (index == -1) ? 0 : (index - 1), Common.getIncDecVol()) + 1) : (Common.GenerateMenu("Select a key. Press ESCAPE, or button 2 to save your changes.", strKeys, (index == -1) ? 0 : (index - 1), Common.getIncDecVol()) + 1);
 				if (index > 0) {
 					if (index < strKeys.Length) {
 						if (mapKeyboard) {

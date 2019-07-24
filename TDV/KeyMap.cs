@@ -7,6 +7,7 @@
 */
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
 
@@ -246,7 +247,16 @@ namespace TDV
 		{
 			if (a == -1)
 				return "";
-			return ("keymap" + a + ".wav");
+			if (Options.menuVoiceMode==Options.VoiceModes.selfVoice)
+				return ("keymap" + a + ".wav");
+			// If we're using a screen reader, we'll create the keymap string by splitting along uppercase letters in the enum.
+			// So an enum value such as throttleUp will be returned as throttle up
+			String val = ((Aircraft.Action)a).ToString();
+			var r = new Regex(@"
+			(?<=[A-Z])(?=[A-Z][a-z]) |
+			(?<=[^A-Z])(?=[A-Z]) |
+			(?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+			return r.Replace(val, " ").ToLower();
 		}
 
 		public static void saveToFile()
