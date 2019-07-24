@@ -676,8 +676,12 @@ namespace TDV
 							} //if !canceledCurrent
 						} else {
 							//joystick
-							OggBuffer prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp3.ogg");
-							prompt.play();
+							OggBuffer prompt = null;
+							if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+								prompt = DSound.loadOgg(DSound.NSoundPath + "\\kmp3.ogg");
+								prompt.play();
+							} else
+								SapiSpeech.speak("Press the joystick button you would like to assign to this action.", SapiSpeech.SpeakFlag.interruptable);
 							while (DXInput.isJSButtonHeldDown()) {
 								Application.DoEvents();
 							}
@@ -685,15 +689,17 @@ namespace TDV
 								jsKey = DXInput.getJSKeys();
 								Application.DoEvents();
 							}
-							prompt.stopOgg();
-							prompt = null;
+							if (Options.menuVoiceMode == Options.VoiceModes.selfVoice) {
+								prompt.stopOgg();
+								prompt = null;
+							} else
+								SapiSpeech.purge();
 							KeyMap.addKey((Aircraft.Action)index, DXInput.getJSKeys()[0]);
 						}
 						//joystick
 					} //if index < .length
 					else { //if we want to delete keymap
-						int yesNo = Common.sVGenerateMenu("kd2.wav",
-							new String[] { "kd3.wav", "kd4.wav" }, Common.getIncDecVol());
+						int yesNo = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? Common.sVGenerateMenu("kd2.wav", new String[] { "kd3.wav", "kd4.wav" }, Common.getIncDecVol()) : Common.GenerateMenu("Selecting Yes will restore the keymap for the currently selected device back to default. Are you sure you wish to do this?", new String[] { "No", "Yes" }, Common.getIncDecVol());
 						if (yesNo == 1) {
 							KeyMap.deleteKeymap((mapKeyboard) ? KeyMap.Device.keyboard : KeyMap.Device.joystick);
 							index = 0; //exit keymap
