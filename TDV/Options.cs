@@ -43,7 +43,12 @@ namespace TDV
 			teamDeath,
 			testing
 		}
-		public static VoiceModes voiceMode
+		public static VoiceModes menuVoiceMode
+		{
+			get;
+			set;
+		}
+		public static VoiceModes statusVoiceMode
 		{
 			get;
 			set;
@@ -319,7 +324,8 @@ namespace TDV
 			s.Write(ipOrDomain);
 			s.Write(callSign);
 			s.Write(playRIO);
-			s.Write((byte)voiceMode);
+			s.Write((byte)menuVoiceMode);
+			s.Write((byte)statusVoiceMode);
 			s.Flush();
 			s.Close();
 		}
@@ -371,13 +377,13 @@ namespace TDV
 				bool pr = s.ReadBoolean();
 				playRIO = pr;
 				byte sv = s.ReadByte();
-				voiceMode = sv;
+				menuVoiceMode = (VoiceModes)sv;
+				sv = s.ReadByte();
+				statusVoiceMode = (VoiceModes)sv;
 			}
 			catch (Exception e)
 			{
 				//Ignore the error
-				System.Diagnostics.Trace.WriteLine("Error while reading options: " + e.GetBaseException());
-				return;
 			}
 			finally
 			{
