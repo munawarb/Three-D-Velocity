@@ -521,7 +521,7 @@ namespace TDV
 
 		private void switchScreenReader()
 		{
-			int choice = Common.sVGenerateMenu("mainmenu_5_4_i.wav", new String[] { "mainmenu_5_4_1.wav", "mainmenu_5_4_2.wav" }, (int)(SapiSpeech.source - 1), Common.getIncDecVol());
+			int choice = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? Common.sVGenerateMenu("mainmenu_5_4_i.wav", new String[] { "mainmenu_5_4_1.wav", "mainmenu_5_4_2.wav" }, (int)(SapiSpeech.source - 1), Common.getIncDecVol()) : Common.GenerateMenu("Select a speech output source to use.", new String[] { "Microsoft SAPI", "Auto detect" }, (int)(SapiSpeech.source - 1), Common.getIncDecVol());
 			if (choice == -1)
 				return;
 			switch (choice) {
