@@ -290,6 +290,11 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			return sVGenerateMenu(intro, menu, index, null, keys, true);
 		}
 
+		public static int GenerateMenu(string intro, string[] menu, int index)
+		{
+			return GenerateMenu(intro, menu, index, null);
+		}
+
 		/// <summary>
 		/// Generates a menu voiced by SAPI using the specified introduction and menu with no key bindings.
 		/// </summary>
