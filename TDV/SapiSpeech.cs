@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Text;
 using System.Diagnostics;
+using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	/// <summary>
@@ -259,6 +260,22 @@ namespace TDV
 		private static void stopWinEyesSpeech()
 		{
 			invokeWinEyesMethod("Silence");
+		}
+
+		public static void playOrSpeakMenu(String soundFile, String text)
+		{
+			if (Options.menuVoiceMode == Options.VoiceModes.selfVoice)
+				DSound.playAndWait(soundFile);
+			else
+				speak(text, SpeakFlag.noInterrupt);
+		}
+
+		public static void playOrSpeakStatus(String soundFile, String text)
+		{
+			if (Options.statusVoiceMode== Options.VoiceModes.selfVoice)
+				DSound.playAndWait(soundFile);
+			else
+				speak(text, SpeakFlag.noInterrupt);
 		}
 
 	}

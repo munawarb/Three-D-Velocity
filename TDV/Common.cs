@@ -84,8 +84,7 @@ namespace TDV
 		public static BinaryReader inFile; //used for loading
 		private static Thread sThread;
 		public static OggBuffer music;
-		public static
-		 AutoResetEvent musicNotifier, menuNotifier, onlineMenuNotifier;
+		public static AutoResetEvent musicNotifier, menuNotifier, onlineMenuNotifier;
 		public static bool firstTimeLoad = true;
 		public static GUI mainGUI;
 		private static bool m_exitMenus;
@@ -644,12 +643,12 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				Options.ipOrDomain = ip;
 				Options.callSign = callSign;
 				Options.writeToFile();
-				DSound.playAndWait(DSound.NSoundPath + "\\c1.wav");
+				SapiSpeech.playOrSpeakMenu(DSound.NSoundPath + "\\c1.wav", "Please wait...");
 				connected = Client.connect(ip, callSign, 4444);
 				failedConnect = !connected;
 				if (!connected) {
 					if ((Client.getMessages() & Client.LoginMessages.wrongCredentials) != Client.LoginMessages.wrongCredentials)
-						DSound.playAndWait(DSound.NSoundPath + "\\c2.wav");
+						SapiSpeech.playOrSpeakMenu(DSound.NSoundPath + "\\c2.wav", "Could not connect. Check your connection and try again. If you are running a firewall, make sure it allows all connection attempts for Three-D Velocity.");
 				} else { //connected
 					fadeMusic();
 					buildOnlineMenu();
@@ -660,7 +659,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				if (connected) {
 					Client.closeConnection();
 					fadeMusic(); //hangar music
-					DSound.playAndWait(DSound.NSoundPath + "\\c4.wav");
+					SapiSpeech.playOrSpeakMenu(DSound.NSoundPath + "\\c4.wav", "You have left the hangar");
 				}
 				menuNotifier.Set();
 				return;
@@ -756,7 +755,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		/// </summary>
 		private static void buildOnlineMenu()
 		{
-			String menuIntro = "c3.wav";
+			String menuIntro = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? "c3.wav" : "You're now in the hangar.";
+			String[] topLevelMenu = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? new string[] { "menuc_1.wav", "menuc_2.wav", "menuc_3.wav",
+				(Options.preorder) ? "menuc_4.wav":"",
+				(Options.preorder) ? "menuc_5.wav":"", "menuc_6.wav", "menuc_7.wav"
+			} : new string[] { "Connect to the free-for-all game", "Connect to an existing game", "Start a new game",
+				"", "", "Join chat room", "Create chat room"
+			};
 			bool exitOnline = false;
 			bool startedMusic = false;
 			int choice = 0;
@@ -778,10 +783,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						exitOnline = true;
 
 					if (!Client.spectatorPending)
-						choice = sVGenerateMenu(menuIntro, new string[] { "menuc_1.wav", "menuc_2.wav", "menuc_3.wav",
-				  (Options.preorder) ? "menuc_4.wav":"",
-						(Options.preorder) ? "menuc_5.wav":"", "menuc_6.wav", "menuc_7.wav"
-						}, getServerItems());
+						choice = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?sVGenerateMenu(menuIntro, topLevelMenu, getServerItems()): GenerateMenu(menuIntro, topLevelMenu, getServerItems());
 					else
 						choice = 0; //enter FFA
 					menuIntro = null; //Only say menu prompt first time user enters hangar
@@ -794,7 +796,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 							BinaryReader gResp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_requestGameList));
 							int listLength = gResp.ReadInt16();
 							if (listLength == 0) {
-								DSound.playAndWait(DSound.NSoundPath + "\\ng.wav");
+								SapiSpeech.playOrSpeakMenu(DSound.NSoundPath + "\\ng.wav", "No games available");
 								break;
 							}
 
@@ -835,7 +837,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 						case 2: //create game
 							Client.gameHost = true;
-							int t = sVGenerateMenu(null, new String[] { "menuc_3_1.wav", "menuc_3_2.wav" }, getServerItems());
+							int t = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?sVGenerateMenu(null, new String[] { "menuc_3_1.wav", "menuc_3_2.wav" }, getServerItems()):GenerateMenu(null, new string[] { "Death match", "Team death" }, getServerItems());
 							if (t == -1)
 								break;
 							bool inGame = true;
@@ -847,8 +849,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 								case 1: //create team death
 									Options.mode = Options.Modes.teamDeath;
-									int color = sVGenerateMenu("menuc_3_2_i.wav", new String[] { "menuc_3_2_1.wav", "menuc_3_2_2.wav",
-						  "menuc_3_2_3.wav", "menuc_3_2_4.wav"}, getServerItems());
+									int color = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? sVGenerateMenu("menuc_3_2_i.wav", new String[] { "menuc_3_2_1.wav", "menuc_3_2_2.wav", "menuc_3_2_3.wav", "menuc_3_2_4.wav" }, getServerItems()) : GenerateMenu("What team would you like to play on?", new string[] { "Blue team", "Green team", "Red team", "Yellow team" }, getServerItems());
 									if (color == -1) {
 										inGame = false;
 										break;
@@ -973,8 +974,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					if (Client.closed || Options.requestedShutdown)
 						exitOnline = true;
 				} //while loop for menu
-				  //Condition below won't be hit in the above loop if we're in a game and ALT+F4 is pressed to close it, so we need it
-				  //here in case the child loop breaks so we will still hit this condition.
+				//Condition below won't be hit in the above loop if we're in a game and ALT+F4 is pressed to close it, so we need it
+				//here in case the child loop breaks so we will still hit this condition.
 				if (Client.closed || Options.requestedShutdown)
 					exitOnline = true;
 			} //parent loop to control data clearing
