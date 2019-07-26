@@ -89,6 +89,11 @@ namespace TDV
 			}
 		}
 
+		public static void speak(String sayString)
+		{
+			speak(sayString, SpeakFlag.interruptable);
+		}
+
 		/// <summary>
 		/// Says something through the speech source.
 		/// </summary>

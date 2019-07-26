@@ -1481,5 +1481,48 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			enterChatRoom(name);
 		}
 
+		/// <summary>
+		/// Executes a statement lambda according to self-voicing switches
+		/// </summary>
+		/// <param name="sv">The function to execute if self-voicing is used.</param>
+		/// <param name="sr">The function to execute if a screen-reader is used.</param>
+		/// <param name="s">The current sv value.</param>
+		public static void executeSvOrSr(Action sv, Action sr, Options.VoiceModes s)
+		{
+			if (s == Options.VoiceModes.selfVoice)
+				sv();
+			else
+				sr();
+		}
+
+		/// <summary>
+		/// Executes a lambda function according to self-voicing switches
+		/// </summary>
+		/// <param name="sv">The function to execute if self-voicing is used.</param>
+		/// <param name="sr">The function to execute if a screen-reader is used.</param>
+		/// <param name="s">The current sv value.</param>
+		/// <returns>The result of the function.</returns>
+		public static int returnSvOrSr(Func<int> sv, Func<int> sr, Options.VoiceModes s)
+		{
+			if (s == Options.VoiceModes.selfVoice)
+				return sv();
+			return sr();
+		}
+
+		/// <summary>
+		/// Executes a lambda function according to self-voicing switches
+		/// </summary>
+		/// <param name="sv">The function to execute if self-voicing is used.</param>
+		/// <param name="sr">The function to execute if a screen-reader is used.</param>
+		/// <param name="s">The current sv value.</param>
+		/// <returns>The result of the function.</returns>
+		public static String returnSvOrSr(Func<String> sv, Func<String> sr, Options.VoiceModes s)
+		{
+			if (s == Options.VoiceModes.selfVoice)
+				return sv();
+			return sr();
+		}
+
+
 	}
 }
