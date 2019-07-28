@@ -184,6 +184,7 @@ namespace TDV
 			targetIntegrity,
 			engineIntegrity,
 			fuel,
+			refuelerCount,
 			distance,
 			sector,
 			altitudeRate,
@@ -2110,6 +2111,9 @@ weapon.firingRange);
 					return true;
 				case Status.sector:
 					Common.executeSvOrSr(() => SelfVoice.NLS(Interaction.getSector((Projector)this), true, true), () => SapiSpeech.speak(Interaction.getSector((Projector)this, false)), Options.statusVoiceMode);
+					return true;
+				case Status.refuelerCount:
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber((double)Mission.refuelCount, true), () => SapiSpeech.speak("" + Mission.refuelCount), Options.statusVoiceMode);
 					return true;
 				case Status.lap:
 					if (Options.mode == Options.Modes.racing)
@@ -4571,6 +4575,8 @@ tY);
 			if (DXInput.IsShift()) {
 				if (DXInput.isFirstPress(Key.F1, false))
 					e = statusMode(Status.sector);
+				else if (DXInput.isFirstPress(Key.F, false))
+					e = statusMode(Status.refuelerCount);
 				else if (DXInput.isFirstPress(Key.F2, false))
 					e = statusMode(Status.lap);
 				else if (DXInput.isFirstPress(Key.F3, false))
