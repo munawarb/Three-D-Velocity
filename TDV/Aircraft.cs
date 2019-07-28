@@ -172,6 +172,7 @@ namespace TDV
 		private enum Status
 		{
 			none,
+			missionObjective,
 			target,
 			course,
 			speedometer,
@@ -2071,6 +2072,12 @@ weapon.firingRange);
 				lastStatusCommand = s;
 			SelfVoice.setPathTo("n");
 			switch (s) {
+				case Status.missionObjective:
+					if (Options.mode == Options.Modes.mission && (int)Mission.missionNumber > 0) {
+						Common.playUntilKeyPress(DSound.SoundPath + "\\o" + ((int)Mission.missionNumber - 1) + ".ogg");
+						return true;
+					}
+					return false;
 				case Status.facing:
 					Common.executeSvOrSr(() => SelfVoice.NLS("i" + (int)facingState + ".wav", true, true), () => SapiSpeech.speak(facingState.ToString()), Options.statusVoiceMode);
 					return true;
@@ -2104,7 +2111,7 @@ weapon.firingRange);
 					} else
 						return false;
 				case Status.integrity:
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getHealthPercent() + "&p.wav", true, true), () => SapiSpeech.speak("" + getHealthPercent()), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getHealthPercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{getHealthPercent()} percent"), Options.statusVoiceMode);
 					return true;
 				case Status.engineIntegrity:
 					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getEngineDamagePercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{getEngineDamagePercent()} percent"), Options.statusVoiceMode);
@@ -2173,7 +2180,7 @@ weapon.firingRange);
 						}, () =>
 						{
 							position.sapiMode = true;
-							SapiSpeech.speak($"{weapon.getLockedTarget().ToString()} {position}, sector: {Interaction.getSector(weapon.getLockedTarget())}");
+							SapiSpeech.speak($"{weapon.getLockedTarget().ToString()} {position}, sector: {Interaction.getSector(weapon.getLockedTarget(), false)}");
 						}, Options.statusVoiceMode);
 						if (Options.RPAutoTrigger)
 							sayRelative = true;
@@ -4584,8 +4591,6 @@ tY);
 			if (DXInput.IsShift()) {
 				if (DXInput.isFirstPress(Key.F1, false))
 					e = statusMode(Status.sector);
-				else if (DXInput.isFirstPress(Key.F, false))
-					e = statusMode(Status.refuelerCount);
 				else if (DXInput.isFirstPress(Key.F2, false))
 					e = statusMode(Status.lap);
 				else if (DXInput.isFirstPress(Key.F3, false))
@@ -4675,6 +4680,21 @@ tY);
 				} //if TAB second time
 
 				switch (k) {
+					case Key.LeftShift:
+					case Key.RightShift:
+						Key theKey = Key.Unknown;
+						while (theKey == Key.Unknown) {
+							if (DXInput.isKeyHeldDown(Key.F))
+								theKey = Key.F;
+							if (!DXInput.IsShift())
+								break;
+							Thread.Sleep(5);
+						}
+						if (theKey == Key.F)
+							return statusMode(Status.refuelerCount);
+						return false;
+					case Key.O:
+						return statusMode(Status.missionObjective);
 					case Key.T:
 						return statusMode(Status.target);
 					case Key.W:
