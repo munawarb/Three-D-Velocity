@@ -1008,12 +1008,10 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		public static void restoreMusic(int restoreVolume)
 		{
 			while (music.volume < restoreVolume) {
-				if ((music.volume + volumeFadeValue) >= restoreVolume)
-					music.volume = restoreVolume;
-				else
-					music.volume += volumeFadeValue;
+				music.volume += volumeFadeValue;
 				Thread.Sleep(100);
 			}
+			music.volume = restoreVolume;
 		}
 
 
