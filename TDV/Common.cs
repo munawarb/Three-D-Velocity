@@ -760,13 +760,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		/// </summary>
 		private static void buildOnlineMenu()
 		{
-			String menuIntro = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? "c3.wav" : "You're now in the hangar.";
-			String[] topLevelMenu = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? new string[] { "menuc_1.wav", "menuc_2.wav", "menuc_3.wav",
+			String menuIntro = Common.returnSvOrSr(() => "c3.wav", () => "You're now in the hangar.", Options.menuVoiceMode);
+			String[] topLevelMenu = Common.returnSvOrSr(() => new string[] { "menuc_1.wav", "menuc_2.wav", "menuc_3.wav",
 				(Options.preorder) ? "menuc_4.wav":"",
 				(Options.preorder) ? "menuc_5.wav":"", "menuc_6.wav", "menuc_7.wav"
-			} : new string[] { "Connect to the free-for-all game", "Connect to an existing game", "Start a new game",
+			}, () => new string[] { "Connect to the free-for-all game", "Connect to an existing game", "Start a new game",
 				"", "", "Join chat room", "Create chat room"
-			};
+			}, Options.menuVoiceMode);
 			bool exitOnline = false;
 			bool startedMusic = false;
 			int choice = 0;
@@ -788,7 +788,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						exitOnline = true;
 
 					if (!Client.spectatorPending)
-						choice = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?sVGenerateMenu(menuIntro, topLevelMenu, getServerItems()): GenerateMenu(menuIntro, topLevelMenu, getServerItems());
+						choice = Common.returnSvOrSr(() => sVGenerateMenu(menuIntro, topLevelMenu, getServerItems()), () => GenerateMenu(menuIntro, topLevelMenu, getServerItems()), Options.menuVoiceMode);
 					else
 						choice = 0; //enter FFA
 					menuIntro = null; //Only say menu prompt first time user enters hangar
@@ -842,7 +842,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 						case 2: //create game
 							Client.gameHost = true;
-							int t = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?sVGenerateMenu(null, new String[] { "menuc_3_1.wav", "menuc_3_2.wav" }, getServerItems()):GenerateMenu(null, new string[] { "Death match", "Team death" }, getServerItems());
+							int t = Common.returnSvOrSr(() => sVGenerateMenu("", new String[] { "menuc_3_1.wav", "menuc_3_2.wav" }, getServerItems()), () => GenerateMenu("", new string[] { "Death match", "Team death" }, getServerItems()), Options.menuVoiceMode); ;
 							if (t == -1)
 								break;
 							bool inGame = true;
@@ -854,7 +854,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 								case 1: //create team death
 									Options.mode = Options.Modes.teamDeath;
-									int color = (Options.menuVoiceMode == Options.VoiceModes.selfVoice) ? sVGenerateMenu("menuc_3_2_i.wav", new String[] { "menuc_3_2_1.wav", "menuc_3_2_2.wav", "menuc_3_2_3.wav", "menuc_3_2_4.wav" }, getServerItems()) : GenerateMenu("What team would you like to play on?", new string[] { "Blue team", "Green team", "Red team", "Yellow team" }, getServerItems());
+									int color = Common.returnSvOrSr(() =>  sVGenerateMenu("menuc_3_2_i.wav", new String[] { "menuc_3_2_1.wav", "menuc_3_2_2.wav", "menuc_3_2_3.wav", "menuc_3_2_4.wav" }, getServerItems()), () => GenerateMenu("What team would you like to play on?", new string[] { "Blue team", "Green team", "Red team", "Yellow team" }, getServerItems()), Options.menuVoiceMode);
 									if (color == -1) {
 										inGame = false;
 										break;
@@ -1502,27 +1502,11 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		/// <param name="sr">The function to execute if a screen-reader is used.</param>
 		/// <param name="s">The current sv value.</param>
 		/// <returns>The result of the function.</returns>
-		public static int returnSvOrSr(Func<int> sv, Func<int> sr, Options.VoiceModes s)
+		public static T returnSvOrSr<T>(Func<T> sv, Func<T> sr, Options.VoiceModes s)
 		{
 			if (s == Options.VoiceModes.selfVoice)
 				return sv();
 			return sr();
 		}
-
-		/// <summary>
-		/// Executes a lambda function according to self-voicing switches
-		/// </summary>
-		/// <param name="sv">The function to execute if self-voicing is used.</param>
-		/// <param name="sr">The function to execute if a screen-reader is used.</param>
-		/// <param name="s">The current sv value.</param>
-		/// <returns>The result of the function.</returns>
-		public static String returnSvOrSr(Func<String> sv, Func<String> sr, Options.VoiceModes s)
-		{
-			if (s == Options.VoiceModes.selfVoice)
-				return sv();
-			return sr();
-		}
-
-
 	}
 }

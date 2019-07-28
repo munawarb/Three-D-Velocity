@@ -824,7 +824,7 @@ namespace TDV
 		{
 			if (spectatorPending)
 				return Options.entryMode = 1;
-			int s = (Options.menuVoiceMode==Options.VoiceModes.selfVoice)?Common.sVGenerateMenu(null, new String[] { "menuc_2_1.wav", "menuc_2_2.wav" }):Common.GenerateMenu(null, new string[] { "Be a pilot", "Act as spectator" });
+			int s = Common.returnSvOrSr(() => Common.sVGenerateMenu("", new String[] { "menuc_2_1.wav", "menuc_2_2.wav" }), () => Common.GenerateMenu("", new string[] { "Be a pilot", "Act as spectator" }), Options.menuVoiceMode);
 			if (s == -1)
 				return -1;
 			Options.entryMode = s;

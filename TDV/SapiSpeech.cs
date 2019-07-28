@@ -269,18 +269,12 @@ namespace TDV
 
 		public static void playOrSpeakMenu(String soundFile, String text)
 		{
-			if (Options.menuVoiceMode == Options.VoiceModes.selfVoice)
-				DSound.playAndWait(soundFile);
-			else
-				speak(text, SpeakFlag.noInterrupt);
+			Common.executeSvOrSr(() => DSound.playAndWait(soundFile), () => speak(text, SpeakFlag.noInterrupt), Options.menuVoiceMode);
 		}
 
 		public static void playOrSpeakStatus(String soundFile, String text)
 		{
-			if (Options.statusVoiceMode== Options.VoiceModes.selfVoice)
-				DSound.playAndWait(soundFile);
-			else
-				speak(text, SpeakFlag.noInterrupt);
+			Common.executeSvOrSr(() => DSound.playAndWait(soundFile), () => speak(text, SpeakFlag.noInterrupt), Options.statusVoiceMode);
 		}
 
 	}
