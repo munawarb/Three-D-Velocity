@@ -84,7 +84,9 @@ namespace TDV
 				missileSound.Stop();
 				hitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 2) + ".wav");
 				target.playSound(hitSound, true, false);
-				fireHitEvent(target, 100000);
+				// Since the boss aircraft has 10,000 damage, let's not let the player kill them with one cruise missile.
+				// However, the missile should wipe out everything else it contacts.
+				fireHitEvent(target, (target is JuliusAircraft)? 1500:100000);
 				finished = true;
 				return;
 			}
