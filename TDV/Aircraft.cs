@@ -196,6 +196,7 @@ namespace TDV
 
 		//sounds
 		private SecondarySoundBuffer throttleClickSound;
+		private SecondarySoundBuffer courseClickSound;
 		private SecondarySoundBuffer selfDestAlarm;
 		private SecondarySoundBuffer ltsHit;
 		private SecondarySoundBuffer catapultSound;
@@ -226,6 +227,7 @@ namespace TDV
 		private SecondarySoundBuffer targetSolutionSound3;
 
 		private int sectorX, sectorY;
+		private int lastDirection;
 		private OpenPositions openPosition, lastOpenPosition;
 		private int origThrottleClickFreq;
 		private int rollTime; //Time before roll can be executed
@@ -815,6 +817,7 @@ namespace TDV
 					DSound.SetCoordinates(x, 0.0, y);
 				updateListener();
 				playThrottleClick();
+				playCourseClick();
 				if (playAlarms) {
 					soundLowFuelAlarm();
 					soundLowSpeedAlarm();
@@ -900,6 +903,7 @@ namespace TDV
 		private void interact()
 		{
 			lastOpenPosition = openPosition;
+			lastDirection = direction;
 			if (!isAI) {
 				DXInput.updateJSState();
 				if (!Options.isPaused)
@@ -1371,6 +1375,7 @@ namespace TDV
 			if (!isAI || autoPlayTarget) {
 				throttleClickSound = loadSound(soundPath + "thrpos.wav");
 				origThrottleClickFreq = throttleClickSound.Frequency;
+				courseClickSound = DSound.LoadSound3d(soundPath + "coupos.wav", false);
 				if (ltsHit == null)
 					ltsHit = loadSound(soundPath + "ca1-1.wav");
 				if (aileronRollSound == null)
@@ -2911,6 +2916,7 @@ tY);
 			DSound.unloadSound(ref turnSignal);
 			DSound.unloadSound(ref selfDestAlarm);
 			DSound.unloadSound(ref throttleClickSound);
+			DSound.unloadSound(ref courseClickSound);
 		}
 
 		public override void freeResources()
@@ -5371,6 +5377,20 @@ tY);
 			weapon.lockIndex = Mission.landingBeacon.id;
 			requestedLand = true;
 			cause = Interaction.Cause.none;
+		}
+
+		private void playCourseClick()
+		{
+			if (direction != lastDirection) {
+				double x = 0;
+				double y = 0;
+				double z = 0;
+				x = this.x;
+				y = this.y;
+				z = this.z;
+				Degrees.moveObject(ref x, ref y, 0, 1.0, 3.0);
+				DSound.PlaySound3d(courseClickSound, true, false, x, z, y);
+			}
 		}
 
 
