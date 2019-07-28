@@ -31,7 +31,7 @@ namespace TDV
 			gameEnd
 		}
 		public static Interaction.FightType fightType;
-
+		private static int nextFighterNumber; // The 0-based offset of the next fighter, used to mitigate duplicate fighter names on the map.
 		public static bool trainingFinished
 		{
 			get;
@@ -476,9 +476,16 @@ namespace TDV
 			Interaction.holderAt(0).add(darkBlaze);
 		}
 
+		private static int getNextFighterNumber()
+		{
+			int r = nextFighterNumber+1; // scale from 1 to 6.
+			nextFighterNumber = (nextFighterNumber + 1) % 6;
+			return r;
+		}
+
 		public static Aircraft createNewFighter(int type, int radius)
 		{
-			Aircraft ac = (Aircraft)createNewObject("f1");
+			Aircraft ac = (Aircraft)createNewObject($"f{getNextFighterNumber()}");
 			switch (type)
 			{
 				case 1:
@@ -506,7 +513,7 @@ namespace TDV
 
 		public static Aircraft createNewFighter(double x, double y)
 		{
-			Aircraft ac = (Aircraft)createNewObject("f1");
+			Aircraft ac = (Aircraft)createNewObject($"f{getNextFighterNumber()}");
 			ac.x = x;
 			ac.y = y;
 			Interaction.holderAt(0).add(ac);
