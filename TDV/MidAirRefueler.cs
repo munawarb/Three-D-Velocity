@@ -152,8 +152,7 @@ speed //this gives total hours
 		{
 			if ((Environment.TickCount - time) / 1000 / 60 >= 5)
 			{
-				playMessage(DSound.SoundPath + "\\rf13.wav");
-				((Aircraft)Mission.player).requestRefuel();
+				((Aircraft)Mission.player).requestRefuel(true);
 			}
 		}
 

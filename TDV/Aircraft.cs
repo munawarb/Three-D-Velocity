@@ -3612,10 +3612,14 @@ tY);
 		//This method will also be called by the
 		//midair refueler and aircraft carrier
 		//after the land scenes are done to break the lock.
-		public void requestRefuel()
+		public void requestRefuel(bool refuelerRanOutOfFuel)
 		{
 			if (Options.mode != Options.Modes.mission)
 				return;
+			if (refuelerRanOutOfFuel) {
+				SecondarySoundBuffer msg = DSound.LoadSound(DSound.SoundPath + "\\rf13.wav");
+				DSound.PlaySound(msg, true, false);
+			}
 			if (callingRefueler) {
 				Mission.refueler.uncall();
 				callingRefueler = false;
@@ -3648,6 +3652,11 @@ tY);
 			}
 			resumeInput();
 			Interaction.resumeAndUnmute();
+		}
+
+		public void requestRefuel()
+		{
+			requestRefuel(false);
 		}
 
 		private void announceRefueler()
