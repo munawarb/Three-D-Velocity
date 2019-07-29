@@ -8,7 +8,7 @@
 * [Status](#status)
 * [Documentation](#documentation)
 * [What's new](#what's-new)
-  * [Updating From Previous Versions](updating-from-previous-versions)
+  * [Updating From Previous Versions](#updating-from-previous-versions)
 * [Downloading the game](#downloading-the-game)
 * [The Multiplayer Server](#the-multiplayer-server)
 * [Parental Advisory](#parental-advisory)
