@@ -1,6 +1,26 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+##### Version 2.30, released on 07/28/2019
+
+###### Added
+- On startup, TDV now asks the player to configure how menus and status messages are spoken. The game can speak messages using either recorded wave files or by using the player's screen reader. This allows for quick localization of written text and allows the player to control the rate of speech of menus and status messages since these messages can be routed to screen-reading software ([#82](../../issues/82)), ([#85](../../issues/85))
+- When throttling up or down, a click will sound when the throttle is closed, one quarter, one half, three quarters and full open ([#86](../../issues/86))
+- A click to mark zero degrees plays as the aircraft turns. The player can turn towards the click to reach zero degrees ([#83](../../issues/83))
+- A new status command, SHIFT + F, announces how many times the player is able to call on the midair refueler for assistance in Mission Mode ([#80](../../issues/80))
+- A new status command, O, replays the most recent mission objective when in Mission Mode ([#63](../../issues/63))
+
+###### Fixed
+- When saving a game in Mission Mode and then reloading the same game in that session, the aircraft would orient itself to the in-game heading instead of the heading from the save file ([#64](../../issues/64))
+- When the refueler runs out of fuel in Mission Mode, the proper message is now played instead of just the lock broken signal ([#77](../../issues/77))
+- Some RIO messages that were never played in the game have been removed ([#84](../../issues/84))
+- Under certain circumstances, the music would restore to full volume instead of the volume it was set at when the game regains focus ([#81](../../issues/81))
+
+###### Changes
+- The "RIO Messages" option is now above the "Save Game" option to make it more accessible ([#75](../../issues/75))
+- The Cruise Missiles will no longer wipe out the boss aircraft in one hit. Their effectiveness against other targets has not changed ([#60](../../issues/60))
+- In Mission Mode, all fighters that swarm the player are no longer labeled "fighter 1" ([#56](../../issues/56))
+
 ##### Version 2.24, released on 12/07/2018
 
 ###### Added
