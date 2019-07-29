@@ -10,9 +10,11 @@ using System.Collections;
 using System.Collections.Generic;
 using SharpDX.Multimedia;
 using SharpDX.DirectSound;
+using SharpDX.XAudio2;
 using OggVorbisDecoder;
 using System.Threading;
 using System.IO;
+using NVorbis;
 namespace BPCSharedComponent.ExtendedAudio
 {
 	/// <summary>
@@ -25,7 +27,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		private OggVorbisFileStream oggFile = null;
 		private Object lockObject;
 		private const short bitsPerSample = 16;
-		private DirectSound device;
+		private XAudio2 device;
 		private int playPointer = 0; //keeps track of which file is to be played next in a list of files or streams
 		private String[] fileNames = null;
 		private int m_volume;
@@ -143,22 +145,29 @@ namespace BPCSharedComponent.ExtendedAudio
 			if (p > soundBuffers.Count - 1) {
 				SoundBufferDescription desc = new SoundBufferDescription();
 				desc.Flags = BufferFlags.ControlPositionNotify | BufferFlags.ControlVolume | BufferFlags.GetCurrentPosition2 | BufferFlags.GlobalFocus;
-				byte[] outBuffer = new Byte[4096];
-				oggFile = new OggVorbisFileStream(fileNames[p]);
+				VorbisReader vorbis = new VorbisReader(fileNames[playPointer]);
+				float[] outBuffer = new float[vorbis.Channels*vorbis.SampleRate/5];
 				PcmStream = new MemoryStream();
-				int PcmBytes = -1;
-				WaveFormat waveFormat = new WaveFormat();
+				int PcmBytes = 0;
+				WaveFormat waveFormat = new WaveFormat(vorbis.SampleRate, bitsPerSample, vorbis.Channels);
+
 				// Decode the Ogg Vorbis data into its PCM data
-				while (PcmBytes != 0) {
-					PcmBytes = oggFile.Read(outBuffer, 0, outBuffer.Length);
-					PcmStream.Write(outBuffer, 0, PcmBytes);
+				int rescaleFactor = 32767;
+				while ((PcmBytes = vorbis.ReadSamples(outBuffer, 0, outBuffer.Length)) > 0) {
+					short[] intData = new short[PcmBytes];
+					byte[] data = new byte[PcmBytes* 2];
+					for(int index = 0; index < PcmBytes; index++) {
+						intData[index] = (short)(outBuffer[index] * rescaleFactor);
+						byte[] b = BitConverter.GetBytes(intData[index]);
+						b.CopyTo(data, index * 2);
+					}
+					PcmStream.Write(data, 0, data.Length);
 				}
-				VorbisInfo info = oggFile.Info;
-				waveFormat = new WaveFormat(info.Rate, bitsPerSample, info.Channels);
 				desc.Format = waveFormat;
 				desc.BufferBytes = (int)PcmStream.Length;
 				lock (lockObject) // So we don't lose a simultaneous volume change.
 					soundBuffers.Add(sBuff = new SecondarySoundBuffer(device, desc));
+				PcmStream.Position = 0;
 				sBuff.Write(PcmStream.ToArray(), 0, LockFlags.EntireBuffer);
 				// In a multi-wave playback, only loop the last track. The preceeding tracks are intros.
 				// Next, if we have a multi-file situation, we need to wait for the current file to stop playing before starting the next one.
@@ -177,12 +186,14 @@ namespace BPCSharedComponent.ExtendedAudio
 				f = (loop && p == fileNames.Length - 1) ? PlayFlags.Looping : PlayFlags.None;
 				sBuff.Play(0, f);
 			}
+			/*
 			if (PcmStream != null) {
 				oggFile.Close();
 				oggFile.Dispose();
 				PcmStream.Close();
 				PcmStream.Dispose();
 			}
+			*/
 			if (!initializeNextTrack && playPointer < fileNames.Length - 1) // Prepare the next track.
 				process(true);
 			preparing = false;
