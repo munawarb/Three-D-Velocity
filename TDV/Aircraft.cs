@@ -3012,20 +3012,20 @@ tY);
 			string[] options = Common.returnSvOrSr(() => new string[]{ "o_1.wav",
 				"o_2.wav",
 				"o_3.wav",
+				"o_7.wav",
 				(Options.mode != Options.Modes.mission || Options.isDemo) ?
 				"" : "o_4.wav",
 				(Options.mode != Options.Modes.mission || Options.isDemo) ?
 				"" : "o_5.wav",
-				"o_7.wav",
 				"o_6.wav"
 			}, () => new string[]{"Vertical range announcements",
 				"Course change announcements",
 				"Relative position auto trigger",
+				"RIO announcements",
 				(Options.mode != Options.Modes.mission || Options.isDemo) ?
 				"" : "Save game",
 				(Options.mode != Options.Modes.mission || Options.isDemo) ?
 				"" : "Load game",
-				"RIO announcements",
 				"Exit"
 			}, Options.menuVoiceMode);
 			int mIndex = 0;
@@ -3080,25 +3080,7 @@ tY);
 							SapiSpeech.speak(Common.getOnOffStatus(Options.RPAutoTrigger = !Options.RPAutoTrigger), SapiSpeech.SpeakFlag.interruptable);
 						}, Options.menuVoiceMode);
 						break;
-
-					case 3: //save
-						int slotSave = Common.returnSvOrSr(() => Common.sVGenerateMenu("", new String[] {DSound.NumPath + "\\1.wav", DSound.NumPath + "\\2.wav", DSound.NumPath + "\\3.wav"}), () => Common.GenerateMenu("", new string[] { "1", "2", "3" }), Options.menuVoiceMode)
-							+ 1;
-						if (slotSave == 0)
-							break;
-						Common.saveGame(slotSave);
-						break;
-
-					case 4: //load game
-						int slotLoad = Common.returnSvOrSr(() => Common.sVGenerateMenu("", new String[] {DSound.NumPath + "\\1.wav", DSound.NumPath + "\\2.wav", DSound.NumPath + "\\3.wav"}), () => Common.GenerateMenu("", new string[] { "1", "2", "3" }), Options.menuVoiceMode)
-							+ 1;
-						if (slotLoad == 0)
-							break;
-						Common.loadGame(slotLoad);
-						exitCode = true;
-						break;
-
-					case 5: // Toggle RIO announcements
+					case 3: // Toggle RIO announcements
 						Common.executeSvOrSr(() =>
 						{
 							SelfVoice.NLS(DSound.NSoundPath + "\\"
@@ -3110,7 +3092,24 @@ tY);
 						}, Options.menuVoiceMode);
 						break;
 
-					case 6: //exit
+					case 4: //save
+						int slotSave = Common.returnSvOrSr(() => Common.sVGenerateMenu("", new String[] {DSound.NumPath + "\\1.wav", DSound.NumPath + "\\2.wav", DSound.NumPath + "\\3.wav"}), () => Common.GenerateMenu("", new string[] { "1", "2", "3" }), Options.menuVoiceMode)
+							+ 1;
+						if (slotSave == 0)
+							break;
+						Common.saveGame(slotSave);
+						break;
+
+					case 5: //load game
+						int slotLoad = Common.returnSvOrSr(() => Common.sVGenerateMenu("", new String[] {DSound.NumPath + "\\1.wav", DSound.NumPath + "\\2.wav", DSound.NumPath + "\\3.wav"}), () => Common.GenerateMenu("", new string[] { "1", "2", "3" }), Options.menuVoiceMode)
+							+ 1;
+						if (slotLoad == 0)
+							break;
+						Common.loadGame(slotLoad);
+						exitCode = true;
+						break;
+
+					default: //exit
 						exitCode = true;
 						break;
 				} //switch
