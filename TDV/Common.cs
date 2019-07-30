@@ -24,8 +24,8 @@ namespace TDV
 	public class Common
 	{
 		public static String applicationVersion = Assembly.GetExecutingAssembly().GetName().Version.Major + "." + Assembly.GetExecutingAssembly().GetName().Version.Minor;
-		public static int volumeIncrementValue { get { return 100; } }
-		public static int volumeFadeValue{get{return 200; } }
+		public static float volumeIncrementValue { get { return 0.25f; } }
+		public static float volumeFadeValue{get{return 0.05f; } }
 		public static bool error
 		{
 			get;
@@ -63,8 +63,8 @@ namespace TDV
 			bool hit();
 			////Returns true if this object is destroyed, false otherwise
 		}
-
-		public static int currentMusicVol, menuMusicVol, onlineMusicVol;
+		private const float defaultMusicVol = 0.5f;
+		public static float currentMusicVol=defaultMusicVol, menuMusicVol=defaultMusicVol, onlineMusicVol=defaultMusicVol;
 		private static SecondarySoundBuffer menuWrapSound, menuMoveSound, menuSelectSound;
 		private static bool m_previousFileVersion;
 
@@ -99,12 +99,6 @@ namespace TDV
 		{
 			get { return (m_gameHasFocus); }
 			set { m_gameHasFocus = value; }
-		}
-
-		public static int maxMusicVol
-		{
-			get { return (DSound.maxMusicVol); }
-			set { DSound.maxMusicVol = value; }
 		}
 
 		//returns a random integer from 0 to  max.
@@ -991,7 +985,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		{
 			if (music == null)
 				return;
-			while (music.volume > ((stop) ? -5000 : -1000)) { //don't completely fade if not stopping
+			while (music.volume > ((stop) ? 0.0f : 0.25f)) { //don't completely fade if not stopping
 				music.volume -= volumeFadeValue;
 				Thread.Sleep(100);
 			}
@@ -1005,7 +999,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			fadeMusic(true);
 		}
 
-		public static void restoreMusic(int restoreVolume)
+		public static void restoreMusic(float restoreVolume)
 		{
 			while (music.volume < restoreVolume) {
 				music.volume += volumeFadeValue;

@@ -81,9 +81,6 @@ namespace TDV
 			Common.mainGUI = this;
 			Common.guiHandle = this.Handle;
 			DSound.initialize(this.Handle, Addendums.File.commonAppPath);
-			Common.currentMusicVol = -500;
-			Common.menuMusicVol = Common.currentMusicVol;
-			Common.onlineMusicVol = Common.currentMusicVol;
 			DXInput.DInputInit(this.Handle);
 			this.Deactivate += new EventHandler(GUI_Deactivate);
 			this.Activated += new EventHandler(GUI_Activated);

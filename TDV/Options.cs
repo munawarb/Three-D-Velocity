@@ -341,15 +341,15 @@ namespace TDV
 				//dump file data into dummy vars so if there's an error, the game options won't contain strange data
 				//caused by the stream erroring out unexpectedly.
 				//if player is running outdated config, don't error out, just ignore the rest
-				int musicVol = s.ReadInt32();
+				float musicVol = s.ReadSingle();
 				bool announceCourse = s.ReadBoolean();
 				bool rp = s.ReadBoolean();
 				int announceV = s.ReadInt32();
 				byte en = s.ReadByte();
 				int launchC = s.ReadInt32();
 				int port = s.ReadInt32();
-				int menuVol = s.ReadInt32();
-				int onlineVol = s.ReadInt32();
+				float menuVol = s.ReadSingle();
+				float onlineVol = s.ReadSingle();
 				int speechSource = s.ReadInt32();
 				int ho = s.ReadInt32();
 				int da = s.ReadInt32();

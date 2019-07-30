@@ -662,7 +662,7 @@ namespace TDV
 			{ //Don't fade music if failed connect since main menu music still playing
 				if (Common.music != null)
 					Common.fadeMusic();
-				DSound.masterMusicVolume = Common.maxMusicVol;
+				DSound.masterMusicVolume = 1.0f;
 			}
 			Mission.reset(Options.Modes.mission);
 			Common.exitMenus = false;

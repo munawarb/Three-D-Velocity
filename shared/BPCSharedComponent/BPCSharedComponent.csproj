@@ -150,9 +150,6 @@
     <Reference Include="NVorbis, Version=0.8.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\TDV\packages\NVorbis.0.8.6\lib\net35\NVorbis.dll</HintPath>
     </Reference>
-    <Reference Include="OggVorbisDecoder">
-      <HintPath>..\OggVorbisDecoder.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\..\TDV\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>

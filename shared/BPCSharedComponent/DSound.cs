@@ -13,6 +13,7 @@ using System.Threading;
 using SharpDX;
 using SharpDX.Multimedia;
 using SharpDX.DirectSound;
+using SharpDX.XAudio2;
 using BPCSharedComponent.Security;
 
 
@@ -22,7 +23,6 @@ namespace BPCSharedComponent.ExtendedAudio
 	{
 		private static String rootDir;
 		private static Object playLock;
-		private static int m_maxMusicVol;
 		private static string pass;
 		private static bool m_isFromResource;
 		public static bool isFromResource
@@ -37,8 +37,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		//main soundcard object
 		public static DirectSound objDS = null;
 		private static SoundListener3D DSBListener = null;
+		private static XAudio2 objXA;
+		private static MasteringVoice masteringVoice;
 		private static PrimarySoundBuffer primaryBuffer;
-		public static int masterMusicVolume;
+		public static float masterMusicVolume;
 		//the listener used for 3d sound
 		//used to hold sounds path
 		public static string SoundPath;
@@ -48,15 +50,6 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static string NumPath;
 
 		/// <summary>
-		/// Gets the maximum volume of background music.
-		/// </summary>
-		public static int maxMusicVol
-		{
-			get { return (m_maxMusicVol); }
-			set { m_maxMusicVol = value; }
-		}
-
-		/// <summary>
 		/// Initializes DirectSound for playback.
 		/// </summary>
 		/// <param name="WinHandle">A pointer to the main form of this program.</param>
@@ -64,12 +57,13 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static void initialize(IntPtr WinHandle, String root)
 		{
 			playLock = new object();
-			maxMusicVol = 0;
 			setRootDirectory(root);
 			SoundPath = "s";
 			NSoundPath = SoundPath + "\\n";
 			NumPath = NSoundPath + "\\ns";
 			objDS = new DirectSound();
+			objXA = new XAudio2();
+			masteringVoice = new MasteringVoice(objXA);
 			//if this object is destroyed, all sounds created with it will also be flushed.
 			objDS.SetCooperativeLevel(WinHandle, CooperativeLevel.Priority);
 			//WinHandle must be passed from the main form
@@ -282,9 +276,13 @@ namespace BPCSharedComponent.ExtendedAudio
 			DSBListener.Position = Get3DVector(x, y, z);
 		}
 
-		////Main playOgg function
-		////Base method for most overloaded methods.
-		public static OggBuffer loadOgg(string fileName, int v)
+		/// <summary>
+		/// Loads an ogg file into memory.
+		/// </summary>
+		/// <param name="fileName">The file name.</param>
+		/// <param name="v">The starting volume.</param>
+		/// <returns>An ogg buffer ready to be played.</returns>
+		public static OggBuffer loadOgg(string fileName, float v)
 		{
 			if (isFromResource)
 				fileName = fileName.Split('.')[0];
@@ -292,19 +290,21 @@ namespace BPCSharedComponent.ExtendedAudio
 				throw (new ArgumentException("The sound " + fileName + " could not be found."));
 
 
-			return (new OggBuffer(fileName, v, objDS));
+			return (new OggBuffer(fileName, v, objXA));
 		}
 
-		//sets filename, but leaves other parameters
-		//as defaults
 		public static OggBuffer loadOgg(string fileName)
 		{
-			return (loadOgg(fileName, maxMusicVol));
+			return (loadOgg(fileName, 1.0f));
 		}
 
-		//Used to play consecutive buffers.
-		//Expects balance, volume, and list of files to play
-		public static OggBuffer loadOgg(int v, params string[] fileNames)
+		/// <summary>
+		/// Used to create a playing chain. The last files will be looped indefinitely and the files before it will only play once, in order.
+		/// </summary>
+		/// <param name="v">The starting volume.</param>
+		/// <param name="fileNames">A list of file names to play, where the last one is looped indefinitely.</param>
+		/// <returns>An ogg buffer that is ready to be played.</returns>
+		public static OggBuffer loadOgg(float v, params string[] fileNames)
 		{
 			for (int i = 0; i < fileNames.Length; i++) {
 				if (isFromResource)
@@ -312,7 +312,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				if (!File.Exists(fileNames[i]))
 					throw (new ArgumentException("The sound " + fileNames[i] + " could not be found."));
 			}
-			return (new OggBuffer(fileNames, v, objDS));
+			return (new OggBuffer(fileNames, v, objXA));
 		}
 
 		/// <summary>
