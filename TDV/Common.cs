@@ -17,6 +17,7 @@ using SharpDX.DirectSound;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
+using System.Collections.Generic;
 
 namespace TDV
 {
@@ -24,6 +25,36 @@ namespace TDV
 	public class Common
 	{
 		public static String applicationVersion = Assembly.GetExecutingAssembly().GetName().Version.Major + "." + Assembly.GetExecutingAssembly().GetName().Version.Minor;
+		private static Dictionary<String, String> friendlyNames = new Dictionary<String, String>()
+		{
+			{"r1", "Racer 1" },
+			{"r2", "Racer 2" },
+			{"r3", "Racer 3" },
+			{"r4", "Racer 4" },
+			{"r5", "Racer 5" },
+			{"r6", "Racer 6" },
+			{"f1", "Fighter 1" },
+			{"f2", "Fighter 2" },
+			{"f3", "Fighter 3" },
+			{"f4", "Fighter 4" },
+			{"f5", "Fighter 5" },
+			{"f6", "Fighter 6" },
+			{"ab", "Airbase" },
+			{"ac", "Aircraft Carrier" },
+			{"bs", "Battleship" },
+			{"b", "Bridge" },
+			{ "c", "Chopper" },
+			{"gt", "Guard Tower" },
+			{"i", "Island" },
+			{"db", "Dark Blaze" },
+			{"lb", "Landing Beacon" },
+			{"r", "Refueler" },
+			{"pp", "Powerplant" },
+			{"rs", "Radar Station" },
+			{"sb", "SAM Battery" },
+			{"t", "Tank" },
+			{"tg", "Training Grounds" }
+		};
 		public static float volumeIncrementValue { get { return 0.25f; } }
 		public static float volumeFadeValue{get{return 0.05f; } }
 		public static bool error
@@ -1499,6 +1530,20 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (s == Options.VoiceModes.selfVoice)
 				return sv();
 			return sr();
+		}
+
+		/// <summary>
+		/// Given an object short name (IE: one that's read by the self-voicing API,) returns a friendly name for the object.
+		/// </summary>
+		/// <param name="name">The short name.</param>
+		/// <returns>A friendly name that can be voiced by a screen-reader.</returns>
+		public static String getFriendlyNameOf(String name)
+		{
+			if (Options.isPlayingOnline)
+				return name;
+			if (!friendlyNames.ContainsKey(name))
+				throw new ArgumentException($"The name {name} was not found in the friendlyNames hash table.");
+			return friendlyNames[name];
 		}
 	}
 }

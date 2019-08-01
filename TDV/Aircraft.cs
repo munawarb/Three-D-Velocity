@@ -610,7 +610,6 @@ namespace TDV
 			loadSounds();
 			engine.Frequency = freqInterval();
 			if (!isAI && !Options.loadedFromMainMenu) {
-				//Thread.Sleep(1000);
 				Common.playUntilKeyPress(DSound.SoundPath + "\\su.ogg");
 			}
 			if (!isMissionFighter() && !isInherited() && !Options.initializingLoad) //don't start chopper motor
@@ -1697,13 +1696,11 @@ namespace TDV
 				for (i = 0; i < strArray.Length; i++) {
 					if (!isAI && Options.mode == Options.Modes.mission && i == strArray.Length - 1) {
 						if (isAboveIsland())
-							strArray[i] = "above.wav&i.wav";
+							strArray[i] = Common.returnSvOrSr(() => "above.wav&i.wav", () => "Above Island", Options.menuVoiceMode);
 						else {
 							Projector proj = Mission.island;
 							RelativePosition ispos = getPosition(proj);
-							strArray[i] = proj.name + ".wav&at.wav&"
-								+ ispos.clockMark + "o.wav&#"
-								+ Common.cultureNeutralRound(ispos.distance, 1) + "&mc.wav";
+							strArray[i] = Common.returnSvOrSr(() => proj.name + ".wav&at.wav&" + ispos.clockMark + "o.wav&#" + Common.cultureNeutralRound(ispos.distance, 1) + "&mc.wav", () => $"Island at {ispos.clockMark} o'clock, {Common.cultureNeutralRound(ispos.distance, 1)} miles closure", Options.menuVoiceMode);
 						} //if we're not above the island
 						continue;
 					}
@@ -1716,7 +1713,7 @@ namespace TDV
 					{
 						RelativePosition pos = getPosition(vArray[i]);
 						pos.sapiMode = true;
-						return ((vArray[i].showInList) ? vArray[i].ToString()
+						return ((vArray[i].showInList) ? Common.getFriendlyNameOf(vArray[i].ToString())
 						: "") + " "
 						+ pos;
 					}, (Options.isPlayingOnline) ? Options.VoiceModes.screenReader : Options.statusVoiceMode); // If we're playing online, we'll be using SAPI for output in the lock menu, always.
@@ -2182,7 +2179,7 @@ weapon.firingRange);
 						}, () =>
 						{
 							position.sapiMode = true;
-							SapiSpeech.speak($"{weapon.getLockedTarget().ToString()} {position}, sector: {Interaction.getSector(weapon.getLockedTarget(), false)}");
+							SapiSpeech.speak($"{Common.getFriendlyNameOf(weapon.getLockedTarget().ToString())} {position}, sector: {Interaction.getSector(weapon.getLockedTarget(), false)}");
 						}, Options.statusVoiceMode);
 						if (Options.RPAutoTrigger)
 							sayRelative = true;
@@ -4571,14 +4568,19 @@ tY);
 				menuStr = new String[w.Count];
 				for (int i = 0; i < w.Count; i++) {
 					if (w[i] is CruiseMissile)
-						name = "wcm.wav";
+						name = Common.returnSvOrSr(() => "wcm.wav", () => "Cruise Missile", Options.menuVoiceMode);
 					else
-						name = "wm.wav";
-					menuStr[i] = name + "&" + getPosition(w[i]).ToString();
+						name = Common.returnSvOrSr(() => "wm.wav", () => "Missile", Options.menuVoiceMode);
+					menuStr[i] = name + Common.returnSvOrSr(() => "&" + getPosition(w[i]).ToString(), () =>
+					{
+						RelativePosition p = getPosition(w[i]);
+						p.sapiMode = true;
+						return p.ToString();
+					}, Options.menuVoiceMode);
 				} //for
 				pauseInput();
 				Interaction.stopAndMute(false);
-				Common.sVGenerateMenu(null, menuStr, 0, "n");
+				Common.executeSvOrSr(() => Common.sVGenerateMenu(null, menuStr, 0, "n"), () => Common.GenerateMenu(null, menuStr, 0), Options.menuVoiceMode);
 				Interaction.resumeAndUnmute();
 				resumeInput();
 			} //if have projectiles
