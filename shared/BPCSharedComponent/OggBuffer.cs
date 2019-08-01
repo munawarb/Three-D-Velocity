@@ -26,12 +26,15 @@ namespace BPCSharedComponent.ExtendedAudio
 			stopped,
 			playing
 		}
+		private const int minimumNumberOfBuffers = 5;
 		private const short bitsPerSample = 16;
+		private bool started;
 		private XAudio2 device;
 		private SourceVoice sourceVoice;
 		private String[] fileNames = null;
 		private float m_volume;
-		private Boolean stopNow;
+		private bool stopNow;
+		private bool voiceCreated;
 		private Status m_status;
 		public Status status
 		{
@@ -62,7 +65,8 @@ namespace BPCSharedComponent.ExtendedAudio
 			else if (v < 0.0f)
 				v = 0.0f;
 			m_volume = v;
-			sourceVoice.SetVolume(v);
+			if (status == Status.playing && voiceCreated)
+				sourceVoice.SetVolume(v);
 		}
 
 		public void stopOgg()
@@ -71,7 +75,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				return;
 			stopNow = true;
 			while (isPlaying())
-				Thread.Sleep(0);
+				Thread.Sleep(10);
 		}
 		public bool isPlaying()
 		{
@@ -82,6 +86,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		{
 			m_status = Status.playing;
 			process(0, loop);
+			while (!started)
+				Thread.Sleep(10);
 		}
 		public void play()
 		{
@@ -90,6 +96,7 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		private void process(int playPointer, bool loop)
 		{
+			bool noMoreData = false;
 			VorbisReader vorbis = new VorbisReader(fileNames[playPointer]);
 			if (fileNames.Length > 1) {
 				if (playPointer < fileNames.Length - 1)
@@ -97,18 +104,21 @@ namespace BPCSharedComponent.ExtendedAudio
 				else
 					loop = true;
 			}
-			float[] outBuffer = new float[vorbis.Channels*vorbis.SampleRate/5];
+			float[] outBuffer = new float[vorbis.Channels * vorbis.SampleRate / 5];
 			// If this is a consecutive track, we've already initialized the sourceVoice so we don't need to do it again.
 			// We can just fill the already-playing voice with data from the new track.
 			if (playPointer == 0) {
 				WaveFormat waveFormat = new WaveFormat(vorbis.SampleRate, bitsPerSample, vorbis.Channels);
-				sourceVoice = new SourceVoice(device, waveFormat, true);
+				sourceVoice = new SourceVoice(device, waveFormat, false);
 				sourceVoice.SetVolume(m_volume);
+				voiceCreated = true;
 			}
-			int rescaleFactor = 32767;
+			const int rescaleFactor = 32767;
 			Func<int, List<DataStream>> getAtLeast = howMany =>
 			{
 				List<DataStream> samples = new List<DataStream>();
+				if (noMoreData)
+					return samples;
 				int PcmBytes = 0;
 				int howManySoFar = 0;
 				while ((PcmBytes = vorbis.ReadSamples(outBuffer, 0, outBuffer.Length)) > 0) {
@@ -119,55 +129,67 @@ namespace BPCSharedComponent.ExtendedAudio
 						byte[] b = BitConverter.GetBytes(intData[index]);
 						b.CopyTo(data, index * 2);
 					}
-					samples.Add(DataStream.Create<byte>(data, true, true));
-					if (++howManySoFar > howMany)
+					samples.Add(DataStream.Create<byte>(data, true, false));
+					if (++howManySoFar == howMany)
 						break;
 				}
+				if (howManySoFar < howMany)
+					noMoreData = true;
 				return samples;
 			};
 			Func<List<DataStream>, List<AudioBuffer>> convertToAudioBuffers = dataStreams =>
 			{
 				List<AudioBuffer> audioBuffers = new List<AudioBuffer>();
-				foreach (DataStream s in dataStreams)
-					audioBuffers.Add(new AudioBuffer(s));
+				foreach (DataStream s in dataStreams) {
+					s.Seek(0, SeekOrigin.Begin);
+					audioBuffers.Add(new AudioBuffer { Stream = s, Flags = BufferFlags.None, AudioBytes = (int)s.Length });
+				}
 				return audioBuffers;
 			};
 			Action<List<AudioBuffer>> submitToSourceVoice = (audioBuffers) =>
 			{
-				foreach (AudioBuffer a in audioBuffers)
+				foreach (AudioBuffer a in audioBuffers) {
 					sourceVoice.SubmitSourceBuffer(a, null);
+				}
 			};
-			List<DataStream> streams = getAtLeast(5);
-			List<AudioBuffer> buffers = convertToAudioBuffers(streams);
-			submitToSourceVoice(buffers);
-			// If this isn't the first consecutive track, we've already started playing this sourceVoice and are just filling it with data from the new track.
-			if (playPointer == 0)
-				sourceVoice.Start();
 			new Thread(() =>
 			{
 				VoiceState state;
+				List<DataStream> streams = getAtLeast(minimumNumberOfBuffers);
+				List<AudioBuffer> buffers = convertToAudioBuffers(streams);
+				submitToSourceVoice(buffers);
+					// If this isn't the first consecutive track, we've already started playing this sourceVoice and are just filling it with data from the new track.
+					if (playPointer == 0)
+					sourceVoice.Start();
+				started = true;
 				while (true) {
 					if (stopNow)
 						break;
 					state = sourceVoice.State;
-					if (state.BuffersQueued < 5) {
-						// Fill the source with more samples since we're running low.
-						List<DataStream> moreStreams = getAtLeast(5);
-						if (moreStreams.Count < 5 && loop)
+					if (state.BuffersQueued < minimumNumberOfBuffers) {
+							// Fill the source with more samples since we're running low.
+							List<DataStream> moreStreams = getAtLeast(minimumNumberOfBuffers);
+						if (moreStreams.Count < minimumNumberOfBuffers && loop) {
 							vorbis.DecodedPosition = 0;
+							noMoreData = false;
+						}
 						if (state.BuffersQueued == 0 && moreStreams.Count == 0)
 							break; // Nothing remaining to fill the source with and we've played everything.
-						List<AudioBuffer> moreBuffers = convertToAudioBuffers(moreStreams);
+							List<AudioBuffer> moreBuffers = convertToAudioBuffers(moreStreams);
 						submitToSourceVoice(moreBuffers);
 					}
 					Thread.Sleep(10);
 				}
-				// If we're transitioning to the next track and haven't received a stop signal.
-				if (!stopNow && playPointer < (fileNames.Length - 1)) {
+					// If we're transitioning to the next track and haven't received a stop signal.
+					if (!stopNow && playPointer < (fileNames.Length - 1)) {
 					process(playPointer + 1, loop);
+					vorbis.Dispose();
 					return;
 				}
+				voiceCreated = false;
 				sourceVoice.Stop();
+				sourceVoice.FlushSourceBuffers();
+				vorbis.Dispose();
 				m_status = Status.stopped;
 			}).Start();
 		}

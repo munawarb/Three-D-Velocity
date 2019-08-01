@@ -609,8 +609,10 @@ namespace TDV
 			}
 			loadSounds();
 			engine.Frequency = freqInterval();
-			if (!isAI && !Options.loadedFromMainMenu)
+			if (!isAI && !Options.loadedFromMainMenu) {
+				//Thread.Sleep(1000);
 				Common.playUntilKeyPress(DSound.SoundPath + "\\su.ogg");
+			}
 			if (!isMissionFighter() && !isInherited() && !Options.initializingLoad) //don't start chopper motor
 				playSound(engine, false, true);
 			if (!isAI) {
