@@ -357,15 +357,17 @@ namespace TDV
 				String ip = s.ReadString();
 				String callSign = s.ReadString();
 
-				Common.currentMusicVol = musicVol;
+				// For options files created with the DirectSound implementation where volume ranges from -10000 to 0, we need to adjust for XAudio2 whose volume range is generally between 0.0 and 1.0.
+				Common.currentMusicVol = (musicVol<0.0f||musicVol>1.0f)? Common.currentMusicVol:musicVol;
+				Common.menuMusicVol = (menuVol<0.0f||menuVol>1.0f)?Common.menuMusicVol:menuVol;
+				Common.onlineMusicVol = (onlineVol<0.0f||onlineVol>1.0f)?Common.onlineMusicVol:onlineVol;
+
 				announceCourseChange = announceCourse;
 				RPAutoTrigger = rp;
 				verticalRangeAnnounceTime = announceV;
 				enabled = (Device)en;
 				launchCount = launchC;
 				Client.port = port;
-				Common.menuMusicVol = menuVol;
-				Common.onlineMusicVol = onlineVol;
 				if (speechSource > 2)
 					speechSource = (int)SapiSpeech.SpeechSource.auto;
 				SapiSpeech.setSource((SapiSpeech.SpeechSource)speechSource);

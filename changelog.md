@@ -1,6 +1,14 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+##### Version 2.31, released on 08/01/2019
+
+###### Added
+- The Ogg Vorbis player in `BPCSharedComponent.dll` has been completely rewritten to take advantage of the latest advances in C#; this has resulted in much cleaner code in the Ogg player. TDV also uses a new library, [NVorbis](https://github.com/ioctlLR/NVorbis), to decode Ogg packets. In addition, it uses XAudio2 to play music and large cut scenes instead of DirectSound. Finally, Ogg files are streamed into memory instead of loading and decoding the entire file at once. This results in a lower memory footprint and allows cut scenes to play with no delays. Previously, the game would take at least a few seconds to load large cut scenes and would occupy a significant portion of memory since the entire decoded Ogg file would be stored in memory ([#91](../../issues/91))
+
+###### Fixed
+- When using a screen-reader, proper object names are now announced instead of their programmatic names ([#90](../../issues/90))
+
 ##### Version 2.30, released on 07/28/2019
 
 ###### Added
