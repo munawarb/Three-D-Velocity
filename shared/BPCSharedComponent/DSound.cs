@@ -35,11 +35,11 @@ namespace BPCSharedComponent.ExtendedAudio
 		//used to store all sounds for cleanup
 		public static ArrayList Sounds = new ArrayList();
 		//main soundcard object
-		public static DirectSound objDS = null;
+		private static XAudio2 mainSoundDevice;
+		private static MasteringVoice mainMasteringVoice;
 		private static SoundListener3D DSBListener = null;
-		private static XAudio2 objXA;
-		private static MasteringVoice masteringVoice;
-		private static PrimarySoundBuffer primaryBuffer;
+		private static XAudio2 musicDevice;
+		private static MasteringVoice musicMasteringVoice;
 		public static float masterMusicVolume;
 		//the listener used for 3d sound
 		//used to hold sounds path
@@ -61,68 +61,32 @@ namespace BPCSharedComponent.ExtendedAudio
 			SoundPath = "s";
 			NSoundPath = SoundPath + "\\n";
 			NumPath = NSoundPath + "\\ns";
-			objDS = new DirectSound();
-			objXA = new XAudio2();
-			masteringVoice = new MasteringVoice(objXA);
-			//if this object is destroyed, all sounds created with it will also be flushed.
-			objDS.SetCooperativeLevel(WinHandle, CooperativeLevel.Priority);
-			//WinHandle must be passed from the main form
-			//            SpeakerConfiguration sConfig;
-			//SpeakerGeometry sGeo;
-			//objDS.GetSpeakerConfiguration(sConfig, sGeo);
-			//objDS.SetSpeakerConfiguration(sConfig, SpeakerGeometry.None);
+			mainSoundDevice = new XAudio2();
+			mainMasteringVoice = new MasteringVoice(mainSoundDevice);
+			musicDevice = new XAudio2();
+			musicMasteringVoice = new MasteringVoice(musicMasteringVoice);
 			//get the listener:
 			setListener();
 		}
 
 		/// <summary>
-		/// Assumes the sounds that will be loaded are encrypted.
+		/// Loads a wave file into a SourceVoice.
 		/// </summary>
-		/// <param name="handle">The form handle.</param>
-		/// <param name="m">True if sounds are encrypted, false otherwise.</param>
-		/// <param name="root">The root directory of the sounds.</param>
-		public static void initialize(IntPtr handle, bool m, String root)
+		/// <param name="FileName">The path of the file to load.</param>
+		/// <returns>A populated SourceVoice.</returns>
+		public static SourceVoice LoadSound(string FileName)
 		{
-			initialize(handle, root);
-			pass = "TDV123";
-			m_isFromResource = m;
-		}
-
-		[MethodImplAttribute(MethodImplOptions.Synchronized)]
-		public static SecondarySoundBuffer LoadSound(string FileName)
-		{
-			if (isFromResource)
-				FileName = FileName.Split('.')[0];
 			if (!File.Exists(FileName)) {
 				throw (new ArgumentException("The sound " + FileName + " could not be found."));
 			}
-			SoundBufferDescription BufferDesc = new SoundBufferDescription();
-			//enable volume changes on all buffers created with this function.
-			BufferDesc.Flags = SharpDX.DirectSound.BufferFlags.ControlVolume
-				| SharpDX.DirectSound.BufferFlags.ControlFrequency
-				//| SharpDX.DirectSound.BufferFlags.StickyFocus
-				| SharpDX.DirectSound.BufferFlags.ControlPan;
-			//load wave file into DirectSound buffer
-			SecondarySoundBuffer theBuffer = null;
-			if (!isFromResource) {
-				AudioFile wFile = new AudioFile(new FileStream(FileName, FileMode.Open));
-				byte[] final = wFile.getRawWaveData();
-				BufferDesc.Format = wFile.format();
-				BufferDesc.BufferBytes = final.Length;
-				theBuffer = new SecondarySoundBuffer(objDS, BufferDesc);
-				theBuffer.Write(final, 0, LockFlags.EntireBuffer);
-				wFile.close();
-			} else {
-				byte[] data = Encrypter.getData(FileName, pass);
-				AudioFile wFile = new AudioFile(data);
-				byte[] final = wFile.getRawWaveData();
-				BufferDesc.Format = wFile.format();
-				BufferDesc.BufferBytes = final.Length;
-				theBuffer = new SecondarySoundBuffer(objDS, BufferDesc);
-				theBuffer.Write(final, 0, LockFlags.EntireBuffer);
-				wFile.close();
-			}
-			return (theBuffer);
+			SoundStream stream = new SoundStream(File.OpenRead(FileName));
+			WaveFormat format = stream.Format; // So we don't lose reference to it when we close the stream.
+			AudioBuffer buffer = new AudioBuffer { Stream = stream.ToDataStream(), AudioBytes = (int)stream.Length, Flags = SharpDX.XAudio2.BufferFlags.EndOfStream };
+			// We can now safely close the stream.
+			stream.Close();
+			SourceVoice sv = new SourceVoice(mainSoundDevice, format, true);
+			sv.SubmitSourceBuffer(buffer, null); // We don't have WMA data.
+			return sv;
 		}
 		public static Vector3 Get3DVector(double X, double Y, double Z)
 		{
