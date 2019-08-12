@@ -74,7 +74,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// </summary>
 		/// <param name="FileName">The path of the file to load.</param>
 		/// <returns>A populated SourceVoice.</returns>
-		public static SourceVoice LoadSound(string FileName)
+		public static ExtendedAudioBuffer LoadSound(string FileName)
 		{
 			if (!File.Exists(FileName)) {
 				throw (new ArgumentException("The sound " + FileName + " could not be found."));
@@ -85,8 +85,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			// We can now safely close the stream.
 			stream.Close();
 			SourceVoice sv = new SourceVoice(mainSoundDevice, format, true);
-			sv.SubmitSourceBuffer(buffer, null); // We don't have WMA data.
-			return sv;
+			return new ExtendedAudioBuffer(buffer, sv);
 		}
 		public static Vector3 Get3DVector(double X, double Y, double Z)
 		{
@@ -198,19 +197,15 @@ namespace BPCSharedComponent.ExtendedAudio
 			return (LoadSound3d(FileName, 3.0, 15.0, useFull3DEmulation));
 		}
 
-		public static void PlaySound(SecondarySoundBuffer Sound, bool bCloseFirst, bool bLoopSound)
+		/// <summary>
+		/// Plays a sound.
+		/// </summary>
+		/// <param name="sound">The ExtendedAudioBuffer to play.</param>
+		/// <param name="stop">If true, will stop the sound and return its position to 0 before playing it. Passing false will have the effect of resuming the sound from the last position it was stopped at.</param>
+		/// <param name="loop">Whether or not to loop the sound.</param>
+		public static void PlaySound(ExtendedAudioBuffer sound, bool stop, bool loop)
 		{
-			//stop currently playing waves?
-			if (bCloseFirst) {
-				Sound.Stop();
-				Sound.CurrentPosition = 0;
-			}
-			//loop the sound?
-			if (bLoopSound) {
-				Sound.Play(0, SharpDX.DirectSound.PlayFlags.Looping);
-			} else {
-				Sound.Play(0, SharpDX.DirectSound.PlayFlags.None);
-			}
+			sound.play(stop, loop);
 		}
 
 		public static void PlaySound3d(SecondarySoundBuffer Sound, bool bCloseFirst, bool bLoopSound, double x, double y, double z)
