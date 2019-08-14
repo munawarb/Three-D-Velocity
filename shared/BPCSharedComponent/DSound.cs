@@ -12,10 +12,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using SharpDX;
 using SharpDX.Multimedia;
+using BPCSharedComponent.Security;
 using SharpDX.XAudio2;
 using SharpDX.X3DAudio;
-using BPCSharedComponent.Security;
-
 
 namespace BPCSharedComponent.ExtendedAudio
 {
@@ -35,7 +34,6 @@ namespace BPCSharedComponent.ExtendedAudio
 		private static XAudio2 musicDevice;
 		private static MasteringVoice musicMasteringVoice;
 		public static float masterMusicVolume;
-		//the listener used for 3d sound
 		//used to hold sounds path
 		public static string SoundPath;
 		//used to hold narratives
@@ -56,7 +54,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			mainSoundDevice = new XAudio2();
 			mainMasteringVoice = new MasteringVoice(mainSoundDevice);
 			musicDevice = new XAudio2();
-			musicMasteringVoice = new MasteringVoice(musicMasteringVoice);
+			musicMasteringVoice = new MasteringVoice(musicDevice);
 			//get the listener:
 			setListener();
 		}
@@ -107,8 +105,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		{
 			Vector3 front = new Vector3((float)x1, (float)y1, (float)z1);
 			Vector3 top = new Vector3((float)x2, (float)y2, (float)z2);
-			listener.FrontOrientation = front;
-			listener.TopOrientation = top;
+			listener.OrientFront = front;
+			listener.OrientTop = top;
 		}
 
 		/// <summary>
@@ -131,7 +129,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="x">The x coordinate of the source.</param>
 		/// <param name="y">The y coordinate of the source.</param>
 		/// <param name="z">The z coordinate of the source.</param>
-		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stopt, bool loop, double x, double y, double z)
+		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, double x, double y, double z)
 		{
 			X3DAudio x3dAudio = new X3DAudio(Speakers.FrontRight);
 			Emitter emitter = new Emitter {
@@ -139,11 +137,11 @@ namespace BPCSharedComponent.ExtendedAudio
 				CurveDistanceScaler = float.MinValue,
 				OrientFront = new Vector3(0, 0, 1),
 				OrientTop = new Vector3(0, 1, 0),
-				Position = new Vector3(x,y,z)
+				Position = new Vector3((float)x, (float)y, (float)z)
 			};
 			sound.play(stop, loop);
 			DspSettings dspSettings = x3dAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, 1, 2);
-			sound.apply3d(dspSettings);
+			sound.apply3D(dspSettings);
 		}
 
 		/// <summary>
@@ -202,11 +200,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		[MethodImplAttribute(MethodImplOptions.Synchronized)]
 		public static void unloadSound(ref ExtendedAudioBuffer sound)
 		{
-			if (sound == null || sound.IsDisposed) {
-				sound = null;
+			if (sound == null) {
 				return;
 			}
-			sound.Stop();
+			sound.stop();
 			sound.Dispose();
 			sound = null;
 		}
@@ -215,30 +212,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		///  Checks to see if a sound is playing.
 		/// </summary>
 		/// <param name="s">The sound to check</param>
-		/// <returns>True if the sound is playing, false if either s is NULL or is not playing.</returns>
-		public static bool isPlaying(SecondarySoundBuffer s)
+		/// <returns>True if the sound is playing, false otherwise</returns>
+		public static bool isPlaying(ExtendedAudioBuffer s)
 		{
-			if (s == null || s.IsDisposed)
-				return false;
-			if ((s.Status & (int)BufferStatus.Playing) == (int)BufferStatus.Playing)
-				return true;
-			return false;
-		}
-
-		public static bool isLooping(SecondarySoundBuffer s)
-		{
-			if (s == null || s.IsDisposed)
-				return false;
-			if ((s.Status & (int)BufferStatus.Looping) == (int)BufferStatus.Looping)
-				return true;
-			return false;
-		}
-
-		public static void getWaveData(string filename)
-		{
-			FileStream s = new FileStream(filename, FileMode.Open,
-				 FileAccess.Read, FileShare.Read);
-
+			return s.state == ExtendedAudioBuffer.State.playing;
 		}
 
 		/// <summary>
@@ -247,7 +224,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="fn">The name of the file to play.</param>
 		public static void playAndWait(String fn)
 		{
-			SecondarySoundBuffer s = LoadSound(fn);
+			ExtendedAudioBuffer s = LoadSound(fn);
 			PlaySound(s, true, false);
 			while (isPlaying(s))
 				Thread.Sleep(100);
@@ -255,11 +232,15 @@ namespace BPCSharedComponent.ExtendedAudio
 			s = null;
 		}
 
+		/// <summary>
+		/// Gets rid of audio objects.
+		/// </summary>
 		public static void cleanUp()
 		{
-			listener.Dispose();
-			primaryBuffer.Dispose();
-			objDS.Dispose();
+			musicMasteringVoice.Dispose();
+			musicDevice.Dispose();
+			mainMasteringVoice.Dispose();
+			mainSoundDevice.Dispose();
 		}
 
 		/// <summary>
