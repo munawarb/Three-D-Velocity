@@ -7,7 +7,7 @@
 */
 using System;
 using SharpDX.XAudio2;
-
+using SharpDX.X3DAudio;
 
 namespace BPCSharedComponent.ExtendedAudio
 {
@@ -38,6 +38,12 @@ namespace BPCSharedComponent.ExtendedAudio
 		public void stop()
 		{
 			voice.Stop();
+		}
+
+		public void apply3D(DspSettings settings)
+		{
+			voice.SetOutputMatrix(1, 2, settings.MatrixCoefficients);
+			voice.SetFrequencyRatio(settings.DopplerFactor);
 		}
 	}
 }

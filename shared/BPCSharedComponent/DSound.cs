@@ -12,8 +12,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using SharpDX;
 using SharpDX.Multimedia;
-using SharpDX.DirectSound;
 using SharpDX.XAudio2;
+using SharpDX.X3DAudio;
 using BPCSharedComponent.Security;
 
 
@@ -24,12 +24,6 @@ namespace BPCSharedComponent.ExtendedAudio
 		private static String rootDir;
 		private static Object playLock;
 		private static string pass;
-		private static bool m_isFromResource;
-		public static bool isFromResource
-		{
-			get { return m_isFromResource; }
-		}
-
 
 		public static string SFileName;
 		//used to store all sounds for cleanup
@@ -37,7 +31,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		//main soundcard object
 		private static XAudio2 mainSoundDevice;
 		private static MasteringVoice mainMasteringVoice;
-		private static SoundListener3D DSBListener = null;
+		private static Listener listener;
 		private static XAudio2 musicDevice;
 		private static MasteringVoice musicMasteringVoice;
 		public static float masterMusicVolume;
@@ -50,13 +44,11 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static string NumPath;
 
 		/// <summary>
-		/// Initializes DirectSound for playback.
+		/// Initializes the sound library for playback.
 		/// </summary>
-		/// <param name="WinHandle">A pointer to the main form of this program.</param>
 		/// <param name="root">The root directory of the sounds.</param>
-		public static void initialize(IntPtr WinHandle, String root)
+		public static void initialize(String root)
 		{
-			playLock = new object();
 			setRootDirectory(root);
 			SoundPath = "s";
 			NSoundPath = SoundPath + "\\n";
@@ -73,7 +65,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// Loads a wave file into a SourceVoice.
 		/// </summary>
 		/// <param name="FileName">The path of the file to load.</param>
-		/// <returns>A populated SourceVoice.</returns>
+		/// <returns>A populated ExtendedAudioBuffer.</returns>
 		public static ExtendedAudioBuffer LoadSound(string FileName)
 		{
 			if (!File.Exists(FileName)) {
@@ -87,114 +79,36 @@ namespace BPCSharedComponent.ExtendedAudio
 			SourceVoice sv = new SourceVoice(mainSoundDevice, format, true);
 			return new ExtendedAudioBuffer(buffer, sv);
 		}
-		public static Vector3 Get3DVector(double X, double Y, double Z)
-		{
-			return (new Vector3((float)X, (float)Y, (float)Z));
-		}
 
-		public static void setListener(double X1, double Y1, double Z1,
-				  double X2, double Y2, double Z2)
-		{
-			//if this is the first time calling this method,
-			//instantiate the listener,
-			//else just reset its position
-			if (DSBListener == null) {
-				SoundBufferDescription BufferDesc = new SoundBufferDescription();
-				BufferDesc.Flags = SharpDX.DirectSound.BufferFlags.PrimaryBuffer
-					| SharpDX.DirectSound.BufferFlags.Control3D;
-				primaryBuffer = new PrimarySoundBuffer(objDS, BufferDesc);
-				//Finally, instantiate the listener using the PrimaryBuffer object
-				DSBListener = new SoundListener3D(primaryBuffer);
-				DSBListener.RolloffFactor = 1.0f; //Apply rolloff
-												  //according to realism.
-				DSBListener.DistanceFactor = 0.3048f;
-			}
-			//To set orientation, a listener3DOrientation object must be passed which contains values for front.x,y,z, Etc.
-			DSBListener.Position = Get3DVector(0.0, 0.0, 0.0);
-			setOrientation(DSBListener,
-				X1, Y1, Z1, X2, Y2, Z2);
-		}
-
+		/// <summary>
+		/// Creates a new listener object with all of its values set to the default unit vectors per the documentation.
+		/// </summary>
 		public static void setListener()
 		{
-			setListener(0, 0, 1, 0, 1, 0);
+			listener = new Listener
+			{
+				OrientFront = new Vector3(0, 0, 1),
+				OrientTop = new Vector3(0, 1, 0),
+				Position = new Vector3(0, 0, 0),
+				Velocity = new Vector3(0, 0, 0)
+			};
 		}
 
-		public static void setOrientation(SoundListener3D l,
-				  double x1, double y1, double z1, double x2, double y2, double z2)
+		/// <summary>
+		/// Orients the listener. The x, y and z values are the respective components of the front and top vectors of the listener. For instance, to orient the listener to its default orientation, one should call setOrientation(0,0,1,0,1,0), IE: the default orientation vectors.
+		/// </summary>
+		/// <param name="x1"></param>
+		/// <param name="y1"></param>
+		/// <param name="z1"></param>
+		/// <param name="x2"></param>
+		/// <param name="y2"></param>
+		/// <param name="z2"></param>
+		public static void setOrientation(double x1, double y1, double z1, double x2, double y2, double z2)
 		{
 			Vector3 front = new Vector3((float)x1, (float)y1, (float)z1);
 			Vector3 top = new Vector3((float)x2, (float)y2, (float)z2);
-			if (l == null) {
-				DSBListener.FrontOrientation = front;
-				DSBListener.TopOrientation = top;
-			} else {
-				l.FrontOrientation = front;
-				l.TopOrientation = top;
-			}
-		}
-
-		//sets orientation on the default listener
-		public static void setOrientation(double x1, double y1, double z1,
-			double x2, double y2, double z2)
-		{
-			setOrientation(null,
-				x1, y1, z1,
-				x2, y2, z2);
-		}
-		[MethodImplAttribute(MethodImplOptions.Synchronized)]
-		public static SecondarySoundBuffer LoadSound3d(string FileName, double MDistance, double MaxDistance, bool useFull3DEmulation)
-		{
-			if (isFromResource)
-				FileName = FileName.Split('.')[0];
-			SoundBufferDescription BufferDesc = new SoundBufferDescription();
-			if (!File.Exists(FileName)) {
-				throw new ArgumentException("The sound " + FileName + " could not be found.");
-			}
-
-
-			BufferDesc.Flags = SharpDX.DirectSound.BufferFlags.Control3D
-						 | SharpDX.DirectSound.BufferFlags.ControlVolume
-						 | SharpDX.DirectSound.BufferFlags.ControlFrequency
-						 //| SharpDX.DirectSound.BufferFlags.StickyFocus
-						 | SharpDX.DirectSound.BufferFlags.Mute3DAtMaxDistance;
-			// if (useFull3DEmulation)
-			//BufferDesc.AlgorithmFor3D = DirectSound3DAlgorithmGuid.FullHrt3DAlgorithm;
-			SecondarySoundBuffer theBuffer = null;
-			if (!isFromResource) {
-				AudioFile wFile = new AudioFile(new FileStream(FileName, FileMode.Open));
-				byte[] final = wFile.getRawWaveData();
-				BufferDesc.Format = wFile.format();
-				BufferDesc.BufferBytes = final.Length;
-				theBuffer = new SecondarySoundBuffer(objDS, BufferDesc);
-				theBuffer.Write(final, 0, LockFlags.EntireBuffer);
-				wFile.close();
-			} else {
-				byte[] data = Encrypter.getData(FileName, pass);
-				AudioFile wFile = new AudioFile(data);
-				byte[] final = wFile.getRawWaveData();
-				BufferDesc.Format = wFile.format();
-				BufferDesc.BufferBytes = final.Length;
-				theBuffer = new SecondarySoundBuffer(objDS, BufferDesc);
-				theBuffer.Write(final, 0, LockFlags.EntireBuffer);
-				wFile.close();
-			}
-
-			SoundBuffer3D DS3DBuffer = new SoundBuffer3D(theBuffer);
-			DS3DBuffer.MinDistance = (float)MDistance;
-			DS3DBuffer.MaxDistance = (float)MaxDistance;
-			DS3DBuffer.Dispose();
-			return (theBuffer);
-		}
-
-		public static SecondarySoundBuffer LoadSound3d(string FileName)
-		{
-			return (LoadSound3d(FileName, 3.0, 15.0, true));
-		}
-
-		public static SecondarySoundBuffer LoadSound3d(string FileName, bool useFull3DEmulation)
-		{
-			return (LoadSound3d(FileName, 3.0, 15.0, useFull3DEmulation));
+			listener.FrontOrientation = front;
+			listener.TopOrientation = top;
 		}
 
 		/// <summary>
@@ -208,31 +122,39 @@ namespace BPCSharedComponent.ExtendedAudio
 			sound.play(stop, loop);
 		}
 
-		public static void PlaySound3d(SecondarySoundBuffer Sound, bool bCloseFirst, bool bLoopSound, double x, double y, double z)
+		/// <summary>
+		/// Positions a sound in 3-D space
+		/// </summary>
+		/// <param name="sound">The ExtendedAudioBuffer to play.</param>
+		/// <param name="stop">If true, will stop the sound and return its position to 0 before playing it. Passing false will have the effect of resuming the sound from the last position it was stopped at.</param>
+		/// <param name="loop">Whether or not to loop the sound.</param>
+		/// <param name="x">The x coordinate of the source.</param>
+		/// <param name="y">The y coordinate of the source.</param>
+		/// <param name="z">The z coordinate of the source.</param>
+		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stopt, bool loop, double x, double y, double z)
 		{
-			lock (playLock) {
-				SoundBuffer3D DS3DBuffer = new SoundBuffer3D(Sound);
-				//stop currently playing waves?
-				if (bCloseFirst) {
-					Sound.Stop();
-					Sound.CurrentPosition = 0;
-				}
-				//set the position
-				DS3DBuffer.Position = Get3DVector(x, y, z);
-
-				//loop the sound?
-				if (bLoopSound) {
-					Sound.Play(0, SharpDX.DirectSound.PlayFlags.Looping);
-				} else {
-					Sound.Play(0, SharpDX.DirectSound.PlayFlags.None);
-				}
-				DS3DBuffer.Dispose();
-			} //lock
+			X3DAudio x3dAudio = new X3DAudio(Speakers.FrontRight);
+			Emitter emitter = new Emitter {
+				ChannelCount = 1,
+				CurveDistanceScaler = float.MinValue,
+				OrientFront = new Vector3(0, 0, 1),
+				OrientTop = new Vector3(0, 1, 0),
+				Position = new Vector3(x,y,z)
+			};
+			sound.play(stop, loop);
+			DspSettings dspSettings = x3dAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, 1, 2);
+			sound.apply3d(dspSettings);
 		}
 
+		/// <summary>
+		/// Sets the position of the listener.
+		/// </summary>
+		/// <param name="x">The x coordinate of the listener.</param>
+		/// <param name="y">The y coordinate of the listener.</param>
+		/// <param name="z">The z coordinate of the listener.</param>
 		public static void SetCoordinates(double x, double y, double z)
 		{
-			DSBListener.Position = Get3DVector(x, y, z);
+			listener.Position = new Vector3((float)x, (float)y, (float)z);
 		}
 
 		/// <summary>
@@ -243,18 +165,19 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <returns>An ogg buffer ready to be played.</returns>
 		public static OggBuffer loadOgg(string fileName, float v)
 		{
-			if (isFromResource)
-				fileName = fileName.Split('.')[0];
 			if (!File.Exists(fileName))
 				throw (new ArgumentException("The sound " + fileName + " could not be found."));
-
-
-			return (new OggBuffer(fileName, v, objXA));
+			return new OggBuffer(fileName, v, musicDevice);
 		}
 
+		/// <summary>
+		/// Loads an ogg file into memory, with maximum volume.
+		/// </summary>
+		/// <param name="fileName">The file name.</param>
+		/// <returns>An ogg buffer ready to be played.</returns>
 		public static OggBuffer loadOgg(string fileName)
 		{
-			return (loadOgg(fileName, 1.0f));
+			return loadOgg(fileName, 1.0f);
 		}
 
 		/// <summary>
@@ -266,12 +189,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static OggBuffer loadOgg(float v, params string[] fileNames)
 		{
 			for (int i = 0; i < fileNames.Length; i++) {
-				if (isFromResource)
-					fileNames[i] = fileNames[i].Split('.')[0];
 				if (!File.Exists(fileNames[i]))
 					throw (new ArgumentException("The sound " + fileNames[i] + " could not be found."));
 			}
-			return (new OggBuffer(fileNames, v, objXA));
+			return new OggBuffer(fileNames, v, musicDevice);
 		}
 
 		/// <summary>
@@ -279,7 +200,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// </summary>
 		/// <param name="sound">The sound to unload.</param>
 		[MethodImplAttribute(MethodImplOptions.Synchronized)]
-		public static void unloadSound(ref SecondarySoundBuffer sound)
+		public static void unloadSound(ref ExtendedAudioBuffer sound)
 		{
 			if (sound == null || sound.IsDisposed) {
 				sound = null;
@@ -336,7 +257,7 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		public static void cleanUp()
 		{
-			DSBListener.Dispose();
+			listener.Dispose();
 			primaryBuffer.Dispose();
 			objDS.Dispose();
 		}
