@@ -42,13 +42,14 @@ namespace BPCSharedComponent.ExtendedAudio
 		public static string SFileName;
 		//used to store all sounds for cleanup
 		public static ArrayList Sounds = new ArrayList();
-		//main soundcard object
 		private static XAudio2 mainSoundDevice;
 		private static MasteringVoice mainMasteringVoice;
 		private static X3DAudio x3DAudio;
 		private static Listener listener;
 		private static XAudio2 musicDevice;
 		private static MasteringVoice musicMasteringVoice;
+		private static XAudio2 alwaysLoudDevice;
+		private static MasteringVoice alwaysLoudMasteringVoice;
 		public static float masterMusicVolume;
 		//used to hold sounds path
 		public static string SoundPath;
@@ -72,6 +73,9 @@ namespace BPCSharedComponent.ExtendedAudio
 			x3DAudio = new X3DAudio((Speakers)mainMasteringVoice.ChannelMask);
 			musicDevice = new XAudio2();
 			musicMasteringVoice = new MasteringVoice(musicDevice);
+			alwaysLoudDevice = new XAudio2();
+			alwaysLoudMasteringVoice = new MasteringVoice(alwaysLoudDevice);
+
 			//get the listener:
 			setListener();
 		}
@@ -80,8 +84,9 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// Loads a wave file into a SourceVoice.
 		/// </summary>
 		/// <param name="FileName">The path of the file to load.</param>
+		/// <param name="device">The XAudio2 device to load the sound on.</param>
 		/// <returns>A populated ExtendedAudioBuffer.</returns>
-		public static ExtendedAudioBuffer LoadSound(string FileName)
+		public static ExtendedAudioBuffer LoadSound(string FileName, XAudio2 device)
 		{
 			if (!File.Exists(FileName)) {
 				throw (new ArgumentException("The sound " + FileName + " could not be found."));
@@ -91,9 +96,31 @@ namespace BPCSharedComponent.ExtendedAudio
 			AudioBuffer buffer = new AudioBuffer { Stream = stream.ToDataStream(), AudioBytes = (int)stream.Length, Flags = SharpDX.XAudio2.BufferFlags.EndOfStream };
 			// We can now safely close the stream.
 			stream.Close();
-			SourceVoice sv = new SourceVoice(mainSoundDevice, format, VoiceFlags.None, 5.0f, true);
+			SourceVoice sv = new SourceVoice(device, format, VoiceFlags.None, 5.0f, true);
 			return new ExtendedAudioBuffer(buffer, sv);
 		}
+
+		/// <summary>
+		/// Loads a wave file into a SourceVoice on the main device.
+		/// </summary>
+		/// <param name="FileName">The path of the file to load.</param>
+		/// <returns>A populated ExtendedAudioBuffer.</returns>
+		public static ExtendedAudioBuffer LoadSound(string FileName)
+		{
+			return LoadSound(FileName, mainSoundDevice);
+		}
+
+		/// <summary>
+		/// Loads a wave file into a SourceVoice on the always loud device.
+		/// </summary>
+		/// <param name="FileName">The path of the file to load.</param>
+		/// <returns>A populated ExtendedAudioBuffer.</returns>
+		public static ExtendedAudioBuffer LoadSoundAlwaysLoud(string FileName)
+		{
+			return LoadSound(FileName, alwaysLoudDevice);
+		}
+
+
 
 		/// <summary>
 		/// Creates a new listener object with all of its values set to the default unit vectors per the documentation.

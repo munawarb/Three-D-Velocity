@@ -367,9 +367,9 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (!string.IsNullOrEmpty(intro)) {
 				if (!sapi) {
 					if (intro.IndexOf("\\") >= 0)
-						ISound = DSound.LoadSound(intro);
+						ISound = DSound.LoadSoundAlwaysLoud(intro);
 					else
-						ISound = DSound.LoadSound(DSound.NSoundPath + "\\" + intro);
+						ISound = DSound.LoadSoundAlwaysLoud(DSound.NSoundPath + "\\" + intro);
 					DSound.PlaySound(ISound, true, false);
 
 					while (DSound.isPlaying(ISound)) {

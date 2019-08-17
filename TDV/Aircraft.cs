@@ -4582,10 +4582,8 @@ tY);
 				}
 				SelfVoice.purge(true);
 			} //if status command
-			if (isMuted) { //entered status mode and muted
-				Interaction.resumeAndUnmute();
-				resumeInput();
-			} //If entered status mode
+			Interaction.resumeAndUnmute();
+			resumeInput();
 		}
 
 		private bool executeTABStatusCommand()

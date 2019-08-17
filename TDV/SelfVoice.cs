@@ -237,10 +237,10 @@ namespace TDV
 				for (globalCounter = 0; globalCounter < soundFiles.Length; globalCounter++)
 				{
 					if (firstLoop)
-						soundFiles[globalCounter] = DSound.LoadSound(finalFiles[globalCounter]);
+						soundFiles[globalCounter] = DSound.LoadSoundAlwaysLoud(finalFiles[globalCounter]);
 					DSound.PlaySound(soundFiles[globalCounter], true, false);
 					if (globalCounter < finalFiles.Length - 1)
-						soundFiles[globalCounter + 1] = DSound.LoadSound(finalFiles[globalCounter + 1]);
+						soundFiles[globalCounter + 1] = DSound.LoadSoundAlwaysLoud(finalFiles[globalCounter + 1]);
 					firstLoop = false;
 					//Next, if only playing one file, return since we're probably in a menu.
 					if (soundFiles.Length != 1 || NWait)
