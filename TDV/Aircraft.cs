@@ -235,6 +235,9 @@ namespace TDV
 		// The amount by which to increase the volume of the jet rumble sound.
 		// Since the jet sound starts at engineFadeInThreshold, we should only account for the upper part of the interval.
 		private const float rumbleVolumeIncrement = (1f - engineFadeInThreshold) / 1500f;
+		private const float windThreshold = 0.2f; // Wind will never drop below this value
+		private const float windVolumeIncrement = (1f - windThreshold) / 1500f;
+		private const float windFreqIncrement = 0.0005f;
 		private int sectorX, sectorY;
 		private int lastDirection;
 		private OpenPositions openPosition, lastOpenPosition;
@@ -3225,7 +3228,7 @@ tY);
 					playSound(windSound, false, true);
 				} //if !looping
 				windSound.setFrequency(windFreqInterval());
-				float v = 1.0f / 6000.0f * (float)speed;
+				float v = windThreshold + (float)speed * windVolumeIncrement; 
 				if (v > 1.0f)
 					v = 1.0f;
 				windSound.setVolume(v);
@@ -3237,7 +3240,7 @@ tY);
 
 		private float windFreqInterval()
 		{
-			return (48100 + (20 * (int)speed));
+			return (float)speed * windFreqIncrement;
 		}
 
 		private bool isStallCondition()
