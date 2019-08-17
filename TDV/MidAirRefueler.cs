@@ -42,7 +42,6 @@ namespace TDV
 			explodeString = soundPath + "d3.wav";
 			startConnectManeuverRange = new Range(5.0, 50.0);
 			connectRange = new Range(2.0, 50.0);
-			addVolume(moveSound);
 		}
 
 		public MidAirRefueler()

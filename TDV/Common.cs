@@ -95,7 +95,7 @@ namespace TDV
 			////Returns true if this object is destroyed, false otherwise
 		}
 		private const float defaultMusicVol = 0.5f;
-		public static float currentMusicVol=defaultMusicVol, menuMusicVol=defaultMusicVol, onlineMusicVol=defaultMusicVol;
+		public static float musicVolume = defaultMusicVol, cutSceneVolume = 1.0f;
 		private static ExtendedAudioBuffer menuWrapSound, menuMoveSound, menuSelectSound;
 		private static bool m_previousFileVersion;
 
@@ -243,11 +243,11 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					initializeRegistration();
 
 					musicExtraItem = new ExtraItem[] {
-		  new ExtraItem(Aircraft.Action.increaseMusicVolume, new ExtraItemFunction(increaseMenuMusicVolume)),
-		  new ExtraItem(Aircraft.Action.decreaseMusicVolume, new ExtraItemFunction(decreaseMenuMusicVolume))};
+		  new ExtraItem(Aircraft.Action.increaseMusicVolume, new ExtraItemFunction(increaseMusicVolume)),
+		  new ExtraItem(Aircraft.Action.decreaseMusicVolume, new ExtraItemFunction(decreaseMusicVolume))};
 					serverExtraItem = new ExtraItem[] {
-		  new ExtraItem(Aircraft.Action.increaseMusicVolume, new ExtraItemFunction(increaseMenuMusicVolume)),
-		  new ExtraItem(Aircraft.Action.decreaseMusicVolume, new ExtraItemFunction(decreaseMenuMusicVolume)),
+		  new ExtraItem(Aircraft.Action.increaseMusicVolume, new ExtraItemFunction(increaseMusicVolume)),
+		  new ExtraItem(Aircraft.Action.decreaseMusicVolume, new ExtraItemFunction(decreaseMusicVolume)),
 					new ExtraItem(Aircraft.Action.chat, new ExtraItemFunction(serverChat)),
 					new ExtraItem(Aircraft.Action.whoIs, new ExtraItemFunction(Client.whoIs)),
 					new ExtraItem(Aircraft.Action.admin, new ExtraItemFunction(Client.adminMenu)),
@@ -696,7 +696,6 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				Mission.enterMissionMode();
 			//Initialize mission mode in case we need to start some music for a mode
 			startMusic();
-			DSound.masterMusicVolume = currentMusicVol;
 			Track t = null;
 			int i = 0;
 			if (!Mission.isMission) {
@@ -800,8 +799,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					if (!Client.askForSpectator()) {
 						if (!startedMusic) {
 							Common.music.stopOgg();
-							DSound.masterMusicVolume = menuMusicVol;
-							Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms6.ogg", menuMusicVol);
+							Common.music = DSound.loadMusicFile(DSound.SoundPath + "\\ms6.ogg");
 							Common.music.play(true);
 							startedMusic = true;
 						}
@@ -1012,10 +1010,9 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 		public static void fadeMusic(bool stop)
 		{
-			if (music == null)
-				return;
-			while (music.volume > ((stop) ? 0.0f : 0.25f)) { //don't completely fade if not stopping
-				music.volume -= volumeFadeValue;
+			float v;
+			while ((v = DSound.getVolumeOfMusic()) > ((stop) ? 0.0f : 0.25f)) { //don't completely fade if not stopping
+				DSound.setVolumeOfMusic(v - volumeFadeValue);
 				Thread.Sleep(100);
 			}
 			if (stop)
@@ -1028,13 +1025,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			fadeMusic(true);
 		}
 
-		public static void restoreMusic(float restoreVolume)
+		public static void restoreMusic()
 		{
-			while (music.volume < restoreVolume) {
-				music.volume += volumeFadeValue;
+			float v;
+			while ((v = DSound.getVolumeOfMusic()) < musicVolume) {
+				DSound.setVolumeOfMusic(v + volumeFadeValue);
 				Thread.Sleep(100);
 			}
-			music.volume = restoreVolume;
+			DSound.setVolumeOfMusic(musicVolume);
 		}
 
 
@@ -1078,48 +1076,44 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		public static void startMusic()
 		{
 			bool changedMusic = false;
-			DSound.masterMusicVolume = currentMusicVol; //menus which let player change music volume will
-														//have set their own masterMusicVolumes.
 			if (Options.mode == Options.Modes.racing) {
-				music = DSound.loadOgg(currentMusicVol,
-					DSound.SoundPath + "\\ms2-1.ogg",
-					DSound.SoundPath + "\\ms2-2.ogg");
+				music = DSound.loadMusicFile(DSound.SoundPath + "\\ms2-1.ogg", DSound.SoundPath + "\\ms2-2.ogg");
 				changedMusic = true;
 			}
 			if (Options.mode == Options.Modes.deathMatch || Options.mode == Options.Modes.testing) {
-				music = DSound.loadOgg(DSound.SoundPath + "\\ms3.ogg", currentMusicVol);
+				music = DSound.loadMusicFile(DSound.SoundPath + "\\ms3.ogg");
 				changedMusic = true;
 			}
 			if (Options.mode == Options.Modes.freeForAll || Options.mode == Options.Modes.oneOnOne || Options.mode == Options.Modes.teamDeath) {
-				music = DSound.loadOgg(DSound.SoundPath + "\\ms7.ogg", onlineMusicVol);
+				music = DSound.loadMusicFile(DSound.SoundPath + "\\ms7.ogg");
 				changedMusic = true;
 			}
 			if (Options.mode == Options.Modes.mission) {
 				if (Mission.isJuliusFight) {
 					if (Options.isLoading)
 						fadeMusic();
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms4-3.ogg", currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms4-3.ogg");
 					changedMusic = true;
 				}
 				if (!changedMusic
 					&& Mission.missionNumber == Mission.Stage.discovery) {
 					if (Options.isLoading)
 						fadeMusic();
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms8.ogg", Common.currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms8.ogg");
 					changedMusic = true;
 				}
 				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight1) {
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms8.ogg", Common.currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms8.ogg");
 					changedMusic = true;
 				}
 
 				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight2) {
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms9.ogg", Common.currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms9.ogg");
 					changedMusic = true;
 				}
 
 				if (!changedMusic && Mission.missionNumber == Mission.Stage.gameEnd && Mission.fightType == Interaction.FightType.lastFight3) {
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms10.ogg", Common.currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms10.ogg");
 					changedMusic = true;
 				}
 
@@ -1128,14 +1122,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					&& Mission.missionNumber <= Mission.Stage.powerPlant) {
 					if (Options.isLoading)
 						fadeMusic();
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms4-1.ogg", currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms4-1.ogg");
 					changedMusic = true;
 				}
 				if (!changedMusic
 					&& Mission.missionNumber >= Mission.Stage.chopperFight) {
 					if (Options.isLoading)
 						fadeMusic();
-					music = DSound.loadOgg(DSound.SoundPath + "\\ms4-2.ogg", currentMusicVol);
+					music = DSound.loadMusicFile(DSound.SoundPath + "\\ms4-2.ogg");
 					changedMusic = true;
 				}
 			}
@@ -1314,24 +1308,16 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			return item;
 		}
 
-		public static void increaseMenuMusicVolume()
+		public static void increaseMusicVolume()
 		{
-			Common.music.volume += volumeIncrementValue;
-			if (Options.entryMode == 1)
-				onlineMusicVol = music.volume;
-			else
-				menuMusicVol = music.volume;
-			DSound.masterMusicVolume = music.volume;
+			DSound.setVolumeOfMusic(DSound.getVolumeOfMusic() + volumeIncrementValue);
+			musicVolume = DSound.getVolumeOfMusic();
 			Options.writeToFile();
 		}
-		public static void decreaseMenuMusicVolume()
+		public static void decreaseMusicVolume()
 		{
-			music.volume -= volumeIncrementValue;
-			if (Options.entryMode == 1)
-				onlineMusicVol = music.volume;
-			else
-				menuMusicVol = music.volume;
-			DSound.masterMusicVolume = music.volume;
+			DSound.setVolumeOfMusic(DSound.getVolumeOfMusic() - volumeIncrementValue);
+			musicVolume = DSound.getVolumeOfMusic();
 			Options.writeToFile();
 		}
 

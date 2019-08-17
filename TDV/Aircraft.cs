@@ -1339,19 +1339,14 @@ namespace TDV
 		{
 			if (engine == null) {
 				engine = loadSound(soundPath + "e1.wav");
-				addVolume(engine);
 			}
 			System.Diagnostics.Trace.WriteLine("Engine is " + ((engine == null) ? "nulll" : "not null") + " for " + name);
-			if (jetRumble == null) {
+			if (jetRumble == null)
 				jetRumble = loadSound(soundPath + "e2.wav");
-				addVolume(jetRumble);
-			}
 			if (afStart == null)
 				afStart = loadSound(soundPath + "a1.wav");
-			if (afFlame == null) {
+			if (afFlame == null)
 				afFlame = loadSound(soundPath + "a2.wav");
-				//addVolume(afFlame);
-			}
 			afStart.setOnEnd(() =>
 			{
 				if (this.afFlame != null)
@@ -1390,10 +1385,8 @@ namespace TDV
 					catapultSound = loadSound(soundPath + "m1.wav");
 				if (lowFuelAlarm == null)
 					lowFuelAlarm = loadSound(soundPath + "alarm10.wav");
-				if (windSound == null) {
+				if (windSound == null)
 					windSound = loadSound(soundPath + "e6.wav");
-					addVolume(windSound);
-				}
 				if (radarSound == null)
 					radarSound = loadSound(soundPath + "rad.wav");
 				if (lockBrokenSound == null)
@@ -2945,26 +2938,6 @@ tY);
 				isProjectorStopped = true;
 			isMuting = false;
 		}
-		private void increaseMusicVolume()
-		{
-			Common.music.volume += Common.volumeIncrementValue;
-			if (Options.isPlayingOnline)
-				Common.onlineMusicVol = Common.music.volume;
-			else
-				Common.currentMusicVol = Common.music.volume;
-			Options.writeToFile();
-			DSound.masterMusicVolume = Common.music.volume;
-		}
-		private void decreaseMusicVolume()
-		{
-			Common.music.volume -= Common.volumeIncrementValue;
-			if (Options.isPlayingOnline)
-				Common.onlineMusicVol = Common.music.volume;
-			else
-				Common.currentMusicVol = Common.music.volume;
-			Options.writeToFile();
-			DSound.masterMusicVolume = Common.music.volume;
-		}
 
 		//if force is false, the course will only be spoken
 		//if it is divisible by ten
@@ -3986,10 +3959,10 @@ tY);
 						stopSAPI();
 						break;
 					case Action.decreaseMusicVolume:
-						decreaseMusicVolume();
+						Common.decreaseMusicVolume();
 						break;
 					case Action.increaseMusicVolume:
-						increaseMusicVolume();
+						Common.increaseMusicVolume();
 						break;
 					case Action.optionsMenu:
 						optionsMenu();

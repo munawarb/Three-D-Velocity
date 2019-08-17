@@ -59,14 +59,6 @@ namespace TDV
 			set { m_target = value; }
 		}
 
-		//Defines the range a projectile must be to the target in order for
-		//it to consider itself a hit.
-		/*
-  public Range fireRange {
-   get { return (m_fireRange); }
-   set { m_fireRange = value; }
-  }
-        */
 		public int ticks
 		{
 			get { return (m_ticks); }

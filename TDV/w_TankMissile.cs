@@ -23,7 +23,6 @@ namespace TDV
 			neutralizeSpeed(100.0);
 			launch = loadSound(soundPath + "tg1.wav");
 			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
-			addVolume(moveSound);
 			setSpan(0.01, 0.01);
 			followTarget = false;
 		}

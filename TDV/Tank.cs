@@ -25,7 +25,6 @@ namespace TDV
 			neutralizeSpeed(20.0);
 			weapon.weaponIndex = WeaponTypes.tankMissile;
 			moveSound = loadSound(soundPath + "e8.wav");
-			addVolume(moveSound);
 			explodeString = soundPath + "d4.wav";
 		}
 

@@ -37,7 +37,6 @@ namespace TDV
 		{
 			base.loadSounds();
 			engine = loadSound(soundPath + "e6.wav");
-			addVolume(engine);
 			explodeSound = loadSound(soundPath + "d1.wav");
 		}
 

@@ -262,6 +262,7 @@ namespace TDV
 				Common.menuNotifier = new AutoResetEvent(false);
 				Common.onlineMenuNotifier = new AutoResetEvent(false);
 				Options.readFromFile();
+				DSound.setVolumeOfMusic(Common.musicVolume);
 
 				if (Options.menuVoiceMode == Options.VoiceModes.none)
 					setSVMode();
@@ -396,10 +397,9 @@ namespace TDV
 		public void mainMenu()
 		{
 			//writeTrack();
-			DSound.masterMusicVolume = Common.menuMusicVol;
 			//If we tried to connect and the connection failed, then the main menu music will still be playing
 			if (!Common.failedConnect) {
-				Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms1.ogg", Common.menuMusicVol);
+				Common.music = DSound.loadMusicFile(DSound.SoundPath + "\\ms1.ogg");
 				Common.music.play(true);
 			}
 			Common.failedConnect = false;
@@ -538,7 +538,7 @@ namespace TDV
 				return;
 			Options.writeToFile();
 			Common.fadeMusic(true);
-			Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms1.ogg", Common.menuMusicVol);
+			Common.music = DSound.loadMusicFile(DSound.SoundPath + "\\ms1.ogg");
 			Common.music.play(true);
 		}
 
@@ -838,7 +838,7 @@ namespace TDV
 				Options.isPaused = false;
 			wasPaused = false;
 			if (Common.music != null)
-				Common.restoreMusic(DSound.masterMusicVolume);
+				Common.restoreMusic();
 			int index = 0;
 			Thread thread = null;
 			if (Interaction.holderAt(0) == null)

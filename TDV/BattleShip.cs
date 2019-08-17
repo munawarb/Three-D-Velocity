@@ -25,7 +25,6 @@ namespace TDV
 			neutralizeSpeed(50.0);
 			weapon.weaponIndex = WeaponTypes.battleShipGuns;
 			moveSound = loadSound(soundPath + "e7.wav");
-			addVolume(moveSound);
 			explodeString = soundPath + "d3.wav";
 		}
 		public BattleShip()

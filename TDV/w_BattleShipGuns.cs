@@ -26,7 +26,6 @@ namespace TDV
 			launch = loadSound(soundPath + "bsg1.wav");
 			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
 			setSpan(0.05, 0.10);
-			addVolume(moveSound);
 			followTarget = false;
 			explodes = (Common.getRandom(0, 1) == 0) ? false : true;
 		}

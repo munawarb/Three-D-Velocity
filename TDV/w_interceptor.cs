@@ -29,7 +29,6 @@ namespace TDV
 			setSpan(0.10, 0.25);
 			launchSound = loadSound(soundPath + "ci1.wav");
 			missileSound = DSound.LoadSound(DSound.SoundPath + "\\ci2.wav");
-			addVolume(missileSound);
 		}
 
 		public override void free()

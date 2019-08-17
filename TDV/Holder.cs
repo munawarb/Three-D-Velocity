@@ -239,34 +239,6 @@ namespace TDV
 			added = false;
 		}
 
-		public void mute(bool hardMute)
-		{
-			lock (lockObject)
-			{
-				foreach (object o in projectors)
-				{
-					if (o is Weapons)
-						((Weapons)o).mute(hardMute);
-					else
-						((Projector)o).mute(hardMute);
-				}
-			}
-		}
-
-		public void unmute()
-		{
-			lock (lockObject)
-			{
-				foreach (object o in projectors)
-				{
-					if (o is Weapons)
-						((Weapons)o).unmute();
-					else
-						((Projector)o).unmute();
-				}
-			}
-		}
-
 		/// <summary>
 		/// Determines if this holder is ticking. Note that holders can be running and empty at the same time
 		/// such as in an online game where a spectator is waiting for aircraft to join.

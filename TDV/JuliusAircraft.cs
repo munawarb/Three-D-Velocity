@@ -60,11 +60,9 @@ namespace TDV
 		{
 			base.loadSounds();
 			engine = loadSound(soundPath + "e9.wav");
-			addVolume(engine);
 			explodeSound = loadSound(soundPath + "d1.wav");
 			startChargeSound = loadSound(soundPath + "cs.wav");
 			chargeSound = loadSound(soundPath + "cl.wav");
-			addVolume(chargeSound);
 			endChargeSound = loadSound(soundPath + "ce.wav");
 		}
 

@@ -33,7 +33,6 @@ namespace TDV
 		private OnlineRole m_role;
 		protected bool requestingSpectator, requestingCancelSpectator;
 		protected bool autoPlayTarget;
-		protected bool isMuted;
 
 		protected float curDir;
 		protected Object dataLocker;
@@ -67,9 +66,6 @@ namespace TDV
 		protected BinaryReader queue;
 		protected MemoryStream stream;
 		public bool unlisted;
-		private List<ExtendedAudioBuffer> ctrlVolume;
-		private List<int> volumes;
-		private List<bool> looping;
 
 		private double m_engineRadius;
 		private int m_engineDamagePoints;
@@ -310,8 +306,6 @@ namespace TDV
 			//Weapons will set their own IDs.
 			if (!Options.isPlayingOnline && !Options.isLoading && !(this is WeaponBase))
 				setID();
-			volumes = null;
-			ctrlVolume = null;
 			if (Options.isPlayingOnline)
 			{
 				queue = new BinaryReader(stream = new MemoryStream()); //queued data to be processed
@@ -682,21 +676,6 @@ namespace TDV
 			return (z <= 0.0);
 		}
 
-		public virtual void mute(bool hardMute)
-		{
-			isMuted = true;
-		}
-
-		public virtual void mute()
-		{
-			mute(false);
-		}
-
-		public virtual void unmute()
-		{
-			isMuted = false;
-		}
-
 		/// <summary>
 		///  Saves this projector's data.
 		/// </summary>
@@ -789,17 +768,6 @@ namespace TDV
 					((double)engineDamagePoints / (double)maxEngineDamagePoints * 100.0);
 		}
 
-		protected void addVolume(ExtendedAudioBuffer buffer)
-		{
-			if (ctrlVolume == null)
-			{
-				ctrlVolume = new List<ExtendedAudioBuffer>();
-				volumes = new List<int>();
-				looping = new List<bool>();
-			}
-			ctrlVolume.Add(buffer);
-		}
-
 		public bool collidesWith(Projector target)
 		{
 			double d1 = Math.Pow(x - target.x, 2);
@@ -864,21 +832,9 @@ namespace TDV
 			return Options.isPlayingOnline && role == OnlineRole.receiver;
 		}
 
+
 		public virtual void freeResources()
 		{
-			if (ctrlVolume != null)
-			{
-				ExtendedAudioBuffer b = null;
-				for (int i = 0; i < ctrlVolume.Count; i++)
-				{
-					b = ctrlVolume[i];
-					DSound.unloadSound(ref b);
-				}
-				ctrlVolume.Clear();
-				volumes.Clear();
-				looping.Clear();
-			}
-			isMuted = false;
 		}
 
 		/// <summary>

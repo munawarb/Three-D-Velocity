@@ -661,7 +661,6 @@ namespace TDV
 			{ //Don't fade music if failed connect since main menu music still playing
 				if (Common.music != null)
 					Common.fadeMusic();
-				DSound.masterMusicVolume = 1.0f;
 			}
 			Mission.reset(Options.Modes.mission);
 			Common.exitMenus = false;
@@ -787,7 +786,7 @@ namespace TDV
 			}
 			if (Mission.missionNumber != Mission.Stage.gameEnd)
 			{
-				Common.restoreMusic(DSound.masterMusicVolume);
+				Common.restoreMusic();
 				resumeAndUnmute();
 			}
 			if (!Common.isValidLicense()

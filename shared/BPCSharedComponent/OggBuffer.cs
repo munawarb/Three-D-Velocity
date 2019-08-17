@@ -32,41 +32,17 @@ namespace BPCSharedComponent.ExtendedAudio
 		private XAudio2 device;
 		private SourceVoice sourceVoice;
 		private String[] fileNames = null;
-		private float m_volume;
 		private bool stopNow;
-		private bool voiceCreated;
 		private Status m_status;
 		public Status status
 		{
 			get { return m_status; }
 		}
-		public float volume
-		{
-			get { return (m_volume); }
-			set { setVolume(value); }
-		}
 
-		public OggBuffer(String[] fileNames, float volume, XAudio2 device)
+		public OggBuffer(XAudio2 device, String[] fileNames)
 		{
 			this.fileNames = fileNames;
-			m_volume = volume;
 			this.device = device;
-		}
-
-		public OggBuffer(String fileName, float volume, XAudio2 device) : this(new string[] { fileName }, volume, device)
-		{
-
-		}
-		public void setVolume(float v)
-		{
-			// XAudio has a min volume of 0.0 and a max volume of 1.0.
-			if (v > 1.0f)
-				v = 1.0f;
-			else if (v < 0.0f)
-				v = 0.0f;
-			m_volume = v;
-			if (status == Status.playing && voiceCreated)
-				sourceVoice.SetVolume(v);
 		}
 
 		public void stopOgg()
@@ -110,8 +86,6 @@ namespace BPCSharedComponent.ExtendedAudio
 			if (playPointer == 0) {
 				WaveFormat waveFormat = new WaveFormat(vorbis.SampleRate, bitsPerSample, vorbis.Channels);
 				sourceVoice = new SourceVoice(device, waveFormat, false);
-				sourceVoice.SetVolume(m_volume);
-				voiceCreated = true;
 			}
 			const int rescaleFactor = 32767;
 			Func<int, List<DataStream>> getAtLeast = howMany =>
@@ -186,7 +160,6 @@ namespace BPCSharedComponent.ExtendedAudio
 					vorbis.Dispose();
 					return;
 				}
-				voiceCreated = false;
 				sourceVoice.Stop();
 				sourceVoice.FlushSourceBuffers();
 				vorbis.Dispose();

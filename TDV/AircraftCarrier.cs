@@ -40,7 +40,6 @@ namespace TDV
 			neutralizeSpeed(50.0);
 			weapon.weaponIndex = WeaponTypes.battleShipGuns;
 			moveSound = loadSound(soundPath + "e7.wav");
-			addVolume(moveSound);
 			setDamagePoints(5000);
 			explodeString = soundPath + "d3.wav";
 			r34 = new Range(4.75, Weapons.maxVRange);

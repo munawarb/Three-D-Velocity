@@ -40,17 +40,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		}
 		private static String rootDir;
 		public static string SFileName;
-		//used to store all sounds for cleanup
-		public static ArrayList Sounds = new ArrayList();
-		private static XAudio2 mainSoundDevice;
-		private static MasteringVoice mainMasteringVoice;
+		private static XAudio2 mainSoundDevice, musicDevice, alwaysLoudDevice, cutScenesDevice;
+		private static MasteringVoice mainMasteringVoice, musicMasteringVoice, alwaysLoudMasteringVoice, cutScenesMasteringVoice;
 		private static X3DAudio x3DAudio;
 		private static Listener listener;
-		private static XAudio2 musicDevice;
-		private static MasteringVoice musicMasteringVoice;
-		private static XAudio2 alwaysLoudDevice;
-		private static MasteringVoice alwaysLoudMasteringVoice;
-		public static float masterMusicVolume;
 		//used to hold sounds path
 		public static string SoundPath;
 		//used to hold narratives
@@ -75,7 +68,8 @@ namespace BPCSharedComponent.ExtendedAudio
 			musicMasteringVoice = new MasteringVoice(musicDevice);
 			alwaysLoudDevice = new XAudio2();
 			alwaysLoudMasteringVoice = new MasteringVoice(alwaysLoudDevice);
-
+			cutScenesDevice = new XAudio2();
+			cutScenesMasteringVoice = new MasteringVoice(cutScenesDevice);
 			//get the listener:
 			setListener();
 		}
@@ -199,41 +193,38 @@ namespace BPCSharedComponent.ExtendedAudio
 		}
 
 		/// <summary>
-		/// Loads an ogg file into memory.
-		/// </summary>
-		/// <param name="fileName">The file name.</param>
-		/// <param name="v">The starting volume.</param>
-		/// <returns>An ogg buffer ready to be played.</returns>
-		public static OggBuffer loadOgg(string fileName, float v)
-		{
-			if (!File.Exists(fileName))
-				throw (new ArgumentException("The sound " + fileName + " could not be found."));
-			return new OggBuffer(fileName, v, musicDevice);
-		}
-
-		/// <summary>
-		/// Loads an ogg file into memory, with maximum volume.
-		/// </summary>
-		/// <param name="fileName">The file name.</param>
-		/// <returns>An ogg buffer ready to be played.</returns>
-		public static OggBuffer loadOgg(string fileName)
-		{
-			return loadOgg(fileName, 1.0f);
-		}
-
-		/// <summary>
 		/// Used to create a playing chain. The last files will be looped indefinitely and the files before it will only play once, in order.
 		/// </summary>
-		/// <param name="v">The starting volume.</param>
-		/// <param name="fileNames">A list of file names to play, where the last one is looped indefinitely.</param>
+		/// <param name="device">The XAudio2 device to load the files on.</param>
+		/// <param name="fileNames">A list of file names to play, where the last one is looped indefinitely if more than one file is provided.</param>
 		/// <returns>An ogg buffer that is ready to be played.</returns>
-		public static OggBuffer loadOgg(float v, params string[] fileNames)
+		public static OggBuffer loadOgg(XAudio2 device, params string[] fileNames)
 		{
 			for (int i = 0; i < fileNames.Length; i++) {
 				if (!File.Exists(fileNames[i]))
 					throw (new ArgumentException("The sound " + fileNames[i] + " could not be found."));
 			}
-			return new OggBuffer(fileNames, v, musicDevice);
+			return new OggBuffer(device, fileNames);
+		}
+
+		/// <summary>
+		/// Loads a music file using the musicDevice.
+		/// </summary>
+		/// <param name="filenames">The file names to load. For multi-track files, these should be passed in the order in which they are to be played. The last one will be looped.</param>
+		/// <returns>An OggBuffer.</returns>
+		public static OggBuffer loadMusicFile(params String[] filenames)
+		{
+			return loadOgg(musicDevice, filenames);
+		}
+
+		/// <summary>
+		/// Loads the specified Ogg files onto the cut scenes device.
+		/// </summary>
+		/// <param name="filenames">The list of file names to loads.</param>
+		/// <returns>An OggBuffer.</returns>
+		public static OggBuffer loadOgg(params String[] filenames)
+		{
+			return loadOgg(cutScenesDevice, filenames);
 		}
 
 		/// <summary>
@@ -342,16 +333,30 @@ namespace BPCSharedComponent.ExtendedAudio
 		}
 
 		/// <summary>
-		/// Sets the volume of the background music.
+		/// Sets the volume of the background music. This method will clamp the volume between the allowable range.
 		/// </summary>
 		/// <param name="v">The volume to set the music to.</param>
 		public static void setVolumeOfMusic(float v)
 		{
+			if (v < 0.0f)
+				v = 0.0f;
+			else if (v > 1.0f)
+				v = 1.0f;
 			musicMasteringVoice.SetVolume(v);
 		}
 
 		/// <summary>
-		/// Sets the volume of the sounds excluding music.
+		/// Gets the volume of the music.
+		/// </summary>
+		/// <returns>The volume.</returns>
+		public static float getVolumeOfMusic()
+		{
+			musicMasteringVoice.GetVolume(out float v);
+			return v;
+		}
+
+		/// <summary>
+		/// Sets the volume of the sounds excluding music. This method will clamp the volume between the allowable range.
 		/// </summary>
 		/// <param name="v">The volume to set the sounds to.</param>
 		public static void setVolumeOfSounds(float v)

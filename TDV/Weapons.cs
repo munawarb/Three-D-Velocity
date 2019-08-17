@@ -57,13 +57,9 @@ namespace TDV
 		void onTick();
 		void free();
 		void initRange(Range r); //This method is implemented through WeaponsBase and inherited by all explosives.
-		void mute();
-		void unmute();
-		//The above two methods are implemented by
-		//WeaponBase and inherited by all Explosives.
 		//this event will be raised by a weapon that has done its work and is ready to be deleted from memory
 		event readyToDisposeHandler readyToDispose;
-		//this event is implemented by all weapons to notify the the launcher craft that a target has been struck
+		//this event is implemented by all weapons to notify the launcher craft that a target has been struck
 		event hitHandler eventHit;
 	}
 #endregion
@@ -874,22 +870,6 @@ createNewWeapon((WeaponTypes)type, lockId, index++,
 			}
 		}
 
-        public void mute(bool hardMute)
-        {
-            //Since Projectiles are projectors,
-            //we don't need to check a mute flag at the Weapons level, since each projectile will take care of itself.
-			setStrafe(false);
-			foreach (WeaponBase w in validWeapons)
-				w.mute(hardMute);
-			muted = true;
-        }
-
-        public void unmute()
-        {
-            foreach(WeaponBase w in validWeapons)
-                w.unmute();
-			muted = false;
-        }
 
 		public void addValidIndex(WeaponTypes w)
 		{

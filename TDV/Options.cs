@@ -308,15 +308,14 @@ namespace TDV
 		public static void writeToFile()
 		{
 			BinaryWriter s = new BinaryWriter(new FileStream(Addendums.File.appPath + "\\settings.tdv", FileMode.Create));
-			s.Write(Common.currentMusicVol);
+			s.Write(Common.musicVolume);
+			s.Write(Common.cutSceneVolume);
 			s.Write(announceCourseChange);
 			s.Write(RPAutoTrigger);
 			s.Write(verticalRangeAnnounceTime);
 			s.Write((byte)enabled);
 			s.Write(launchCount);
 			s.Write(Client.port);
-			s.Write(Common.menuMusicVol);
-			s.Write(Common.onlineMusicVol);
 			s.Write((int)SapiSpeech.source);
 			s.Write(hour);
 			s.Write(day);
@@ -342,26 +341,21 @@ namespace TDV
 				//caused by the stream erroring out unexpectedly.
 				//if player is running outdated config, don't error out, just ignore the rest
 				float musicVol = s.ReadSingle();
+				Common.musicVolume = musicVol;
+				musicVol = s.ReadSingle();
+				Common.cutSceneVolume = musicVol;
 				bool announceCourse = s.ReadBoolean();
 				bool rp = s.ReadBoolean();
 				int announceV = s.ReadInt32();
 				byte en = s.ReadByte();
 				int launchC = s.ReadInt32();
 				int port = s.ReadInt32();
-				float menuVol = s.ReadSingle();
-				float onlineVol = s.ReadSingle();
 				int speechSource = s.ReadInt32();
 				int ho = s.ReadInt32();
 				int da = s.ReadInt32();
 				int ye = s.ReadInt32();
 				String ip = s.ReadString();
 				String callSign = s.ReadString();
-
-				// For options files created with the DirectSound implementation where volume ranges from -10000 to 0, we need to adjust for XAudio2 whose volume range is generally between 0.0 and 1.0.
-				Common.currentMusicVol = (musicVol<0.0f||musicVol>1.0f)? Common.currentMusicVol:musicVol;
-				Common.menuMusicVol = (menuVol<0.0f||menuVol>1.0f)?Common.menuMusicVol:menuVol;
-				Common.onlineMusicVol = (onlineVol<0.0f||onlineVol>1.0f)?Common.onlineMusicVol:onlineVol;
-
 				announceCourseChange = announceCourse;
 				RPAutoTrigger = rp;
 				verticalRangeAnnounceTime = announceV;

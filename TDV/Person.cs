@@ -5,16 +5,15 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
+using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
+using BPCSharedComponent.VectorCalculation;
+using SharpDX;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX;
-using BPCSharedComponent.ExtendedAudio;
-using SharpDX.DirectInput;
-using BPCSharedComponent.VectorCalculation;
-using BPCSharedComponent.ExtendedAudio;
-using BPCSharedComponent.Input;
 
 namespace TDV
 {
@@ -337,9 +336,9 @@ namespace TDV
 				else if (DXInput.isKeyHeldDown(Key.Left))
 					move(Person.MovementDirection.west, DXInput.isFirstPress(Key.Left));
 				if (DXInput.isFirstPress(Key.F6))
-					decreaseMusicVolume();
+					Common.decreaseMusicVolume();
 				if (DXInput.isFirstPress(Key.F7))
-					increaseMusicVolume();
+					Common.increaseMusicVolume();
 			}
 			if (swinging && (DateTime.Now - startSwingTime).TotalMilliseconds > 200)
 				doPunch();
@@ -671,29 +670,5 @@ namespace TDV
 				shootTarget = null;
 			}
 		}
-
-		#region MusicControls
-		private void increaseMusicVolume()
-		{
-			Common.music.volume += Common.volumeIncrementValue;
-			if (Options.isPlayingOnline)
-				Common.onlineMusicVol = Common.music.volume;
-			else
-				Common.currentMusicVol = Common.music.volume;
-			Options.writeToFile();
-			DSound.masterMusicVolume = Common.music.volume;
-		}
-		private void decreaseMusicVolume()
-		{
-			Common.music.volume -= Common.volumeIncrementValue;
-			if (Options.isPlayingOnline)
-				Common.onlineMusicVol = Common.music.volume;
-			else
-				Common.currentMusicVol = Common.music.volume;
-			Options.writeToFile();
-			DSound.masterMusicVolume = Common.music.volume;
-		}
-		#endregion
-
 	}
 }
