@@ -26,6 +26,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		private AudioBuffer buffer;
 		private SourceVoice voice;
 		private State m_state;
+		private bool hasNeverPlayed;
 		private Action onEnd;
 
 		/// <summary>
@@ -46,6 +47,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			this.buffer = buffer;
 			this.voice = voice;
 			m_state = State.stopped;
+			hasNeverPlayed = true;
 			voice.StreamEnd += () =>
 			{
 				m_state = State.stopped;
@@ -73,7 +75,10 @@ namespace BPCSharedComponent.ExtendedAudio
 			if (loop) {
 				buffer.LoopCount = AudioBuffer.LoopInfinite;
 			}
-			if (stop) {
+			// We'll start the buffer from the beginning if we've never played this buffer before so that the sound can be loaded.
+			// Otherwise, the sound might start from a random position in the buffer.
+			if (stop || hasNeverPlayed) {
+				hasNeverPlayed = false;
 				voice.Stop();
 				voice.FlushSourceBuffers();
 				buffer.Stream.Position = 0;

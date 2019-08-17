@@ -10,7 +10,6 @@ using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
 using BPCSharedComponent.VectorCalculation;
 using SharpDX.DirectInput;
-using SharpDX.XAudio2;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +21,9 @@ using System.Windows.Forms;
 
 namespace TDV
 {
+	/// <summary>
+	/// Represents the different positions of the throttle.
+	/// </summary>
 	public enum OpenPositions
 	{
 		closed,
@@ -228,6 +230,11 @@ namespace TDV
 		private ExtendedAudioBuffer targetSolutionSound;
 		private ExtendedAudioBuffer targetSolutionSound3;
 
+		// The volume at which fade-in will no longer occur.
+		private const float engineFadeInThreshold = 0.6f;
+		// The amount by which to increase the volume of the jet rumble sound.
+		// Since the jet sound starts at engineFadeInThreshold, we should only account for the upper part of the interval.
+		private const float rumbleVolumeIncrement = (1f - engineFadeInThreshold) / 1500f;
 		private int sectorX, sectorY;
 		private int lastDirection;
 		private OpenPositions openPosition, lastOpenPosition;
@@ -1356,7 +1363,7 @@ namespace TDV
 			//if AI, engines will be stopped but not faded because 3d sound modifies volume and it could cause conflicts.
 			System.Diagnostics.Trace.WriteLine("IsAI is " + isAI + " for " + name);
 			if (!isAI)
-				jetRumble.setVolume(0.8f);
+				jetRumble.setVolume(0.5f);
 			System.Diagnostics.Trace.WriteLine("Passed set jetRumble volume for " + name);
 			origEngineFreq = engine.getFrequency();
 			System.Diagnostics.Trace.WriteLine("Passed set engine frequency for " + name);
@@ -2397,7 +2404,7 @@ tY);
 		{
 			if (!isOnRunway) {
 				float v = jetRumble.getVolume();
-				if (v < 0.9f) {
+				if (v < engineFadeInThreshold) {
 					jetRumble.setVolume(v + 0.01f);
 				}
 			}
@@ -3280,11 +3287,9 @@ tY);
 		private void changeRumbleVolume()
 		{
 			float vol = jetRumble.getVolume();
-			if (vol < 0.9f)
+			if (vol < engineFadeInThreshold)
 				return; //still fading in.
-			vol = 0.9f + (float)speed * 0.005f;
-			if (vol > 0.0f)
-				vol = 0.0f;
+			vol = engineFadeInThreshold + (float)speed * rumbleVolumeIncrement;
 			jetRumble.setVolume(vol);
 		}
 

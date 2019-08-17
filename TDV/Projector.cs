@@ -110,7 +110,7 @@ namespace TDV
 		public double x;
 		public double y;
 		public double z;
-		private double m_speed; //total speed output of aircraft
+		private double m_speed; //total speed output of aircraft, measured in mph.
 		//represents airspeed
 		private int m_rpm; //engine rpm, can go up to
 		//Projector.maxRPM
