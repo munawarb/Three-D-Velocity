@@ -7,13 +7,13 @@
 */
 using System;
 using System.Threading;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public class Tank : MissionObjectBase
 	{
-		private SecondarySoundBuffer moveSound;
+		private ExtendedAudioBuffer moveSound;
 		private bool firstLoad;
 		public Tank(double x, double y, Instructions i)
 			: base("t", i)
@@ -43,7 +43,7 @@ namespace TDV
 			performDeaths();
 			if (readyToTerminate())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				isProjectorStopped = true;
 				return;
 			}
@@ -62,7 +62,7 @@ namespace TDV
 		{
 			if (hit())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				base.performDeaths();
 			}
 		}

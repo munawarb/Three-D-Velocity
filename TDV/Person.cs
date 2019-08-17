@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpDX;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using SharpDX.DirectInput;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
@@ -29,13 +29,13 @@ namespace TDV
 			west
 		}
 		#region sounds
-		private SecondarySoundBuffer hitSound, impactSound, throwSound;
-		private SecondarySoundBuffer blockSound;
-		private SecondarySoundBuffer[] swingSound, swingVoice, punchedSound, stepSound, gruntSound, tossSound, tossVoice;
-		private SecondarySoundBuffer lastStepSound;
-		private SecondarySoundBuffer crashSound;
-		private SecondarySoundBuffer stunSound;
-		private SecondarySoundBuffer lockSound, shootSound;
+		private ExtendedAudioBuffer hitSound, impactSound, throwSound;
+		private ExtendedAudioBuffer blockSound;
+		private ExtendedAudioBuffer[] swingSound, swingVoice, punchedSound, stepSound, gruntSound, tossSound, tossVoice;
+		private ExtendedAudioBuffer lastStepSound;
+		private ExtendedAudioBuffer crashSound;
+		private ExtendedAudioBuffer stunSound;
+		private ExtendedAudioBuffer lockSound, shootSound;
 		#endregion
 
 		private PersonMissile[] missiles;
@@ -247,7 +247,7 @@ namespace TDV
 			if (lastStepSound != null) {
 				if (!force && DSound.isPlaying(lastStepSound))
 					return;
-				lastStepSound.Stop();
+				lastStepSound.stop();
 			}
 
 			int lx = x;
@@ -287,7 +287,7 @@ namespace TDV
 				playSound(stunSound, false, true);
 				return;
 			} else if (DSound.isPlaying(stunSound))
-				stunSound.Stop();
+				stunSound.stop();
 			if (isAI) {
 				if (!isInPanicMode && (double)(damage / maxDamage) * 100 <= 40)
 					isInPanicMode = true;
@@ -509,7 +509,7 @@ namespace TDV
 		public override void playCrashSound(int x, int y)
 		{
 			if (crashSound == null)
-				crashSound = DSound.LoadSound3d(DSound.SoundPath + "\\a_fwall.wav");
+				crashSound = DSound.LoadSound(DSound.SoundPath + "\\a_fwall.wav");
 			DSound.PlaySound3d(crashSound, true, false, x, y, 0);
 		}
 

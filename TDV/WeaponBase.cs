@@ -11,7 +11,7 @@ using System.IO;
 using System.Windows.Forms;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public abstract class WeaponBase : Projector, Explosive
@@ -29,7 +29,7 @@ namespace TDV
 		private Weapons m_weapon;
 		private Projector m_origTarget;
 		private bool m_followTarget;
-		protected SecondarySoundBuffer expl;
+		protected ExtendedAudioBuffer expl;
 		protected WeaponTypes type;
 
 		//Will determine if during mission mode,
@@ -132,7 +132,7 @@ namespace TDV
 				&& origTarget != null)
 				z = origTarget.z;
 			if (damage < 1) {
-				expl = DSound.LoadSound3d(DSound.SoundPath + "\\m4-1.wav");
+				expl = DSound.LoadSound(DSound.SoundPath + "\\m4-1.wav");
 				DSound.PlaySound(expl, true, false);
 				finished = true;
 			}
@@ -236,10 +236,10 @@ namespace TDV
 		/// <summary>
 		/// Plays a sound in 3D desipte setting of isAI.
 		/// </summary>
-		/// <param name="s">The SecondarySoundBuffer to play.</param>
+		/// <param name="s">The ExtendedAudioBuffer to play.</param>
 		/// <param name="stopFlag">True if this sound should be stopped before it is played or replayed.</param>
 		/// <param name="loopFlag">True if this sound should loop.</param>
-		protected void playSound3d(SecondarySoundBuffer s, bool stopFlag, bool loopFlag)
+		protected void playSound3d(ExtendedAudioBuffer s, bool stopFlag, bool loopFlag)
 		{
 			DSound.PlaySound3d(s, stopFlag, loopFlag, x, z, y);
 		}
@@ -267,7 +267,7 @@ namespace TDV
 
 		protected void explode()
 		{
-			expl = DSound.LoadSound3d(DSound.SoundPath + "\\m4-1.wav");
+			expl = DSound.LoadSound(DSound.SoundPath + "\\m4-1.wav");
 			playSound3d(expl, true, false);
 			List<Projector> hits = Interaction.getObjectsInRange(this, new Range(2.0, 1000.0), Interaction.RangeFlag.existing);
 			if (hits == null)

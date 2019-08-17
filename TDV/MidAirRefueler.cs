@@ -8,7 +8,7 @@
 using System;
 using System.Threading;
 using System.IO;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
@@ -16,8 +16,8 @@ namespace TDV
 	public class MidAirRefueler : MissionObjectBase
 	{
 		private long time;
-		private SecondarySoundBuffer moveSound;
-		public SecondarySoundBuffer message;
+		private ExtendedAudioBuffer moveSound;
+		public ExtendedAudioBuffer message;
 		private bool firstLoad;
 		private double sx;
 		private double sy;
@@ -68,7 +68,7 @@ namespace TDV
 			if (readyToTerminate())
 			{
 				if (moveSound != null)
-					moveSound.Stop();
+					moveSound.stop();
 				isProjectorStopped = true;
 				return;
 			}
@@ -96,7 +96,7 @@ namespace TDV
 		{
 			if (hit())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				base.performDeaths();
 			}
 		}
@@ -131,7 +131,7 @@ speed //this gives total hours
 			time = 0;
 			neutralizeSpeed(1500.0);
 			if (message != null && DSound.isPlaying(message))
-				message.Stop();
+				message.stop();
 		}
 
 		public void connectManeuver()
@@ -159,7 +159,7 @@ speed //this gives total hours
 		private void playMessage(String o, bool wait)
 		{
 			if (message != null)
-				message.Stop();
+				message.stop();
 			message = DSound.LoadSound(o);
 			DSound.PlaySound(message, true, false);
 			if (wait)

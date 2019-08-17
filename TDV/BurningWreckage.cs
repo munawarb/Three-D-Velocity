@@ -9,13 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 
 namespace TDV
 {
 	public class BurningWreckage : Furniture
 	{
-		private SecondarySoundBuffer fireSound;
+		private ExtendedAudioBuffer fireSound;
 		/// <summary>
 		/// Creates a new wreckage
 		/// </summary>
@@ -38,7 +38,7 @@ namespace TDV
 
 		public override void cleanUp()
 		{
-			fireSound.Stop();
+			fireSound.stop();
 			fireSound = null;
 			base.cleanUp();
 		}

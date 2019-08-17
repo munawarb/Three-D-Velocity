@@ -5,14 +5,14 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
+using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.VectorCalculation;
+using SharpDX.XAudio2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
-using System.IO;
-using BPCSharedComponent.VectorCalculation;
-using BPCSharedComponent.ExtendedAudio;
-using SharpDX.DirectSound;
 namespace TDV
 {
 	public abstract class Projector : Common.Hittable
@@ -67,7 +67,7 @@ namespace TDV
 		protected BinaryReader queue;
 		protected MemoryStream stream;
 		public bool unlisted;
-		private List<SecondarySoundBuffer> ctrlVolume;
+		private List<ExtendedAudioBuffer> ctrlVolume;
 		private List<int> volumes;
 		private List<bool> looping;
 
@@ -498,7 +498,7 @@ namespace TDV
 
 		//The below methods are mask methods for directX
 		//All projectors will have the ability to play sounds from their perspectives
-		public void playSound(SecondarySoundBuffer theSound, bool stopFlag, bool loopFlag)
+		public void playSound(ExtendedAudioBuffer theSound, bool stopFlag, bool loopFlag)
 		{
 			lock (this)
 			{
@@ -515,13 +515,13 @@ namespace TDV
 				}
 			}
 		}
-		public SecondarySoundBuffer loadSound(string filename)
+		public ExtendedAudioBuffer loadSound(string filename)
 		{
-			SecondarySoundBuffer s = null;
+			ExtendedAudioBuffer s = null;
 			if (isAI && !autoPlayTarget)
 			{
 				if (!forceStareo)
-					s = DSound.LoadSound3d(filename);
+					s = DSound.LoadSound(filename);
 				else
 					s = DSound.LoadSound(filename);
 			}
@@ -648,7 +648,7 @@ namespace TDV
 
 		////masked method for dSound
 		////.unloadSound method
-		public void unloadSound(SecondarySoundBuffer s)
+		public void unloadSound(ExtendedAudioBuffer s)
 		{
 			DSound.unloadSound(ref s);
 		}
@@ -684,24 +684,6 @@ namespace TDV
 
 		public virtual void mute(bool hardMute)
 		{
-			if (volumes == null || isMuted)
-				return; //object may not have defined any sounds to be muted.
-			//Or we've already muted.
-			/*Holders will keep calling mute()
-			 * Even though they may already have called it.
-			 * This way, objects that are inserted into the holders after the mute operation will also be muted.
-			 * */
-			for (int i = 0; i < ctrlVolume.Count; i++)
-			{
-				volumes.Add(ctrlVolume[i].Volume);
-				if (ctrlVolume[i].Volume > -8000)
-					ctrlVolume[i].Volume = -8000;
-				if (hardMute)
-				{
-					looping.Add(DSound.isLooping(ctrlVolume[i]));
-					ctrlVolume[i].Stop();
-				}
-			}
 			isMuted = true;
 		}
 
@@ -712,16 +694,6 @@ namespace TDV
 
 		public virtual void unmute()
 		{
-			if (volumes == null || !isMuted || ctrlVolume.Count != volumes.Count)
-				return;
-			for (int i = 0; i < ctrlVolume.Count; i++)
-			{
-				ctrlVolume[i].Volume = volumes[i];
-				if (looping.Count > 0 && looping[i])
-					ctrlVolume[i].Play(0, PlayFlags.Looping);
-			}
-			volumes.Clear();
-			looping.Clear();
 			isMuted = false;
 		}
 
@@ -817,11 +789,11 @@ namespace TDV
 					((double)engineDamagePoints / (double)maxEngineDamagePoints * 100.0);
 		}
 
-		protected void addVolume(SecondarySoundBuffer buffer)
+		protected void addVolume(ExtendedAudioBuffer buffer)
 		{
 			if (ctrlVolume == null)
 			{
-				ctrlVolume = new List<SecondarySoundBuffer>();
+				ctrlVolume = new List<ExtendedAudioBuffer>();
 				volumes = new List<int>();
 				looping = new List<bool>();
 			}
@@ -896,7 +868,7 @@ namespace TDV
 		{
 			if (ctrlVolume != null)
 			{
-				SecondarySoundBuffer b = null;
+				ExtendedAudioBuffer b = null;
 				for (int i = 0; i < ctrlVolume.Count; i++)
 				{
 					b = ctrlVolume[i];

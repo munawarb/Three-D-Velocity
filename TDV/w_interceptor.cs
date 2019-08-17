@@ -7,7 +7,7 @@
 */
 using System;
 using System.IO;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
@@ -15,9 +15,9 @@ namespace TDV
 {
 	public class MissileInterceptor : WeaponBase
 	{
-		private SecondarySoundBuffer launchSound;
-		private SecondarySoundBuffer missileSound;
-		private SecondarySoundBuffer hitSound;
+		private ExtendedAudioBuffer launchSound;
+		private ExtendedAudioBuffer missileSound;
+		private ExtendedAudioBuffer hitSound;
 
 
 		public MissileInterceptor(Weapons w)
@@ -28,7 +28,7 @@ namespace TDV
 			neutralizeSpeed(900.0);
 			setSpan(0.10, 0.25);
 			launchSound = loadSound(soundPath + "ci1.wav");
-			missileSound = DSound.LoadSound3d(DSound.SoundPath + "\\ci2.wav");
+			missileSound = DSound.LoadSound(DSound.SoundPath + "\\ci2.wav");
 			addVolume(missileSound);
 		}
 
@@ -76,7 +76,7 @@ namespace TDV
 			base.onTick();
 			if (inFiringRange())
 			{
-				missileSound.Stop();
+				missileSound.stop();
 				hitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 2) + ".wav");
 				target.playSound(hitSound, true, false);
 				target.hit(target.damage, Interaction.Cause.destroyedByWeapon);
@@ -86,7 +86,7 @@ namespace TDV
 			}
 			if (totalDistance > 30.0 || !Weapons.isValidLock(origTarget) || finished)
 			{
-				missileSound.Stop();
+				missileSound.stop();
 				finished = true;
 				performing = false;
 			}
@@ -94,7 +94,7 @@ namespace TDV
 
 		public override void serverSideHit(Projector target, int remainingDamage)
 		{
-			missileSound.Stop();
+			missileSound.stop();
 			hitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 2) + ".wav");
 			target.playSound(hitSound, true, false);
 			fireHitEvent(target, remainingDamage);

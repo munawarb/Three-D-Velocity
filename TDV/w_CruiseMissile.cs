@@ -7,7 +7,7 @@
 */
 using System;
 using System.IO;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
@@ -15,10 +15,10 @@ namespace TDV
 {
 	public class CruiseMissile : WeaponBase
 	{
-		private SecondarySoundBuffer launchSound;
-		private SecondarySoundBuffer fox;
-		private SecondarySoundBuffer missileSound;
-		private SecondarySoundBuffer hitSound;
+		private ExtendedAudioBuffer launchSound;
+		private ExtendedAudioBuffer fox;
+		private ExtendedAudioBuffer missileSound;
+		private ExtendedAudioBuffer hitSound;
 		private long m_time;
 
 
@@ -30,7 +30,7 @@ namespace TDV
 			neutralizeSpeed((weapon.creator.flyingCruiseMissile) ? 1800.0 : 900.0);
 			setSpan(0.10, 0.25);
 			launchSound = loadSound(soundPath + "cr1.wav");
-			missileSound = DSound.LoadSound3d(DSound.SoundPath + "\\cr2.wav");
+			missileSound = DSound.LoadSound(DSound.SoundPath + "\\cr2.wav");
 			addVolume(missileSound);
 		}
 
@@ -81,7 +81,7 @@ namespace TDV
 			base.onTick();
 			if (inFiringRange())
 			{
-				missileSound.Stop();
+				missileSound.stop();
 				hitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 2) + ".wav");
 				target.playSound(hitSound, true, false);
 				// Since the boss aircraft has 10,000 damage, let's not let the player kill them with one cruise missile.
@@ -92,7 +92,7 @@ namespace TDV
 			}
 			if (totalDistance > 30.0 || !Weapons.isValidLock(origTarget) || finished)
 			{
-				missileSound.Stop();
+				missileSound.stop();
 				finished = true;
 				performing = (hitSound != null && DSound.isPlaying(hitSound)) || (expl != null && DSound.isPlaying(expl));
 			}
@@ -100,7 +100,7 @@ namespace TDV
 
 		public override void serverSideHit(Projector target, int damageAmount)
 		{
-			missileSound.Stop();
+			missileSound.stop();
 			hitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 2) + ".wav");
 			target.playSound(hitSound, true, false);
 			fireHitEvent(target, damageAmount);

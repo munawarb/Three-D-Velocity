@@ -6,7 +6,7 @@
 * Copyright (C) Munawar Bijani
 */
 using System;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 using System.Collections.Generic;
@@ -14,9 +14,9 @@ namespace TDV
 {
 	public class BattleShipGuns : WeaponBase
 	{
-		private SecondarySoundBuffer launch;
-		private SecondarySoundBuffer Hit;
-		private SecondarySoundBuffer moveSound;
+		private ExtendedAudioBuffer launch;
+		private ExtendedAudioBuffer Hit;
+		private ExtendedAudioBuffer moveSound;
 		private bool explodes;
 		public BattleShipGuns(Weapons w)
 			: base(w, "p" + (int)WeaponTypes.battleShipGuns)
@@ -24,7 +24,7 @@ namespace TDV
 			weapon.decreaseAmmunitionFor(WeaponTypes.battleShipGuns);
 			neutralizeSpeed(1000.0);
 			launch = loadSound(soundPath + "bsg1.wav");
-			moveSound = DSound.LoadSound3d(DSound.SoundPath + "\\bsg2.wav");
+			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
 			setSpan(0.05, 0.10);
 			addVolume(moveSound);
 			followTarget = false;
@@ -63,10 +63,10 @@ namespace TDV
 			playSound(moveSound, false, false);
 			if (inFiringRange())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				if (explodes)
 				{
-					Hit = DSound.LoadSound3d(DSound.SoundPath + "\\m4-1.wav");
+					Hit = DSound.LoadSound(DSound.SoundPath + "\\m4-1.wav");
 					playSound3d(Hit, true, false);
 				}
 				else

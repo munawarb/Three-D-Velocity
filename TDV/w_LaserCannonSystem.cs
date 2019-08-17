@@ -6,14 +6,14 @@
 * Copyright (C) Munawar Bijani
 */
 using System;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public class LaserCannonSystem : WeaponBase
 	{
-		private SecondarySoundBuffer cannonLaunch;
+		private ExtendedAudioBuffer cannonLaunch;
 
 		public LaserCannonSystem(Weapons w)
 			: base(w, "p" + (int)WeaponTypes.laserCannonSystem)
@@ -64,7 +64,7 @@ namespace TDV
 
 			if (inFiringRange())
 			{
-				cannonLaunch.Stop();
+				cannonLaunch.stop();
 				origTarget.hit(true);
 				fireHitEvent(origTarget, 0);
 				weapon.lCSTarget = origTarget;
@@ -80,7 +80,7 @@ namespace TDV
 
 		public override void serverSideHit(Projector target, int remainingDamage)
 		{
-			cannonLaunch.Stop();
+			cannonLaunch.stop();
 			fireHitEvent(target, remainingDamage);
 			weapon.lCSTarget = target;
 			finished = true;

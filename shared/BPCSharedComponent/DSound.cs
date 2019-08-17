@@ -20,16 +20,32 @@ namespace BPCSharedComponent.ExtendedAudio
 {
 	public class DSound
 	{
+		/// <summary>
+		/// Various speaker configurations. The configuration of the system can be gotten from MasteringVoice.ChannelMask.
+		/// This enum was built with the help of https://devel.nuclex.org/external/svn/directx/trunk/include/audiodefs.h and the SharpDX MasteringVoice source.
+		/// </summary>
+		private enum SpeakerConfiguration
+		{
+			mono = Speakers.FrontCenter,
+			stereo = Speakers.FrontLeft|Speakers.FrontRight,
+			twoPointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.LowFrequency,
+			surround = Speakers.FrontLeft|Speakers.FrontRight|Speakers.FrontCenter|Speakers.BackCenter,
+			quad = Speakers.FrontLeft|Speakers.FrontRight|Speakers.BackLeft|Speakers.BackRight,
+			fourPointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight,
+			fivePointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.FrontCenter|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight,
+			// SharpDX doesn't define constants for leftOfCenter and rightOfCenter. These constants were obtained from https://devel.nuclex.org/external/svn/directx/trunk/include/audiodefs.h
+			sevenPointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.FrontCenter|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight | 0x00000040 | 0x00000080,
+			fivePointOneSurround = Speakers.FrontLeft | Speakers.FrontRight | Speakers.FrontCenter | Speakers.LowFrequency | Speakers.SideLeft | Speakers.SideRight,
+			sevenPointOneSurround = Speakers.FrontLeft | Speakers.FrontRight | Speakers.FrontCenter | Speakers.LowFrequency | Speakers.BackLeft|Speakers.BackRight| Speakers.SideLeft | Speakers.SideRight
+		}
 		private static String rootDir;
-		private static Object playLock;
-		private static string pass;
-
 		public static string SFileName;
 		//used to store all sounds for cleanup
 		public static ArrayList Sounds = new ArrayList();
 		//main soundcard object
 		private static XAudio2 mainSoundDevice;
 		private static MasteringVoice mainMasteringVoice;
+		private static X3DAudio x3DAudio;
 		private static Listener listener;
 		private static XAudio2 musicDevice;
 		private static MasteringVoice musicMasteringVoice;
@@ -53,6 +69,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			NumPath = NSoundPath + "\\ns";
 			mainSoundDevice = new XAudio2();
 			mainMasteringVoice = new MasteringVoice(mainSoundDevice);
+			x3DAudio = new X3DAudio((Speakers)mainMasteringVoice.ChannelMask);
 			musicDevice = new XAudio2();
 			musicMasteringVoice = new MasteringVoice(musicDevice);
 			//get the listener:
@@ -74,7 +91,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			AudioBuffer buffer = new AudioBuffer { Stream = stream.ToDataStream(), AudioBytes = (int)stream.Length, Flags = SharpDX.XAudio2.BufferFlags.EndOfStream };
 			// We can now safely close the stream.
 			stream.Close();
-			SourceVoice sv = new SourceVoice(mainSoundDevice, format, true);
+			SourceVoice sv = new SourceVoice(mainSoundDevice, format, VoiceFlags.None, 5.0f, true);
 			return new ExtendedAudioBuffer(buffer, sv);
 		}
 
@@ -131,7 +148,6 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="z">The z coordinate of the source.</param>
 		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, double x, double y, double z)
 		{
-			X3DAudio x3dAudio = new X3DAudio(Speakers.FrontRight);
 			Emitter emitter = new Emitter {
 				ChannelCount = 1,
 				CurveDistanceScaler = float.MinValue,
@@ -140,7 +156,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				Position = new Vector3((float)x, (float)y, (float)z)
 			};
 			sound.play(stop, loop);
-			DspSettings dspSettings = x3dAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, 1, 2);
+			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, 1, 2);
 			sound.apply3D(dspSettings);
 		}
 
@@ -252,5 +268,68 @@ namespace BPCSharedComponent.ExtendedAudio
 			rootDir = root;
 		}
 
+		/// <summary>
+		/// Pans a sound.
+		/// This method was written using the guide at https://docs.microsoft.com/en-us/windows/win32/xaudio2/how-to--pan-a-sound
+		/// </summary>
+		/// <param name="sound">The sound to pan.</param>
+		/// <param name="pan">The value by which to pan the sound. -1.0f is completely left, and 1.0f is completely right. 0.0f is center.</param>
+		public static void setPan(ExtendedAudioBuffer sound, float pan)
+		{
+			SpeakerConfiguration mask = (SpeakerConfiguration)mainMasteringVoice.ChannelMask;
+			float[] outputMatrix = new float[8];
+			float left = 0.5f - pan / 2;
+			float right = 0.5f + pan / 2;
+			switch(mask) {
+				case SpeakerConfiguration.mono:
+					outputMatrix[0] = 1.0f;
+					break;
+				case SpeakerConfiguration.stereo:
+				case SpeakerConfiguration.twoPointOne:
+				case SpeakerConfiguration.surround:
+					outputMatrix[0] = left;
+					outputMatrix[1] = right;
+					break;
+				case SpeakerConfiguration.quad:
+					outputMatrix[0] = outputMatrix[2] = left;
+					outputMatrix[1] = outputMatrix[3] = right;
+					break;
+				case SpeakerConfiguration.fourPointOne:
+					outputMatrix[0] = outputMatrix[3] = left;
+					outputMatrix[1] = outputMatrix[4] = right;
+					break;
+				case SpeakerConfiguration.fivePointOne:
+				case SpeakerConfiguration.sevenPointOne:
+				case SpeakerConfiguration.fivePointOneSurround:
+					outputMatrix[0] = outputMatrix[4] = left;
+					outputMatrix[1] = outputMatrix[5] = right;
+					break;
+				case SpeakerConfiguration.sevenPointOneSurround:
+					outputMatrix[0] = outputMatrix[4] = outputMatrix[6] = left;
+					outputMatrix[1] = outputMatrix[5] = outputMatrix[7] = right;
+					break;
+			}
+			VoiceDetails soundDetails = sound.getVoiceDetails();
+			VoiceDetails masteringDetails = mainMasteringVoice.VoiceDetails;
+			sound.setOutputMatrix(soundDetails.InputChannelCount, masteringDetails.InputChannelCount, outputMatrix);
+		}
+
+		/// <summary>
+		/// Sets the volume of the background music.
+		/// </summary>
+		/// <param name="v">The volume to set the music to.</param>
+		public static void setVolumeOfMusic(float v)
+		{
+			musicMasteringVoice.SetVolume(v);
+		}
+
+		/// <summary>
+		/// Sets the volume of the sounds excluding music.
+		/// </summary>
+		/// <param name="v">The volume to set the sounds to.</param>
+		public static void setVolumeOfSounds(float v)
+		{
+			mainMasteringVoice.SetVolume(v);
+		}
 	}
 }

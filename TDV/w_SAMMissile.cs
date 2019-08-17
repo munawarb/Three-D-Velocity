@@ -6,23 +6,23 @@
 * Copyright (C) Munawar Bijani
 */
 using System;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public class SAMMissile : WeaponBase
 	{
-		private SecondarySoundBuffer launch;
-		private SecondarySoundBuffer Hit;
-		private SecondarySoundBuffer moveSound;
+		private ExtendedAudioBuffer launch;
+		private ExtendedAudioBuffer Hit;
+		private ExtendedAudioBuffer moveSound;
 		public SAMMissile(Weapons w)
 			: base(w, "p" + (int)WeaponTypes.samMissile)
 		{
 			weapon.decreaseAmmunitionFor(WeaponTypes.samMissile);
 			neutralizeSpeed(3000.0);
 			launch = loadSound(soundPath + "sam1.wav");
-			moveSound = DSound.LoadSound3d(DSound.SoundPath + "\\bsg2.wav");
+			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
 			setSpan(0.20, 0.20);
 			followTarget = false;
 		}
@@ -59,7 +59,7 @@ namespace TDV
 			playSound3d(moveSound, false, false);
 			if (inFiringRange())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				Hit = target.loadSound(target.soundPath + "bsg" + Common.getRandom(3, 4) + ".wav");
 				target.playSound(Hit, true, false);
 				fireHitEvent(target, Common.getRandom(100, 200));

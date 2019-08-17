@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpDX;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 
@@ -19,7 +19,7 @@ namespace TDV
 	public class Furniture : FightObject
 	{
 		private BoundingBox box;
-		private SecondarySoundBuffer destroySound, crashSound;
+		private ExtendedAudioBuffer destroySound, crashSound;
 		protected String destroyFile, hitFile;
 		public int length { get; set; }
 		public int width { get; set; }

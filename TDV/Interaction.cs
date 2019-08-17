@@ -5,17 +5,16 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
+using BPCSharedComponent.ExtendedAudio;
+using BPCSharedComponent.Input;
+using BPCSharedComponent.VectorCalculation;
+using SharpDX.DirectInput;
 using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using BPCSharedComponent.ExtendedAudio;
-using BPCSharedComponent.VectorCalculation;
-using BPCSharedComponent.Input;
-using SharpDX.DirectSound;
-using SharpDX.DirectInput;
 
 namespace TDV
 {
@@ -1132,8 +1131,7 @@ namespace TDV
 						Thread.Sleep(5);
 				}
 				isReadingDestroyed = true;
-				SecondarySoundBuffer n = DSound.LoadSound(DSound.NSoundPath + "\\o"
-				 + dName + ".wav");
+				ExtendedAudioBuffer n = DSound.LoadSound(DSound.NSoundPath + "\\o" + dName + ".wav");
 				DSound.PlaySound(n, true, false);
 				while (DSound.isPlaying(n))
 				{
@@ -1467,7 +1465,7 @@ namespace TDV
 		{
 			if (Options.mode != Options.Modes.freeForAll && Options.entryMode != 1 && !Client.gameHost)
 			{
-				SecondarySoundBuffer go = DSound.LoadSound(DSound.SoundPath + "\\cc6.wav");
+				ExtendedAudioBuffer go = DSound.LoadSound(DSound.SoundPath + "\\cc6.wav");
 				DSound.PlaySound(go, true, false);
 				while (DSound.isPlaying(go))
 				{
@@ -1681,8 +1679,7 @@ namespace TDV
 		/// <param name="hardMute">If true, an aggressive mute is performed. If false, just volume is lowered.</param>
 		public static void muteAllObjects(bool hardMute)
 		{
-			holderAt(1).mute(hardMute);
-			holderAt(0).mute(hardMute);
+			DSound.setVolumeOfSounds(hardMute ? 0.0f : 0.2f);
 		}
 
 		/// <summary>
@@ -1690,8 +1687,7 @@ namespace TDV
 		/// </summary>
 		private static void unmuteAllObjects()
 		{
-			holderAt(0).unmute();
-			holderAt(1).unmute();
+			DSound.setVolumeOfSounds(1.0f);
 		}
 
 		/// <summary>

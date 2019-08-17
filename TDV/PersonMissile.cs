@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 
@@ -18,7 +18,7 @@ namespace TDV
 	public class PersonMissile
 	{
 		private int x, y;
-		private SecondarySoundBuffer moveSound, explodeSound;
+		private ExtendedAudioBuffer moveSound, explodeSound;
 		private int speed, maxDamage;
 		private DateTime lastMoveTime, startTime;
 		private Person target;
@@ -38,8 +38,8 @@ namespace TDV
 			this.maxDamage = maxDamage;
 			this.target = target;
 			startTime = DateTime.Now;
-			moveSound = DSound.LoadSound3d(DSound.SoundPath + "\\a_mmove.wav");
-			explodeSound = DSound.LoadSound3d(DSound.SoundPath + "\\a_mexpl.wav");
+			moveSound = DSound.LoadSound(DSound.SoundPath + "\\a_mmove.wav");
+			explodeSound = DSound.LoadSound(DSound.SoundPath + "\\a_mexpl.wav");
 			DSound.PlaySound3d(moveSound, true, true, x, 0, y);
 		}
 
@@ -63,7 +63,7 @@ namespace TDV
 			}
 			if ((DateTime.Now - startTime).Seconds >= 10)
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				DSound.PlaySound3d(explodeSound, true, false, x, 0, y);
 				if (Degrees.getDistanceBetween(x, y, target.x, target.y) <= 1)
 					target.hitAndGrunt(maxDamage);
@@ -74,7 +74,7 @@ namespace TDV
 		{
 			if (moveSound == null) //clean up has occurred
 				return true;
-			if (DSound.isLooping(moveSound))
+			if (DSound.isPlaying(moveSound))
 				return false;
 			return !DSound.isPlaying(explodeSound);
 		}

@@ -6,23 +6,23 @@
 * Copyright (C) Munawar Bijani
 */
 using System;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public class TankMissile : WeaponBase
 	{
-		private SecondarySoundBuffer launch;
-		private SecondarySoundBuffer Hit;
-		private SecondarySoundBuffer moveSound;
+		private ExtendedAudioBuffer launch;
+		private ExtendedAudioBuffer Hit;
+		private ExtendedAudioBuffer moveSound;
 		public TankMissile(Weapons w)
 			: base(w, "p" + (int)WeaponTypes.tankMissile)
 		{
 			weapon.decreaseAmmunitionFor(WeaponTypes.tankMissile);
 			neutralizeSpeed(100.0);
 			launch = loadSound(soundPath + "tg1.wav");
-			moveSound = DSound.LoadSound3d(DSound.SoundPath + "\\bsg2.wav");
+			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
 			addVolume(moveSound);
 			setSpan(0.01, 0.01);
 			followTarget = false;
@@ -61,7 +61,7 @@ namespace TDV
 			playSound3d(moveSound, false, false);
 			if (inFiringRange())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				Hit = target.loadSound(target.soundPath + "bsg" + Common.getRandom(3, 4) + ".wav");
 				target.playSound(Hit, true, false);
 				fireHitEvent(target, Common.getRandom(201, 300));

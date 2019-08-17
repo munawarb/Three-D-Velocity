@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 using System.Windows.Forms;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using Microsoft.VisualBasic;
 using System.Threading;
 using BPCSharedComponent.ExtendedAudio;
@@ -27,7 +27,7 @@ namespace TDV
 		private static double gNumber;
 		private static Thread numThread = null;
 		private static StringBuilder files;
-		private static SecondarySoundBuffer[] soundFiles;
+		private static ExtendedAudioBuffer[] soundFiles;
 		private static bool filesPlaying;
 		private static Object locker = new object();
 		private static bool threadRunning = false;
@@ -48,7 +48,7 @@ namespace TDV
 	&& soundFiles[globalCounter] != null)
 			{
 				if (DSound.isPlaying(soundFiles[globalCounter]))
-					soundFiles[globalCounter].Stop();
+					soundFiles[globalCounter].stop();
 			}
 		}
 		public static void VoiceNumber(double number)
@@ -232,7 +232,7 @@ namespace TDV
 
 				//Now we have all the files to play.
 				String[] finalFiles = files.ToString().Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-				soundFiles = new SecondarySoundBuffer[finalFiles.Length];
+				soundFiles = new ExtendedAudioBuffer[finalFiles.Length];
 				bool firstLoop = true;
 				for (globalCounter = 0; globalCounter < soundFiles.Length; globalCounter++)
 				{
@@ -420,7 +420,7 @@ namespace TDV
 			return threadRunning;
 		}
 
-		private static void cleanUp(ref SecondarySoundBuffer[] sounds)
+		private static void cleanUp(ref ExtendedAudioBuffer[] sounds)
 		{
 			if (sounds == null)
 				return;

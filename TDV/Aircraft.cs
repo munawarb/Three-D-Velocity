@@ -5,20 +5,20 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-using SharpDX.DirectSound;
 using BPCSharedComponent;
 using BPCSharedComponent.ExtendedAudio;
-using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.Input;
+using BPCSharedComponent.VectorCalculation;
 using SharpDX.DirectInput;
-using System.Text;
+using SharpDX.XAudio2;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace TDV
 {
@@ -197,41 +197,41 @@ namespace TDV
 		}
 
 		//sounds
-		private SecondarySoundBuffer throttleClickSound;
-		private SecondarySoundBuffer courseClickSound;
-		private SecondarySoundBuffer selfDestAlarm;
-		private SecondarySoundBuffer ltsHit;
-		private SecondarySoundBuffer catapultSound;
-		private SecondarySoundBuffer lowFuelAlarm;
-		private SecondarySoundBuffer windSound;
-		private SecondarySoundBuffer aileronRollSound, barrelRollSound;
-		private SecondarySoundBuffer radarSound;
-		private SecondarySoundBuffer lockBrokenSound;
-		private SecondarySoundBuffer enginesLaunch;
-		private SecondarySoundBuffer enginesLand;
-		private SecondarySoundBuffer lockAlertSound;
-		private SecondarySoundBuffer afStart;
-		private SecondarySoundBuffer afFlame;
-		private SecondarySoundBuffer afEnd;
-		private SecondarySoundBuffer fallAlarm;
+		private ExtendedAudioBuffer throttleClickSound;
+		private ExtendedAudioBuffer courseClickSound;
+		private ExtendedAudioBuffer selfDestAlarm;
+		private ExtendedAudioBuffer ltsHit;
+		private ExtendedAudioBuffer catapultSound;
+		private ExtendedAudioBuffer lowFuelAlarm;
+		private ExtendedAudioBuffer windSound;
+		private ExtendedAudioBuffer aileronRollSound, barrelRollSound;
+		private ExtendedAudioBuffer radarSound;
+		private ExtendedAudioBuffer lockBrokenSound;
+		private ExtendedAudioBuffer enginesLaunch;
+		private ExtendedAudioBuffer enginesLand;
+		private ExtendedAudioBuffer lockAlertSound;
+		private ExtendedAudioBuffer afStart;
+		private ExtendedAudioBuffer afFlame;
+		private ExtendedAudioBuffer afEnd;
+		private ExtendedAudioBuffer fallAlarm;
 		private OggBuffer ATCMessage;
-		private SecondarySoundBuffer RIOMessage;
-		private SecondarySoundBuffer pilotMessage;
-		private SecondarySoundBuffer lowSpeedAlarm;
-		protected SecondarySoundBuffer engine;
-		private SecondarySoundBuffer jetRumble;
-		private SecondarySoundBuffer altitudeWarningAlarm;
-		private SecondarySoundBuffer landingGear;
-		private SecondarySoundBuffer landingGearOut;
-		private SecondarySoundBuffer turnSignal;
-		private SecondarySoundBuffer destroyed;
-		private SecondarySoundBuffer targetSolutionSound;
-		private SecondarySoundBuffer targetSolutionSound3;
+		private ExtendedAudioBuffer RIOMessage;
+		private ExtendedAudioBuffer pilotMessage;
+		private ExtendedAudioBuffer lowSpeedAlarm;
+		protected ExtendedAudioBuffer engine;
+		private ExtendedAudioBuffer jetRumble;
+		private ExtendedAudioBuffer altitudeWarningAlarm;
+		private ExtendedAudioBuffer landingGear;
+		private ExtendedAudioBuffer landingGearOut;
+		private ExtendedAudioBuffer turnSignal;
+		private ExtendedAudioBuffer destroyed;
+		private ExtendedAudioBuffer targetSolutionSound;
+		private ExtendedAudioBuffer targetSolutionSound3;
 
 		private int sectorX, sectorY;
 		private int lastDirection;
 		private OpenPositions openPosition, lastOpenPosition;
-		private int origThrottleClickFreq;
+		private float origThrottleClickFreq;
 		private int rollTime; //Time before roll can be executed
 		private int gunFireCount, gunWaitTime;
 		private int maxGunFireCount, maxGunWaitTime;
@@ -276,7 +276,6 @@ namespace TDV
 		//two vars below used to stop messages from replaying
 		//once aircraft unmutes and alarms start playing
 		private bool loopedThrough;
-		private bool justCameFromMute;
 		private bool actionsThreadRunning;
 		private bool stopInput;
 		private bool inputPause;
@@ -295,7 +294,6 @@ namespace TDV
 		private bool iteratingActions;
 		protected bool firstMove;
 		private bool afterburnersActive;
-		private long afTime;
 		//Time for which this craft has been racing. At the beginning of the race, it holds the tickCount
 		private long missionCounter;
 		private int missileWarnTime;
@@ -306,7 +304,7 @@ namespace TDV
 		//total time elapsed before self destruct will initiate.
 		private long m_selfDestructTime;
 		//when the race first starts. When the craft is done racing this value will be minused from the time stamp when the craft finishes racing
-		private int origEngineFreq;
+		private float origEngineFreq;
 		private Weapons m_weapon;
 		private bool m_isMuting;
 		private bool isFalling;
@@ -432,32 +430,26 @@ namespace TDV
 			set { m_isLandingGearRetracted = value; }
 		}
 
-		////Flag to determine if has just taken off
+		//Flag to determine if has just taken off
 		private bool isLifting
 		{
 			get { return (m_isLifting); }
 			set { m_isLifting = value; }
 		}
-		////If vehicle is on a runway, returns true; otherwise, false
+		// If aircraft is on a runway, returns true; otherwise, false
 		public bool isOnRunway
 		{
 			get { return (m_isOnRunway); }
 			set { m_isOnRunway = value; }
 		}
 
-		////returns the secondaryBuffer appropriate for what engine should be used
-		////For instance, if the vehicle is on the ground, the ground engine buffer will be returned.
-
-
-
-		////This flag determines if the Aircraft is currently in a turn. (viz. has to turn to clear the current Straightaway)
 		private bool isInTurn
 		{
 			get { return (m_isTurning); }
 			set { m_isTurning = value; }
 		}
 
-		////Distance traveled on current Straightaway.
+		//Distance traveled on current Straightaway.
 		private double currentDistance
 		{
 			get { return (m_currentDistance); }
@@ -608,7 +600,7 @@ namespace TDV
 				setStrafeTime(10, 10);
 			}
 			loadSounds();
-			engine.Frequency = freqInterval();
+			engine.setFrequency(freqInterval());
 			if (!isAI && !Options.loadedFromMainMenu) {
 				Common.playUntilKeyPress(DSound.SoundPath + "\\su.ogg");
 			}
@@ -748,9 +740,9 @@ namespace TDV
 				if (DSound.isPlaying(enginesLaunch))
 					playSound(enginesLaunch, false, false);
 				if (!isInherited()) {
-					if (DSound.isLooping(jetRumble))
+					if (DSound.isPlaying(jetRumble))
 						playSound(jetRumble, false, true);
-					if (!isOnRunway && !DSound.isLooping(jetRumble)) //if it was stopped restart it
+					if (!isOnRunway && !DSound.isPlaying(jetRumble)) //if it was stopped restart it
 						playSound(jetRumble, true, true);
 				} //if !chopper
 			} //if !enginesOff
@@ -773,7 +765,7 @@ namespace TDV
 					&& (!isInTurn))
 					isInTurn = true;
 			}
-			engine.Frequency = freqInterval();
+			engine.setFrequency(freqInterval());
 
 			throttle();
 			if (!isStallCondition()) {
@@ -807,7 +799,7 @@ namespace TDV
 			if (isFalling) {
 				if (!isStallCondition()) { //if pulled out of stall
 					isFalling = false;
-					fallAlarm.Stop();
+					fallAlarm.stop();
 					fallRate = 0.0f;
 				} else //still stalling
 					fall();
@@ -895,12 +887,6 @@ namespace TDV
 					cruiseFire += Common.intervalMS; //we've already fired.
 				fireCruiseMissile();
 			} //if mission fighter
-
-			if (loopedThrough)
-				justCameFromMute = false;
-			if (justCameFromMute)
-				loopedThrough = true; //signal this projector to unset
-									  //the justCameFromMute flag on the next tick.
 		}
 
 		private void interact()
@@ -1255,7 +1241,7 @@ namespace TDV
 		}
 
 		/*
-		private void actionsArray.Add(SecondarySoundBuffer[] theArray, SecondarySoundBuffer ac)
+		private void actionsArray.Add(ExtendedAudioBuffer[] theArray, ExtendedAudioBuffer ac)
 		{
 			if ((theArray.GetUpperBound(0) == 0)) {
 				if ((theArray[0] == null)) {
@@ -1354,8 +1340,13 @@ namespace TDV
 				afStart = loadSound(soundPath + "a1.wav");
 			if (afFlame == null) {
 				afFlame = loadSound(soundPath + "a2.wav");
-				addVolume(afFlame);
+				//addVolume(afFlame);
 			}
+			afStart.setOnEnd(() =>
+			{
+				if (this.afFlame != null)
+					playSound(this.afFlame, true, true);
+			});
 			if (afEnd == null)
 				afEnd = loadSound(soundPath + "a3.wav");
 			if (enginesLaunch == null)
@@ -1365,9 +1356,9 @@ namespace TDV
 			//if AI, engines will be stopped but not faded because 3d sound modifies volume and it could cause conflicts.
 			System.Diagnostics.Trace.WriteLine("IsAI is " + isAI + " for " + name);
 			if (!isAI)
-				jetRumble.Volume = -2000;
+				jetRumble.setVolume(0.8f);
 			System.Diagnostics.Trace.WriteLine("Passed set jetRumble volume for " + name);
-			origEngineFreq = engine.Frequency;
+			origEngineFreq = engine.getFrequency();
 			System.Diagnostics.Trace.WriteLine("Passed set engine frequency for " + name);
 			if (landingGear == null)
 				landingGear = loadSound(soundPath + "l.wav");
@@ -1377,8 +1368,8 @@ namespace TDV
 
 			if (!isAI || autoPlayTarget) {
 				throttleClickSound = loadSound(soundPath + "thrpos.wav");
-				origThrottleClickFreq = throttleClickSound.Frequency;
-				courseClickSound = DSound.LoadSound3d(soundPath + "coupos.wav", false);
+				origThrottleClickFreq = throttleClickSound.getFrequency();
+				courseClickSound = DSound.LoadSound(soundPath + "coupos.wav");
 				if (ltsHit == null)
 					ltsHit = loadSound(soundPath + "ca1-1.wav");
 				if (aileronRollSound == null)
@@ -1404,13 +1395,13 @@ namespace TDV
 				if (lowSpeedAlarm == null)
 					lowSpeedAlarm = loadSound(soundPath + "alarm4.wav");
 				if (targetSolutionSound == null)
-					targetSolutionSound = DSound.LoadSound3d(DSound.SoundPath + "\\alarm5.wav", false);
+					targetSolutionSound = DSound.LoadSound(DSound.SoundPath + "\\alarm5.wav");
 				if (targetSolutionSound3 == null)
 					targetSolutionSound3 = loadSound(soundPath + "alarm7.wav");
 				if (altitudeWarningAlarm == null)
 					altitudeWarningAlarm = loadSound(soundPath + "alarm1.wav");
 				if (turnSignal == null)
-					turnSignal = DSound.LoadSound3d(soundPath + "alarm3.wav", false);
+					turnSignal = DSound.LoadSound(soundPath + "alarm3.wav");
 				if (selfDestAlarm == null)
 					selfDestAlarm = DSound.LoadSound(soundPath + "alarm9.wav");
 			}
@@ -1474,7 +1465,7 @@ namespace TDV
 				if (!isLandingGearRetracted) {
 					if (z > retractGearAltitude) {
 						if (!isAI)
-							landingGearOut.Stop();
+							landingGearOut.stop();
 						playSound(landingGear, true, false);
 						isLandingGearRetracted = true;
 					}
@@ -1482,7 +1473,7 @@ namespace TDV
 				} else {
 					////if  landingGearRetracted
 					if (z < retractGearAltitude) {
-						landingGear.Stop();
+						landingGear.stop();
 						playSound(landingGearOut, true, false);
 						isLandingGearRetracted = false;
 					}
@@ -1501,9 +1492,9 @@ namespace TDV
 			if (!isOnRunway) {
 				if (z <= minAltitude || z > 50000.0) {
 					if (z <= minAltitude) {
-						if (!DSound.isLooping(altitudeWarningAlarm)) {
+						if (!DSound.isPlaying(altitudeWarningAlarm)) {
 							if (Options.mode != Options.Modes.mission
-										&& !firstLaunch && !justCameFromMute
+										&& !firstLaunch
 								&& !requestedLand && !landingOnCarrier && !isElevating) {
 								if (ATCMessage != null)
 									ATCMessage.stopOgg();
@@ -1516,8 +1507,8 @@ namespace TDV
 					DSound.PlaySound(altitudeWarningAlarm, false, true);
 				} else {
 					////if z>minAltitude
-					if (DSound.isLooping(altitudeWarningAlarm)) {
-						altitudeWarningAlarm.Stop();
+					if (DSound.isPlaying(altitudeWarningAlarm)) {
+						altitudeWarningAlarm.stop();
 					}
 					////if alarm.status.looping
 				}
@@ -1533,8 +1524,8 @@ namespace TDV
 				return;
 
 			if (!isInTurn) {
-				if (DSound.isLooping(turnSignal))
-					turnSignal.Stop();
+				if (DSound.isPlaying(turnSignal))
+					turnSignal.stop();
 				return;
 			}
 			double x = 0;
@@ -1738,8 +1729,6 @@ namespace TDV
 			weapon.lockIndex = id;
 			if (isAI)
 				return true; //don't play lock announcement
-							 //We set forcePlay to true so this RIO clip gets played. Otherwise the RIO message for
-							 // a lock will be silenced because justCameFromMute is true.
 			playRIO(soundPath + "lk" + Common.getRandom(0, 1)
 + ".wav", true);
 			return true;
@@ -1978,9 +1967,9 @@ weapon.firingRange);
 		{
 			return (name);
 		}
-		private int freqInterval()
+		private float freqInterval()
 		{
-			return (origEngineFreq + (30 * (int)engineSpeed));
+			return throttlePosition*0.05f;
 		}
 
 		private void level()
@@ -2196,40 +2185,40 @@ weapon.firingRange);
 			if (isMuting)
 				return;
 			if (!weapon.isValidLock() || isOnRunway) {
-				if (DSound.isLooping(targetSolutionSound))
-					targetSolutionSound.Stop();
-				if (DSound.isLooping(targetSolutionSound3))
-					targetSolutionSound3.Stop();
+				if (DSound.isPlaying(targetSolutionSound))
+					targetSolutionSound.stop();
+				if (DSound.isPlaying(targetSolutionSound3))
+					targetSolutionSound3.stop();
 				return;
 			}
 
 			if (weapon.weaponIndex == WeaponTypes.missileInterceptor) {
-				targetSolutionSound.Stop();
+				targetSolutionSound.stop();
 				if (weapon.getInterceptorLock() != null)
 					playSound(targetSolutionSound3, false, true);
 				else
-					targetSolutionSound3.Stop();
+					targetSolutionSound3.stop();
 				return;
 			}
 
 			if (weapon.weaponIndex == WeaponTypes.cruiseMissile) {
-				targetSolutionSound.Stop();
+				targetSolutionSound.stop();
 				if (weapon.cruiseMissileLocked()) {
 					if (weapon.inFiringRange()) {
 						playSound(targetSolutionSound3, false, true);
 						if (Options.mode == Options.Modes.training && currentStage == TrainingStages.solidToneOnFighter1)
 							completedTrainingStage = true;
 					} else
-						targetSolutionSound3.Stop();
+						targetSolutionSound3.stop();
 				} else //if toggled to cruise missile but not locked
-					targetSolutionSound3.Stop();
+					targetSolutionSound3.stop();
 				return;
 			} //if cruise missile
 
 			if (weapon.isValidLock()) {
 				if (!weapon.inFiringRange()) {
-					targetSolutionSound.Stop();
-					targetSolutionSound3.Stop();
+					targetSolutionSound.stop();
+					targetSolutionSound3.stop();
 					return;
 				}
 
@@ -2237,23 +2226,23 @@ weapon.firingRange);
 				RelativePosition p = getPosition(t);
 				if (p.isAhead) {
 					if (p.degreesDifference > 5) {
-						targetSolutionSound3.Stop();
+						targetSolutionSound3.stop();
 						double tx = x;
 						double tY = y;
 						Degrees.moveObject(ref tx, ref tY, p.degrees, 1.0, 1.0);
-						targetSolutionSound.Frequency = (int)(48100 - (100 * p.degreesDifference));
+						targetSolutionSound.setFrequency(48100.0f - (100 * p.degreesDifference));
 						DSound.PlaySound3d(targetSolutionSound, false, true, tx,
 							(pov == PointOfView.interior) ? z : 0.0,
 tY);
 					} else { //if degree difference==0
-						targetSolutionSound.Stop();
+						targetSolutionSound.stop();
 						playSound(targetSolutionSound3, false, true);
 						if (Options.mode == Options.Modes.training && currentStage == TrainingStages.solidToneOnFighter1)
 							completedTrainingStage = true;
 					} //if degrees difference=0
 				} else { //if ! ahead
-					targetSolutionSound.Stop();
-					targetSolutionSound3.Stop();
+					targetSolutionSound.stop();
+					targetSolutionSound3.stop();
 				} //if ahead
 			} //if valid lock
 		}
@@ -2261,14 +2250,14 @@ tY);
 		private void soundLowSpeedAlarm()
 		{
 			if (isPartialStallCondition() && !isFalling) {
-				if (!firstLaunch && !DSound.isLooping(lowSpeedAlarm)) {
+				if (!firstLaunch && !DSound.isPlaying(lowSpeedAlarm)) {
 					playRIO(soundPath + "alarm4m"
 						+ Common.getRandom(1, 2) + ".wav", false);
 				} //if lowspeed alarm not playing
-				if (!DSound.isLooping(lowSpeedAlarm))
+				if (!DSound.isPlaying(lowSpeedAlarm))
 					playSound(lowSpeedAlarm, false, true);
 			} else { // if not dangerously low
-				lowSpeedAlarm.Stop();
+				lowSpeedAlarm.stop();
 			} //if gear retracted and below harddeck
 		}
 
@@ -2278,7 +2267,7 @@ tY);
 			fallRate -= (float)(9.8 * Common.intervalMS / 1000);
 			if (!isAI) {
 				muteAlarms(false); //don't stop stall alarm!
-				if (!DSound.isLooping(fallAlarm)) {
+				if (!DSound.isPlaying(fallAlarm)) {
 					playRIO(soundPath + "hc.wav");
 					playSound(fallAlarm, false, true);
 				} //if not looping
@@ -2288,25 +2277,25 @@ tY);
 		protected virtual void muteEngines()
 		{
 			if (engine != null)
-				engine.Stop();
+				engine.stop();
 			if (jetRumble != null)
-				jetRumble.Stop();
+				jetRumble.stop();
 		}
 		private void muteAlarms(bool stopStallAlarm)
 		{
 			if (isAI && !autoPlayTarget) {
 				return;
 			}
-			if (!isFalling) altitudeWarningAlarm.Stop();
-			lowSpeedAlarm.Stop();
-			targetSolutionSound.Stop();
-			targetSolutionSound3.Stop();
+			if (!isFalling) altitudeWarningAlarm.stop();
+			lowSpeedAlarm.stop();
+			targetSolutionSound.stop();
+			targetSolutionSound3.stop();
 			if (stopStallAlarm)
-				fallAlarm.Stop();
-			turnSignal.Stop();
-			lockAlertSound.Stop();
-			lowFuelAlarm.Stop();
-			selfDestAlarm.Stop();
+				fallAlarm.stop();
+			turnSignal.stop();
+			lockAlertSound.stop();
+			lowFuelAlarm.stop();
+			selfDestAlarm.stop();
 		}
 
 		private void muteAlarms()
@@ -2406,8 +2395,12 @@ tY);
 
 		private void fadeEngines()
 		{
-			if (!isOnRunway && jetRumble.Volume < -1000)
-				jetRumble.Volume += 200;
+			if (!isOnRunway) {
+				float v = jetRumble.getVolume();
+				if (v < 0.9f) {
+					jetRumble.setVolume(v + 0.01f);
+				}
+			}
 		}
 
 		public virtual void muteAllSounds()
@@ -2417,15 +2410,15 @@ tY);
 			isMuting = true;
 			muteAlarms();
 			muteEngines();
-			afStart.Stop();
-			afFlame.Stop();
-			afEnd.Stop();
+			afStart.stop();
+			afFlame.stop();
+			afEnd.stop();
 			if (windSound != null)
-				windSound.Stop();
+				windSound.stop();
 			stopMessages();
 			if (aileronRollSound != null) {
-				aileronRollSound.Stop();
-				barrelRollSound.Stop();
+				aileronRollSound.stop();
+				barrelRollSound.stop();
 			}
 		}
 
@@ -2463,7 +2456,7 @@ tY);
 			if (isTerminated)
 				return;
 			lock (lockAlertSound) {
-				if (!DSound.isLooping(lockAlertSound)) {
+				if (!DSound.isPlaying(lockAlertSound)) {
 					if (Common.getRandom(1, 100) < 5) {
 						playRIO(soundPath + "danger1.wav", false);
 					}
@@ -2482,7 +2475,7 @@ tY);
 			}
 			if ((lockAlertSound != null)) {
 				lock (lockAlertSound) {
-					lockAlertSound.Stop();
+					lockAlertSound.stop();
 				}
 			}
 		}
@@ -2525,19 +2518,15 @@ tY);
 			if (!isAI)
 				DXInput.startAfterburnerEffect();
 			if (!enginesOff) {
-				if (!DSound.isLooping(afFlame)) {
-					//First start the afterburner sound,
-					//then just shift it in 3d space.
-					if (!DSound.isPlaying(afStart))
-						afTime = Environment.TickCount;
+				if (DSound.isPlaying(afStart)) {
+					// Shift it in 3d space.
 					playSound(afStart, false, false);
-
-					if (Environment.TickCount - afTime >= 2000)
-						playSound(afFlame, true, true);
 				} //if afflame!looping
-				else
-					playSound(afFlame, false, true); //shift it
-
+				else {
+					if (DSound.isPlaying(afFlame)) {
+						playSound(afFlame, false, true); //shift it
+					}
+				}
 				if (isAI)
 					return;
 				//AI will deactivate afterburners through the
@@ -2549,10 +2538,8 @@ tY);
 					return; //keep the afterburners going.
 			} //if !enginesOff
 
-			afStart.Stop();
-			afStart.CurrentPosition = 0;
-			afFlame.Stop();
-			afFlame.CurrentPosition = 0;
+			afStart.stop();
+			afFlame.stop();
 			playSound(afEnd, true, false);
 			afterburnersActive = false;
 			if (!isAI)
@@ -2561,10 +2548,13 @@ tY);
 
 		private void activateAfterburners()
 		{
+			if (afterburnersActive)
+				return;
 			if (enginesOff)
 				return;
 			if (DSound.isPlaying(afEnd))
-				afEnd.Stop();
+				afEnd.stop();
+			playSound(afStart, true, false);
 			afterburnersActive = true;
 			if (!isAI)
 				DXInput.startAfterburnerEffect();
@@ -2573,10 +2563,8 @@ tY);
 		private void deactivateAfterburners()
 		{
 			afterburnersActive = false;
-			afStart.Stop();
-			afStart.CurrentPosition = 0;
-			afFlame.Stop();
-			afFlame.CurrentPosition = 0;
+			afStart.stop();
+			afFlame.stop();
 			playSound(afEnd, true, false);
 		}
 
@@ -2716,11 +2704,11 @@ tY);
 					selfDestructTime = 0; //stop and reset timer
 
 				if (selfDestructTime >= 1
-					&& !DSound.isLooping(selfDestAlarm))
+					&& !DSound.isPlaying(selfDestAlarm))
 					playSound(selfDestAlarm, false, true);
 				else if (selfDestructTime == 0
-					&& DSound.isLooping(selfDestAlarm))
-					selfDestAlarm.Stop();
+					&& DSound.isPlaying(selfDestAlarm))
+					selfDestAlarm.stop();
 			} //if mission mode
 		}
 
@@ -2798,7 +2786,7 @@ tY);
 		{
 			if (requestedLand)
 				return false; //don't terminate if landing.
-			if (DSound.isPlaying(destroyed))
+			if (destroyed != null && DSound.isPlaying(destroyed))
 				return false;
 			return base.readyToTerminate();
 		}
@@ -3140,8 +3128,8 @@ tY);
 		private void playThrottleClick()
 		{
 			if (lastOpenPosition!=openPosition) {
-				int freq = origThrottleClickFreq + 1000 * (int)openPosition;
-				throttleClickSound.Frequency = freq;
+				float freq = (float)openPosition;
+				throttleClickSound.setFrequency(freq);
 				playSound(throttleClickSound, true, false);
 			}
 		}
@@ -3226,21 +3214,21 @@ tY);
 		private void playWindSound()
 		{
 			if (speed >= 150.0) {
-				if (!DSound.isLooping(windSound)) {
+				if (!DSound.isPlaying(windSound)) {
 					playSound(windSound, false, true);
 				} //if !looping
-				windSound.Frequency = windFreqInterval();
-				int v = -6000 + 20 * (int)speed;
-				if (v > 0)
-					v = 0;
-				windSound.Volume = v;
+				windSound.setFrequency(windFreqInterval());
+				float v = 1.0f / 6000.0f * (float)speed;
+				if (v > 1.0f)
+					v = 1.0f;
+				windSound.setVolume(v);
 			} //if speed>=150
 			else { //if speed <150
-				windSound.Stop();
+				windSound.stop();
 			}
 		}
 
-		private int windFreqInterval()
+		private float windFreqInterval()
 		{
 			return (48100 + (20 * (int)speed));
 		}
@@ -3284,21 +3272,20 @@ tY);
 			if (ATCMessage != null)
 				ATCMessage.stopOgg();
 			if (RIOMessage != null)
-				RIOMessage.Stop();
+				RIOMessage.stop();
 			if (pilotMessage != null)
-				pilotMessage.Stop();
+				pilotMessage.stop();
 		}
 
 		private void changeRumbleVolume()
 		{
-			if (jetRumble.Volume < -1000)
+			float vol = jetRumble.getVolume();
+			if (vol < 0.9f)
 				return; //still fading in.
-			int vol = -1000 + (int)speed;
-			if (vol > 0)
-				vol = 0;
-			if (vol < -1000)
-				vol = -1000;
-			jetRumble.Volume = vol;
+			vol = 0.9f + (float)speed * 0.005f;
+			if (vol > 0.0f)
+				vol = 0.0f;
+			jetRumble.setVolume(vol);
 		}
 
 		private void moveToSector()
@@ -3409,8 +3396,6 @@ tY);
 				return;
 			if (isAI && !autoPlayTarget)
 				return;
-			if (!forcePlay && justCameFromMute)
-				return;
 			if (!forcePlay && RIOMessage != null && DSound.isPlaying(RIOMessage))
 				return; //it's already playing, don't stop it
 			DSound.unloadSound(ref RIOMessage);
@@ -3421,54 +3406,6 @@ tY);
 		private void playRIO(String file)
 		{
 			playRIO(file, true);
-		}
-
-		/// <summary>
-		/// Mutes all sounds
-		/// </summary>
-		/// <param name="hardMute">If true, will do aggressive mute.</param>
-		public override void mute(bool hardMute)
-		{
-			if (isMuted)
-				return;
-			isMuting = true;
-			base.mute(hardMute);
-			muteAlarms();
-			if (hardMute)
-				muteAllSounds();
-			if (!isAI)
-				DXInput.stopAfterburnerEffect();
-		}
-
-		/// <summary>
-		/// Mutes aircraft but does not do aggressive mute.
-		/// </summary>
-		public override void mute()
-		{
-			mute(false);
-		}
-
-		/// <summary>
-		/// Unmutes all sounds.
-		/// </summary>
-		/// <param name="signal">If true, this object will set justCameFromMute, which is a flag for announcements over alarms to not play since all we're doing is unmuting. Alarms are restarted in a call to unmute().</param>
-		public void unmute(bool signal)
-		{
-			if (!isMuted)
-				return;
-			if (signal)
-				signalCameFromMute();
-			isMuting = false;
-			base.unmute();
-		}
-
-
-		/// <summary>
-		/// Unmutes with signal to true.
-		/// </summary>
-		public override void unmute()
-		{
-			unmute(true);
 		}
 
 		public override void save(BinaryWriter w)
@@ -3622,7 +3559,7 @@ tY);
 			if (Options.mode != Options.Modes.mission)
 				return;
 			if (refuelerRanOutOfFuel) {
-				SecondarySoundBuffer msg = DSound.LoadSound(DSound.SoundPath + "\\rf13.wav");
+				ExtendedAudioBuffer msg = DSound.LoadSound(DSound.SoundPath + "\\rf13.wav");
 				DSound.PlaySound(msg, true, false);
 			}
 			if (callingRefueler) {
@@ -3907,6 +3844,8 @@ tY);
 						break;
 					case Action.throttleUp:
 						throttleUp(); //will only activate with keyboard.
+						//SapiSpeech.speak("" + engine.getFrequency());
+						//engine.setFrequency(engine.getFrequency() + 1f);
 						break;
 					case Action.throttleDown:
 						throttleDown(); //will only activate with keyboard.
@@ -4073,11 +4012,11 @@ tY);
 			if (isMuting)
 				return;
 			if (m_fuelWeight > 1000.0) {
-				if (DSound.isLooping(lowFuelAlarm))
-					lowFuelAlarm.Stop();
+				if (DSound.isPlaying(lowFuelAlarm))
+					lowFuelAlarm.stop();
 				return;
 			}
-			if (!DSound.isLooping(lowFuelAlarm))
+			if (!DSound.isPlaying(lowFuelAlarm))
 				playSound(lowFuelAlarm, false, true);
 		}
 
@@ -4162,12 +4101,6 @@ tY);
 				return;
 			}
 			damage += restorationAmount;
-		}
-
-		private void signalCameFromMute()
-		{
-			loopedThrough = false;
-			justCameFromMute = true;
 		}
 
 		private void finishedInputEvent(String input)
@@ -4985,24 +4918,24 @@ tY);
 			if (isMuting)
 				return;
 			if (rollState == RollState.none) {
-				if (DSound.isLooping(barrelRollSound))
-					barrelRollSound.Stop();
-				if (DSound.isLooping(aileronRollSound))
-					aileronRollSound.Stop();
+				if (DSound.isPlaying(barrelRollSound))
+					barrelRollSound.stop();
+				if (DSound.isPlaying(aileronRollSound))
+					aileronRollSound.stop();
 				return;
 			}
-			SecondarySoundBuffer rollSound = (rollState == RollState.barrelRoll ? barrelRollSound : aileronRollSound);
-			if (DSound.isLooping(barrelRollSound) && rollState != RollState.barrelRoll)
-				barrelRollSound.Stop();
-			if (DSound.isLooping(aileronRollSound) && (rollState != RollState.aileronRoll || rollState == RollState.loop))
-				aileronRollSound.Stop();
+			ExtendedAudioBuffer rollSound = (rollState == RollState.barrelRoll ? barrelRollSound : aileronRollSound);
+			if (DSound.isPlaying(barrelRollSound) && rollState != RollState.barrelRoll)
+				barrelRollSound.stop();
+			if (DSound.isPlaying(aileronRollSound) && (rollState != RollState.aileronRoll || rollState == RollState.loop))
+				aileronRollSound.stop();
 			if (rollState == RollState.aileronRoll || rollState == RollState.barrelRoll) { //banking
 				if (bankAngle > 0)
-					rollSound.Pan = (facingState == FacingState.upright ? 5000 : -5000);
+					DSound.setPan(rollSound, facingState == FacingState.upright ? 1.0f : -1.0f);
 				else
-					rollSound.Pan = (facingState == FacingState.upright ? -5000 : 5000);
+					DSound.setPan(rollSound, facingState == FacingState.upright ? -1.0f : 1.0f);
 			} else //loop
-				rollSound.Pan = 0;
+				DSound.setPan(rollSound, 0.0f);
 			playSound(rollSound, false, true);
 		}
 
@@ -5041,7 +4974,7 @@ tY);
 		private void doTraining()
 		{
 			if (currentStage == TrainingStages.turnedOnAfterburners) {
-				completedTrainingStage = DSound.isLooping(afFlame);
+				completedTrainingStage = DSound.isPlaying(afFlame);
 			}
 
 			if (currentStage == TrainingStages.turnedOffAfterburners) {
@@ -5096,7 +5029,7 @@ tY);
 			}
 
 			if (currentStage == TrainingStages.throttleBackUp) {
-				completedTrainingStage = DSound.isLooping(afFlame) && speed == maxSpeed;
+				completedTrainingStage = DSound.isPlaying(afFlame) && speed == maxSpeed;
 			}
 
 			if (currentStage == TrainingStages.checkSpeed) {
@@ -5148,7 +5081,7 @@ tY);
 			}
 
 			if (currentStage == TrainingStages.barrelRoll) {
-				completedTrainingStage = DSound.isLooping(barrelRollSound) && bankAngle > 0;
+				completedTrainingStage = DSound.isPlaying(barrelRollSound) && bankAngle > 0;
 				if (!completedTrainingStage && (bankAngle < 0 || rollState == RollState.aileronRoll || rollState == RollState.loop))
 					playIncorrectTrainingCommand();
 				else
@@ -5156,7 +5089,7 @@ tY);
 			}
 
 			if (currentStage == TrainingStages.comeOutOfBarrelRoll) {
-				completedTrainingStage = !DSound.isLooping(barrelRollSound);
+				completedTrainingStage = !DSound.isPlaying(barrelRollSound);
 			}
 
 			if (currentStage == TrainingStages.splitS) {
@@ -5200,7 +5133,7 @@ tY);
 				Degrees.moveObject(ref px, ref py, dir, 1.0, 3.0);
 				Mission.trainer.x = px;
 				Mission.trainer.y = py;
-				completedTrainingStage = weapon.isValidLock() && z == weapon.getLockedTarget().z && DSound.isLooping(targetSolutionSound); //otherwise trainer talks before solution kicks in.
+				completedTrainingStage = weapon.isValidLock() && z == weapon.getLockedTarget().z && DSound.isPlaying(targetSolutionSound); //otherwise trainer talks before solution kicks in.
 			}
 
 			if (currentStage == TrainingStages.solidToneOnFighter1) {
@@ -5327,7 +5260,7 @@ tY);
 				saidInstructions = true;
 			} else {
 				if (currentStage == TrainingStages.hudCourse || currentStage == TrainingStages.killFighter2)
-					aileronRollSound.Stop();
+					aileronRollSound.stop();
 				currentStage++;
 				saidInstructions = false;
 				completedTrainingStage = false;
@@ -5350,7 +5283,7 @@ tY);
 				return;
 			if (String.IsNullOrEmpty(trainingNames[(int)currentStage]))
 				return;
-			String mask = (DSound.isFromResource) ? (trainingNames[(int)currentStage] + "*") : (trainingNames[(int)currentStage] + "*.ogg");
+			String mask = trainingNames[(int)currentStage] + "*.ogg";
 			Regex regEx = new Regex(trainingNames[(int)currentStage] + "[0-9]+", RegexOptions.Compiled);
 			String[] files = Directory.GetFiles(DSound.SoundPath, mask);
 			Array.Sort(files);

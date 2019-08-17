@@ -7,7 +7,7 @@
 */
 using System;
 using System.IO;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
@@ -15,10 +15,10 @@ namespace TDV
 {
 	public class Missile : WeaponBase
 	{
-		private SecondarySoundBuffer missileLaunchSound;
-		private SecondarySoundBuffer missileSound;
-		private SecondarySoundBuffer missileHitSound;
-		private SecondarySoundBuffer fox;
+		private ExtendedAudioBuffer missileLaunchSound;
+		private ExtendedAudioBuffer missileSound;
+		private ExtendedAudioBuffer missileHitSound;
+		private ExtendedAudioBuffer fox;
 		private double tz;
 
 		public Missile(Weapons w)
@@ -27,7 +27,7 @@ namespace TDV
 			type = WeaponTypes.missile;
 			weapon.decreaseAmmunitionFor(WeaponTypes.missile);
 			missileLaunchSound = loadSound(soundPath + "m1.wav");
-			missileSound = DSound.LoadSound3d(DSound.SoundPath + "\\m2.wav");
+			missileSound = DSound.LoadSound(DSound.SoundPath + "\\m2.wav");
 			addVolume(missileSound);
 			neutralizeSpeed(1500.0);
 			setSpan(0.1, 0.1);
@@ -59,7 +59,7 @@ namespace TDV
 			base.onTick();
 			if (inFiringRange())
 			{
-				missileSound.Stop();
+				missileSound.stop();
 				missileHitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 3) + ".wav");
 				target.playSound(missileHitSound, true, false);
 				fireHitEvent(target, Common.getRandom(300));
@@ -68,7 +68,7 @@ namespace TDV
 			}
 			if (totalDistance > 15.0 || finished)
 			{
-				missileSound.Stop();
+				missileSound.stop();
 				finished = true;
 				performing = (missileHitSound != null && DSound.isPlaying(missileHitSound)) || (expl != null && DSound.isPlaying(expl));
 			}
@@ -76,7 +76,7 @@ namespace TDV
 
 		public override void serverSideHit(Projector target, int damageAmount)
 		{
-			missileSound.Stop();
+			missileSound.stop();
 			missileHitSound = target.loadSound(target.soundPath + "m3-" + Common.getRandom(1, 3) + ".wav");
 			target.playSound(missileHitSound, true, false);
 			fireHitEvent(target, damageAmount);
@@ -90,9 +90,9 @@ namespace TDV
 			if (!isAI)
 			{
 				if (ammunitionNumber % 2 != 0) //odd number means fire from right
-					missileLaunchSound.Pan = (ammunitionNumber + 1) / 2 * 2500; //give 1 to ammunition number so we can divide properly; adding 1 will make it evenly divisible by 2.
+					DSound.setPan(missileLaunchSound, (ammunitionNumber + 1) / 2 * 0.25f); //give 1 to ammunition number so we can divide properly; adding 1 will make it evenly divisible by 2.
 				else
-					missileLaunchSound.Pan = ammunitionNumber / 2 * -2500;
+					DSound.setPan(missileLaunchSound, ammunitionNumber / 2 * -0.25f);
 				fox = loadSound(soundPath + "fox2.wav");
 				playSound(fox, true, false);
 				DXInput.startFireEffect();

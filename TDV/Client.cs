@@ -14,7 +14,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.IO;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
@@ -135,7 +135,7 @@ namespace TDV
 		}
 		private static List<String> chatMessages;
 
-		private static SecondarySoundBuffer chatSound, chatEnterSound, chatLeaveSound, privateMessageSound, serverMessageSound;
+		private static ExtendedAudioBuffer chatSound, chatEnterSound, chatLeaveSound, privateMessageSound, serverMessageSound;
 		private static byte[] responseStream;
 		private static AutoResetEvent waitingForResponse;
 		private static LoginMessages m_messages;

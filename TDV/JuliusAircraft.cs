@@ -7,17 +7,17 @@
 */
 using System;
 using System.IO;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public class JuliusAircraft : Aircraft
 	{
-		private SecondarySoundBuffer taunt;
-		private SecondarySoundBuffer startChargeSound;
-		private SecondarySoundBuffer chargeSound;
-		private SecondarySoundBuffer endChargeSound;
+		private ExtendedAudioBuffer taunt;
+		private ExtendedAudioBuffer startChargeSound;
+		private ExtendedAudioBuffer chargeSound;
+		private ExtendedAudioBuffer endChargeSound;
 		private bool incarnatedChoppers;
 		private bool incarnatedFighters;
 		private bool incarnatedFighters2;
@@ -70,10 +70,10 @@ namespace TDV
 
 		protected override void muteEngines()
 		{
-			engine.Stop();
-			chargeSound.Stop();
-			endChargeSound.Stop();
-			startChargeSound.Stop();
+			engine.stop();
+			chargeSound.stop();
+			endChargeSound.stop();
+			startChargeSound.stop();
 			base.muteEngines();
 		}
 
@@ -200,7 +200,7 @@ namespace TDV
 		public void warnPlayer()
 		{
 			if (taunt != null)
-				taunt.Stop();
+				taunt.stop();
 			playTaunt(soundPath + "j1-2.wav");
 		}
 
@@ -301,8 +301,8 @@ namespace TDV
 			if (rechargeTime == 0)
 				return;
 			playSound(endChargeSound, true, false);
-			chargeSound.Stop();
-			startChargeSound.Stop();
+			chargeSound.stop();
+			startChargeSound.stop();
 			if (justStopSounds)
 				((Aircraft)Mission.player).announceDoneCharging();
 			else
@@ -314,7 +314,7 @@ namespace TDV
 		public override void muteAllSounds()
 		{
 			if (taunt != null)
-				taunt.Stop();
+				taunt.stop();
 			base.muteAllSounds();
 		}
 

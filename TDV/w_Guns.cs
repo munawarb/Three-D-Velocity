@@ -6,7 +6,7 @@
 * Copyright (C) Munawar Bijani
 */
 using System;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
@@ -15,7 +15,7 @@ namespace TDV
 	public class Guns : WeaponBase
 	{
 
-		private SecondarySoundBuffer gunHitSound;
+		private ExtendedAudioBuffer gunHitSound;
 		public Guns(Weapons w)
 			: base(w, "p" + (int)WeaponTypes.guns)
 		{

@@ -5,14 +5,12 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
-using System;
-using SharpDX.DirectSound;
 using BPCSharedComponent.VectorCalculation;
+using System;
 namespace TDV
 {
 	public class Chopper : Aircraft
 	{
-		//will act like a vehicle with some masked methods
 		public Chopper(double x, double y)
 			: base(0, 1000, "c", true, new Track(Options.currentTrack))
 		{
@@ -45,7 +43,7 @@ namespace TDV
 
 		protected override void muteEngines()
 		{
-			engine.Stop();
+			engine.stop();
 			base.muteEngines();
 		}
 

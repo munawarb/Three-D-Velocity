@@ -11,7 +11,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 namespace TDV
@@ -104,8 +104,8 @@ namespace TDV
   private int m_lastMaxIndex;
   private int[] m_ammunition;
   private Projector m_LCSTarget;
-  private static SecondarySoundBuffer lockSound, lockAlertSound;
-  private SecondarySoundBuffer gunSound;
+  private static ExtendedAudioBuffer lockSound, lockAlertSound;
+  private ExtendedAudioBuffer gunSound;
   private Projector m_target;
         private bool explosiveDeleted; //is true if a weapon was deleted
         //on its call to Explosive.onTick()

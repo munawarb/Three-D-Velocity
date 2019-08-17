@@ -8,6 +8,7 @@
 using System;
 using SharpDX.XAudio2;
 using SharpDX.X3DAudio;
+using System.Threading;
 
 namespace BPCSharedComponent.ExtendedAudio
 {
@@ -25,6 +26,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		private AudioBuffer buffer;
 		private SourceVoice voice;
 		private State m_state;
+		private Action onEnd;
 
 		/// <summary>
 		///  The state of the audio. It will begin in the stopped state.
@@ -47,7 +49,18 @@ namespace BPCSharedComponent.ExtendedAudio
 			voice.StreamEnd += () =>
 			{
 				m_state = State.stopped;
+				if (onEnd != null)
+					new Thread(() => onEnd()).Start();
 			};
+		}
+
+		/// <summary>
+		/// Sets a callback to be executed when this sound is done playing. Querying state during the callback will return State.stopped.
+		/// </summary>
+		/// <param name="onEnd">A function to execute when this sound stops playing.</param>
+		public void setOnEnd(Action onEnd)
+		{
+			this.onEnd = onEnd;
 		}
 
 		/// <summary>
@@ -57,17 +70,17 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="loop">Whether or not to loop the sound.</param>
 		public void play(bool stop, bool loop)
 		{
+			if (loop) {
+				buffer.LoopCount = AudioBuffer.LoopInfinite;
+			}
 			if (stop) {
 				voice.Stop();
 				voice.FlushSourceBuffers();
 				buffer.Stream.Position = 0;
 				voice.SubmitSourceBuffer(buffer, null);
 			}
-			if (loop) {
-				buffer.LoopCount = AudioBuffer.LoopInfinite;
-			}
-			m_state = State.playing;
 			voice.Start();
+			m_state = State.playing;
 		}
 
 		/// <summary>
@@ -87,6 +100,64 @@ namespace BPCSharedComponent.ExtendedAudio
 		{
 			voice.SetOutputMatrix(1, 2, settings.MatrixCoefficients);
 			voice.SetFrequencyRatio(settings.DopplerFactor);
+		}
+
+		/// <summary>
+		/// Gets the frequency of the sound expressed in semitones.
+		/// </summary>
+		/// <returns>The semitones.</returns>
+		public float getFrequency()
+		{
+			voice.GetFrequencyRatio(out float freq);
+			return XAudio2.FrequencyRatioToSemitones(freq);
+		}
+
+		/// <summary>
+		/// Sets the frequency of the sound.
+		/// </summary>
+		/// <param name="f">The frequency ratio of the sound expressed in semitones.</param>
+		public void setFrequency(float f)
+		{
+			voice.SetFrequencyRatio(XAudio2.SemitonesToFrequencyRatio(f));
+		}
+
+		/// <summary>
+		/// Gets the volume of the sound.
+		/// </summary>
+		/// <returns>The volume setting.</returns>
+		public float getVolume()
+		{
+			voice.GetVolume(out float volume);
+			return volume;
+		}
+
+		/// <summary>
+		/// Sets the volume fo the sound.
+		/// </summary>
+		/// <param name="v">The volume to set the sound at.</param>
+		public void setVolume(float v)
+		{
+			voice.SetVolume(v);
+		}
+
+		/// <summary>
+		/// Gets the VoiceDetails for the sound.
+		/// </summary>
+		/// <returns>The VoiceDetails struct.</returns>
+		public VoiceDetails getVoiceDetails()
+		{
+			return voice.VoiceDetails;
+		}
+
+		/// <summary>
+		/// Applies a level matrix to a sound.
+		/// </summary>
+		/// <param name="sourceChannels">The channel count for the voice.</param>
+		/// <param name="destinationChannels">The channel count for the destination, which is the mastering voice through which this sound is mixed, in most cases.</param>
+		/// <param name="levelMatrixRef">The matrix representing levels.</param>
+		public void setOutputMatrix(int sourceChannels, int destinationChannels, float[] levelMatrixRef)
+		{
+			voice.SetOutputMatrix(sourceChannels, destinationChannels, levelMatrixRef);
 		}
 
 		#region IDisposable Support

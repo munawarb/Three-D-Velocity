@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 using System.Threading;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
@@ -18,7 +18,7 @@ namespace TDV
 	public class AircraftCarrier : MissionObjectBase
 	{
 		private OggBuffer message;
-		private SecondarySoundBuffer moveSound;
+		private ExtendedAudioBuffer moveSound;
 		private bool landedBefore;
 		private bool playerLanding;
 		private bool playerLanded;
@@ -62,7 +62,7 @@ namespace TDV
 			performDeaths();
 			if (readyToTerminate())
 			{
-				moveSound.Stop();
+				moveSound.stop();
 				isProjectorStopped = true;
 				return;
 			}
@@ -98,7 +98,7 @@ namespace TDV
 		{
 			playerLanded = true;
 			Interaction.stopAndMute(true, true);
-			moveSound.Stop();
+			moveSound.stop();
 			Common.fadeMusic();
 			playMessage(DSound.SoundPath + "\\ac" + ((landedBefore) ? "6" : "5") + ".ogg");
 			landedBefore = true;
@@ -156,7 +156,7 @@ namespace TDV
 			if (hit())
 			{
 				sendFinalObjectUpdate();
-				moveSound.Stop();
+				moveSound.stop();
 				base.performDeaths();
 			}
 		}

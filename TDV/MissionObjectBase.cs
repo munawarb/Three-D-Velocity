@@ -10,7 +10,7 @@ using System.IO;
 using System.Threading;
 using BPCSharedComponent.VectorCalculation;
 using BPCSharedComponent.ExtendedAudio;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	public class MissionObjectBase : Projector
@@ -20,7 +20,7 @@ namespace TDV
 		private Weapons m_weapon;
 		private bool m_mustKill;
 		private bool m_noKill;
-		protected SecondarySoundBuffer explodeSound;
+		protected ExtendedAudioBuffer explodeSound;
 		private String m_explodeString;
 		private String m_serverTag;
 		private int m_maxProbability;
@@ -200,7 +200,7 @@ namespace TDV
 			if (isProjectorStopped || dirty)
 				return true;
 
-			if (!DSound.isPlaying(explodeSound))
+			if (explodeSound != null && !DSound.isPlaying(explodeSound))
 			{ //game hasn't ended, or explode sound is playing
 				if (Interaction.isGameFinished(true))
 					System.Diagnostics.Trace.WriteLine(String.Format("shutdown {0}, demo expired {1}, abort {2}, player damage is {3}", Options.requestedShutdown, Options.demoExpired, Options.abortGame, (Mission.player == null)?0:Mission.player.damage));

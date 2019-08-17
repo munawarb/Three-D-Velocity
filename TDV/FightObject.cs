@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpDX;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
 
@@ -252,7 +252,7 @@ namespace TDV
 		/// <param name="theSound">The sound to play.</param>
 		/// <param name="stopFlag">If the sound should be stopped before playing.</param>
 		/// <param name="loopFlag">Whether the sound should be looped or not.</param>
-		protected void playSound(SecondarySoundBuffer theSound, bool stopFlag, bool loopFlag)
+		protected void playSound(ExtendedAudioBuffer theSound, bool stopFlag, bool loopFlag)
 		{
 			if (isAI)
 				DSound.PlaySound3d(theSound, stopFlag, loopFlag, x, 0, y);
@@ -260,11 +260,11 @@ namespace TDV
 				DSound.PlaySound(theSound, stopFlag, loopFlag);
 		}
 
-		protected SecondarySoundBuffer loadSound(string filename)
+		protected ExtendedAudioBuffer loadSound(string filename)
 		{
-			SecondarySoundBuffer s = null;
+			ExtendedAudioBuffer s = null;
 			if (isAI)
-				s = DSound.LoadSound3d(DSound.SoundPath + "\\a_" + filename);
+				s = DSound.LoadSound(DSound.SoundPath + "\\a_" + filename);
 			else
 				s = DSound.LoadSound(DSound.SoundPath + "\\" + filename);
 			return s;
@@ -276,9 +276,9 @@ namespace TDV
 		/// <param name="filename">The file name to use as the template. Should not include the .wav extension</param>
 		/// <param name="n">The number of files to load</param>
 		/// <returns>An array populated with sound buffers.</returns>
-		protected SecondarySoundBuffer[] loadSoundArray(String filename, int n)
+		protected ExtendedAudioBuffer[] loadSoundArray(String filename, int n)
 		{
-			SecondarySoundBuffer[] sounds = new SecondarySoundBuffer[n];
+			ExtendedAudioBuffer[] sounds = new ExtendedAudioBuffer[n];
 			for (int i = 0; i < sounds.Length; i++)
 				sounds[i] = loadSound(filename + (i + 1) + ".wav");
 			return sounds;

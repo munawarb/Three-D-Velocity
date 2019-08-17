@@ -11,7 +11,7 @@ using System.Text;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
-using SharpDX.DirectSound;
+using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
@@ -80,7 +80,7 @@ namespace TDV
 			Common.gameHasFocus = true;
 			Common.mainGUI = this;
 			Common.guiHandle = this.Handle;
-			DSound.initialize(this.Handle, Addendums.File.commonAppPath);
+			DSound.initialize(Addendums.File.commonAppPath);
 			DXInput.DInputInit(this.Handle);
 			this.Deactivate += new EventHandler(GUI_Deactivate);
 			this.Activated += new EventHandler(GUI_Activated);
@@ -1199,7 +1199,7 @@ namespace TDV
 				};
 				intro = (DXInput.JSDevice == null) ? "Press ENTER on a sound to hear it" : "Press the fire button on a sound to hear it";
 			}, Options.menuVoiceMode);
-			SecondarySoundBuffer clip = null;
+			ExtendedAudioBuffer clip = null;
 			do {
 				choice = Common.returnSvOrSr(() => Common.sVGenerateMenu(intro, choices, choice, Common.getIncDecVol()), () => Common.GenerateMenu(intro, choices, choice, Common.getIncDecVol()), Options.menuVoiceMode);
 				intro = null;

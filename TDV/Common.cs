@@ -5,19 +5,19 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
-using System;
-using System.Globalization;
-using System.Collections;
-using System.Text;
-using System.IO;
-using System.Threading;
-using System.Reflection;
-using System.Windows.Forms;
-using SharpDX.DirectSound;
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.Input;
 using SharpDX.DirectInput;
+using SharpDX.XAudio2;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace TDV
 {
@@ -96,7 +96,7 @@ namespace TDV
 		}
 		private const float defaultMusicVol = 0.5f;
 		public static float currentMusicVol=defaultMusicVol, menuMusicVol=defaultMusicVol, onlineMusicVol=defaultMusicVol;
-		private static SecondarySoundBuffer menuWrapSound, menuMoveSound, menuSelectSound;
+		private static ExtendedAudioBuffer menuWrapSound, menuMoveSound, menuSelectSound;
 		private static bool m_previousFileVersion;
 
 		public static bool previousFileVersion
@@ -357,9 +357,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						 || DXInput.isJSButtonHeldDown(1))
 				Thread.Sleep(5);
 
-			SecondarySoundBuffer ISound = null;
+			ExtendedAudioBuffer ISound = null;
 			bool HasSaid = false;
-			long MenuRate = 0;
 			SapiSpeech.purge();
 			SelfVoice.purge(true);
 			int length = menu.Length;
@@ -371,8 +370,6 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						ISound = DSound.LoadSound(intro);
 					else
 						ISound = DSound.LoadSound(DSound.NSoundPath + "\\" + intro);
-
-					ISound.Frequency = (int)MenuRate;
 					DSound.PlaySound(ISound, true, false);
 
 					while (DSound.isPlaying(ISound)) {
@@ -705,6 +702,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (!Mission.isMission) {
 				t = new Track(Options.currentTrack);
 				Holder h = Interaction.holderAt(0);
+				Options.mode = Options.Modes.testing;
 				for (i = 1;
 				 i <=
 				 ((Options.mode == Options.Modes.testing || Options.mode == Options.Modes.training) ? 1 :
@@ -1441,10 +1439,10 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				return;
 			BinaryReader resp = null;
 			if (args[choice].passworded) {
-				SecondarySoundBuffer enterPassword = DSound.LoadSound(DSound.NSoundPath + "\\pw1.wav");
+				ExtendedAudioBuffer enterPassword = DSound.LoadSound(DSound.NSoundPath + "\\pw1.wav");
 				DSound.PlaySound(enterPassword, true, false);
 				String pwd = mainGUI.receiveInput();
-				enterPassword.Stop();
+				enterPassword.stop();
 				if (pwd == null)
 					return;
 				resp = Client.getResponse(CSCommon.buildCMDString(CSCommon.cmd_joinChatRoom, args[choice].id, pwd));
@@ -1473,10 +1471,10 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 		private static void createChatRoom()
 		{
-			SecondarySoundBuffer enr = DSound.LoadSound(DSound.NSoundPath + "\\enr.wav");
+			ExtendedAudioBuffer enr = DSound.LoadSound(DSound.NSoundPath + "\\enr.wav");
 			DSound.PlaySound(enr, true, false);
 			String name = mainGUI.receiveInput();
-			enr.Stop();
+			enr.stop();
 			if (name == null)
 				return;
 			String password = null;
@@ -1488,7 +1486,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				do {
 					DSound.PlaySound(enr, true, false);
 					password = mainGUI.receiveInput();
-					enr.Stop();
+					enr.stop();
 				} while (password == null);
 			}
 			using (BinaryWriter w = new BinaryWriter(new MemoryStream())) {
