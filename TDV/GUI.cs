@@ -538,8 +538,7 @@ namespace TDV
 				return;
 			Options.writeToFile();
 			Common.fadeMusic(true);
-			Common.music = DSound.loadMusicFile(DSound.SoundPath + "\\ms1.ogg");
-			Common.music.play(true);
+			Common.startMusic(DSound.SoundPath + "\\ms1.ogg");
 		}
 
 		private void buildKeyMapMenu()

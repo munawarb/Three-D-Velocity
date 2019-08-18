@@ -187,8 +187,8 @@ namespace BPCSharedComponent.ExtendedAudio
 				Position = new Vector3((float)x, (float)y, (float)z)
 			};
 			sound.play(stop, loop);
-			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, 1, 2);
-			sound.apply3D(dspSettings);
+			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
+			sound.apply3D(dspSettings, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
 		}
 
 		/// <summary>

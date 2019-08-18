@@ -790,9 +790,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				while (!exitOnline) {
 					if (!Client.askForSpectator()) {
 						if (!startedMusic) {
-							Common.music.stopOgg();
-							Common.music = DSound.loadMusicFile(DSound.SoundPath + "\\ms6.ogg");
-							Common.music.play(true);
+							startMusic(DSound.SoundPath + "\\ms6.ogg");
 							startedMusic = true;
 						}
 					} //if doesn't want spectator
@@ -1125,8 +1123,19 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					changedMusic = true;
 				}
 			}
-			if (changedMusic)
+			if (changedMusic) {
+				DSound.setVolumeOfMusic(musicVolume);
 				music.play(true);
+			}
+		}
+
+		public static void startMusic(String filename)
+		{
+			DSound.setVolumeOfMusic(musicVolume);
+			if (music != null)
+				music.stopOgg();
+			music = DSound.loadMusicFile(filename);
+			music.play(true);
 		}
 
 		public static void saveGame(int slot)

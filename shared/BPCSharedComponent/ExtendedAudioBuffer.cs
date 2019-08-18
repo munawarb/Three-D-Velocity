@@ -109,7 +109,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// Applies 3-D settings represented by the supplied settings object to the sound.
 		/// </summary>
 		/// <param name="settings">The DspSettings object that represents changes that should be made to this sound.</param>
-		public void apply3D(DspSettings settings)
+		public void apply3D(DspSettings settings, int sourceChannels, int destinationChannels)
 		{
 			voice.SetOutputMatrix(1, 2, settings.MatrixCoefficients);
 			voice.SetFrequencyRatio(settings.DopplerFactor);
