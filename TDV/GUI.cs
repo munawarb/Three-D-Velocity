@@ -399,8 +399,7 @@ namespace TDV
 			//writeTrack();
 			//If we tried to connect and the connection failed, then the main menu music will still be playing
 			if (!Common.failedConnect) {
-				Common.music = DSound.loadMusicFile(DSound.SoundPath + "\\ms1.ogg");
-				Common.music.play(true);
+				Common.startMusic(DSound.SoundPath + "\\ms1.ogg");
 			}
 			Common.failedConnect = false;
 

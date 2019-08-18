@@ -316,7 +316,6 @@ namespace TDV
 		//when the race first starts. When the craft is done racing this value will be minused from the time stamp when the craft finishes racing
 		private float origEngineFreq;
 		private Weapons m_weapon;
-		private bool m_isMuting;
 		private bool isFalling;
 		private float fallRate = 0.0f; //in meters/s
 		private bool m_isLeveling;
@@ -380,13 +379,6 @@ namespace TDV
 		{
 			get { return (m_POV); }
 			set { m_POV = value; }
-		}
-		////determines if all alarms should be muted.
-		////if this flag is set, all alarm processing will be haulted and aborted.
-		private bool isMuting
-		{
-			get { return (m_isMuting); }
-			set { m_isMuting = value; }
 		}
 
 		private long selfDestructTime
@@ -711,7 +703,6 @@ namespace TDV
 			}
 			System.Diagnostics.Trace.WriteLine("Before readyToTerminate check for " + name);
 			if (readyToTerminate()) {
-				muteAllSounds();
 				freeResources();
 				if (!isAI)
 					terminateInput();
@@ -1489,8 +1480,6 @@ namespace TDV
 
 		private void altitudeWarning()
 		{
-			if (isMuting)
-				return;
 
 			if (!isOnRunway) {
 				if (z <= minAltitude || z > 50000.0) {
@@ -1523,9 +1512,6 @@ namespace TDV
 
 		private void updateTurnSignal()
 		{
-			if (isMuting)
-				return;
-
 			if (!isInTurn) {
 				if (DSound.isPlaying(turnSignal))
 					turnSignal.stop();
@@ -1821,7 +1807,6 @@ namespace TDV
 					}
 				} //if sender
 				explodeSound = loadSound(soundPath + "d1.wav");
-				muteAllSounds();
 				playSound(explodeSound, true, false);
 				if (!isAI) {
 					DXInput.startExplodeEffect();
@@ -1839,7 +1824,6 @@ namespace TDV
 					speak("You made a pilot error");
 					sMessage = name + " made a pilot error";
 				}
-				muteAllSounds();
 				if (!isAI
 					&& Options.mode == Options.Modes.mission && isAboveOcean()) {
 					Common.fadeMusic();
@@ -2185,8 +2169,6 @@ weapon.firingRange);
 
 		private void targetSolution()
 		{
-			if (isMuting)
-				return;
 			if (!weapon.isValidLock() || isOnRunway) {
 				if (DSound.isPlaying(targetSolutionSound))
 					targetSolutionSound.stop();
@@ -2406,24 +2388,6 @@ tY);
 			}
 		}
 
-		public virtual void muteAllSounds()
-		{
-			if (isProjectorStopped) //call to die may have cleaned up things so may get null reference
-				return;
-			isMuting = true;
-			muteAlarms();
-			muteEngines();
-			afStart.stop();
-			afFlame.stop();
-			afEnd.stop();
-			if (windSound != null)
-				windSound.stop();
-			stopMessages();
-			if (aileronRollSound != null) {
-				aileronRollSound.stop();
-				barrelRollSound.stop();
-			}
-		}
 
 
 		/// <summary>
@@ -2514,8 +2478,6 @@ tY);
 
 		private void afterBurners()
 		{
-			if (isMuting)
-				return;
 			if (!afterburnersActive)
 				return;
 			if (!isAI)
@@ -2791,6 +2753,7 @@ tY);
 				return false; //don't terminate if landing.
 			if (destroyed != null && DSound.isPlaying(destroyed))
 				return false;
+			System.Diagnostics.Trace.WriteLine($"ready to terminate for {name} is {base.readyToTerminate()}");
 			return base.readyToTerminate();
 		}
 
@@ -2936,7 +2899,6 @@ tY);
 				terminateInput();
 			if (!requestingSpectator)
 				isProjectorStopped = true;
-			isMuting = false;
 		}
 
 		//if force is false, the course will only be spoken
@@ -3674,11 +3636,11 @@ tY);
 				//Can't use isTerminate dhere since this projector will only terminate
 				//after this thread stops receiving input.
 				while (inputPause || Interaction.holderAt(0).haulted) {
-					System.Diagnostics.Trace.WriteLine("Requested pause");
+					//System.Diagnostics.Trace.WriteLine("Requested pause");
 					resetActions(); //clear what actions were already registered
-					System.Diagnostics.Trace.WriteLine("Reset actions");
+					//System.Diagnostics.Trace.WriteLine("Reset actions for " + name);
 					weapon.setStrafe(false); //stop strafe sound so it doesn't play over lock menus, etc.
-					System.Diagnostics.Trace.WriteLine("Strafe now false");
+					//System.Diagnostics.Trace.WriteLine("Strafe now false");
 					//in case we have a split second case of the player pressing a key
 					//but we're supposed to stop receiving input.
 					actionsThreadRunning = false;
@@ -3735,7 +3697,7 @@ tY);
 								bankAngle = 0;
 							}
 							check(Action.splitS, true);
-							weapon.setStrafe(!isMuting && check(Action.fireWeapon, weapon.weaponIndex != WeaponTypes.guns) && weapon.weaponIndex == WeaponTypes.guns);
+							weapon.setStrafe(check(Action.fireWeapon, weapon.weaponIndex != WeaponTypes.guns) && weapon.weaponIndex == WeaponTypes.guns);
 							check(Action.autoelevation, true);
 							check(Action.sectorNav, true);
 							check(Action.requestRefuel, true);
@@ -3990,8 +3952,6 @@ tY);
 
 		private void soundLowFuelAlarm()
 		{
-			if (isMuting)
-				return;
 			if (m_fuelWeight > 1000.0) {
 				if (DSound.isPlaying(lowFuelAlarm))
 					lowFuelAlarm.stop();
@@ -4894,8 +4854,6 @@ tY);
 
 		private void playRollSound()
 		{
-			if (isMuting)
-				return;
 			if (rollState == RollState.none) {
 				if (DSound.isPlaying(barrelRollSound))
 					barrelRollSound.stop();

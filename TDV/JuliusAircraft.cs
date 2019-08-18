@@ -80,7 +80,6 @@ namespace TDV
 		{
 			if (readyToTerminate())
 			{
-				muteAllSounds();
 				isProjectorStopped = true;
 				return;
 			}
@@ -308,12 +307,6 @@ namespace TDV
 				rechargeTime = 0;
 				fireTime = 1;
 			}
-		}
-		public override void muteAllSounds()
-		{
-			if (taunt != null)
-				taunt.stop();
-			base.muteAllSounds();
 		}
 
 		public override void freeResources()

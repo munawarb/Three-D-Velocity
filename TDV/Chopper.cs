@@ -50,7 +50,6 @@ namespace TDV
 		{
 			if (readyToTerminate())
 			{
-				muteAllSounds();
 				isProjectorStopped = true;
 				return;
 			}

@@ -200,7 +200,7 @@ namespace TDV
 			if (isProjectorStopped || dirty)
 				return true;
 
-			if (explodeSound != null && !DSound.isPlaying(explodeSound))
+			if (explodeSound == null || (explodeSound != null && !DSound.isPlaying(explodeSound)))
 			{ //game hasn't ended, or explode sound is playing
 				if (Interaction.isGameFinished(true))
 					System.Diagnostics.Trace.WriteLine(String.Format("shutdown {0}, demo expired {1}, abort {2}, player damage is {3}", Options.requestedShutdown, Options.demoExpired, Options.abortGame, (Mission.player == null)?0:Mission.player.damage));
