@@ -701,21 +701,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (!Mission.isMission) {
 				t = new Track(Options.currentTrack);
 				Holder h = Interaction.holderAt(0);
-				Options.mode = Options.Modes.testing;
-				for (i = 1;
-				 i <=
-				 ((Options.mode == Options.Modes.testing || Options.mode == Options.Modes.training) ? 1 :
-				 getRandom(5,
-				 (Options.autoPlay) ? 7 : 5));
-				 i++) {
+				for (i = 1; i <= /*((Options.mode == Options.Modes.testing || Options.mode == Options.Modes.training) ? 1 : getRandom(5, (Options.autoPlay) ? 7 : 5))*/2; i++) {
 					string name = null;
 					if (i == 1)
 						name = "o";
 					else
-						name = ((Options.mode == Options.Modes.deathMatch) ? "f" : "r")
-											  + (i - 1);
-					Aircraft v = new Aircraft(0, 1500, name,
-									   (Options.autoPlay) ? true : (i > 1), t);
+						name = ((Options.mode == Options.Modes.deathMatch) ? "f" : "r") + (i - 1);
+					Aircraft v = new Aircraft(0, 1500, name, (Options.autoPlay) ? true : (i > 1), t);
 					if (Common.ACBMode && !Options.autoPlay)
 						v.startAtHeight(15000);
 					h.add(v);
@@ -723,7 +715,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 						Mission.player = (MissionObjectBase)Interaction.objectAt(v.id);
 				}
 			} else if (!Options.loadedFromMainMenu) { //if mission mode
-													  //If loading mission from main menu, all objects already exist. This code will create duplicate players otherwise.
+				//If loading mission from main menu, all objects already exist. This code will create duplicate players otherwise.
 				if (Options.mode == Options.Modes.racing) {
 					SelfVoice.nStop = false;
 					SelfVoice.NLS(DSound.NSoundPath + "\\race.wav&#" + (Mission.racesComplete + 1));

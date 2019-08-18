@@ -79,8 +79,9 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// </summary>
 		/// <param name="FileName">The path of the file to load.</param>
 		/// <param name="device">The XAudio2 device to load the sound on.</param>
+		/// <param name="notificationsSupport">True to enable receiving notifications on this buffer, false otherwise. A notification might include an event when this buffer starts processing data, or when the buffer has finished playing. Set this parameter to true if you wish to receive a notification when the buffer is done playing by means of the function passed to setOnEnd.</param>
 		/// <returns>A populated ExtendedAudioBuffer.</returns>
-		public static ExtendedAudioBuffer LoadSound(string FileName, XAudio2 device)
+		public static ExtendedAudioBuffer LoadSound(string FileName, XAudio2 device, bool notificationsSupport)
 		{
 			if (!File.Exists(FileName)) {
 				throw (new ArgumentException("The sound " + FileName + " could not be found."));
@@ -90,18 +91,29 @@ namespace BPCSharedComponent.ExtendedAudio
 			AudioBuffer buffer = new AudioBuffer { Stream = stream.ToDataStream(), AudioBytes = (int)stream.Length, Flags = SharpDX.XAudio2.BufferFlags.EndOfStream };
 			// We can now safely close the stream.
 			stream.Close();
-			SourceVoice sv = new SourceVoice(device, format, VoiceFlags.None, 5.0f, true);
+			SourceVoice sv = new SourceVoice(device, format, VoiceFlags.None, 5.0f, notificationsSupport);
 			return new ExtendedAudioBuffer(buffer, sv);
 		}
 
 		/// <summary>
-		/// Loads a wave file into a SourceVoice on the main device.
+		/// Loads a wave file into a SourceVoice on the main device, with notifications disabled.
 		/// </summary>
 		/// <param name="FileName">The path of the file to load.</param>
 		/// <returns>A populated ExtendedAudioBuffer.</returns>
 		public static ExtendedAudioBuffer LoadSound(string FileName)
 		{
-			return LoadSound(FileName, mainSoundDevice);
+			return LoadSound(FileName, mainSoundDevice, false);
+		}
+
+		/// <summary>
+		/// Loads a wave file into a SourceVoice on the main device, with the given notificationsSupport flag.
+		/// </summary>
+		/// <param name="FileName">The path of the file to load.</param>
+		/// <param name="notificationsSupport">True to enable receiving notifications on this buffer, false otherwise. A notification might include an event when this buffer starts processing data, or when the buffer has finished playing. Set this parameter to true if you wish to receive a notification when the buffer is done playing by means of the function passed to setOnEnd.</param>
+		/// <returns>A populated ExtendedAudioBuffer.</returns>
+		public static ExtendedAudioBuffer LoadSound(string FileName, bool notificationsSupport)
+		{
+			return LoadSound(FileName, mainSoundDevice, notificationsSupport);
 		}
 
 		/// <summary>
@@ -111,10 +123,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <returns>A populated ExtendedAudioBuffer.</returns>
 		public static ExtendedAudioBuffer LoadSoundAlwaysLoud(string FileName)
 		{
-			return LoadSound(FileName, alwaysLoudDevice);
+			return LoadSound(FileName, alwaysLoudDevice, false);
 		}
-
-
 
 		/// <summary>
 		/// Creates a new listener object with all of its values set to the default unit vectors per the documentation.

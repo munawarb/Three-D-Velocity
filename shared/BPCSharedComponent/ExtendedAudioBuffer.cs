@@ -25,7 +25,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		}
 		private AudioBuffer buffer;
 		private SourceVoice voice;
-		private State m_state;
+		private bool isInitializingPlayback; // If a consumer happens to query the state of this buffer while we're loading data, they might get State.stopped which is incorrect. So we'll use this flag to force this buffer to send State.playing.
 		private bool hasNeverPlayed;
 		private Action onEnd;
 
@@ -34,30 +34,38 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// </summary>
 		public State state
 		{
-			get { return m_state; }
+			get
+			{
+				if (isInitializingPlayback)
+					return State.playing;
+				else {
+					if (voice.State.BuffersQueued > 0)
+						return State.playing;
+					return State.stopped;
+				}
+			}
 		}
 
 		/// <summary>
 		///  Constructs a new ExtendedAudioBuffer.
 		/// </summary>
 		/// <param name="buffer">The AudioBuffer with which to fill the SourceVoice. The SourceVoice can either be filled beforehand or filled by calling play(true, false).</param>
-		/// <param name="voice">The SourceVoice that represents the pipeline of the supplied Audio Buffer. The SourceVoice must be instantiated with delegate support enabled.</param>
+		/// <param name="voice">The SourceVoice that represents the pipeline of the supplied Audio Buffer. In order to use onEnd, this voice must be instantiated with delegate suport enabled.</param>
 		public ExtendedAudioBuffer(AudioBuffer buffer, SourceVoice voice)
 		{
 			this.buffer = buffer;
 			this.voice = voice;
-			m_state = State.stopped;
 			hasNeverPlayed = true;
+			// Will only fire if callback support is enabled.
 			voice.StreamEnd += () =>
 			{
-				m_state = State.stopped;
 				if (onEnd != null)
 					new Thread(() => onEnd()).Start();
 			};
 		}
 
 		/// <summary>
-		/// Sets a callback to be executed when this sound is done playing. Querying state during the callback will return State.stopped.
+		/// Sets a callback to be executed when this sound is done playing. Querying state during the callback will return State.stopped. In order for this callback to be fired, the SourceVoice must have been created with delegate support enabled. Use one of the overloads of DSound.LoadSound to achieve this.
 		/// </summary>
 		/// <param name="onEnd">A function to execute when this sound stops playing.</param>
 		public void setOnEnd(Action onEnd)
@@ -72,6 +80,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="loop">Whether or not to loop the sound.</param>
 		public void play(bool stop, bool loop)
 		{
+			isInitializingPlayback = true;
 			if (loop) {
 				buffer.LoopCount = AudioBuffer.LoopInfinite;
 			}
@@ -85,7 +94,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				voice.SubmitSourceBuffer(buffer, null);
 			}
 			voice.Start();
-			m_state = State.playing;
+			isInitializingPlayback = false;
 		}
 
 		/// <summary>
@@ -94,7 +103,6 @@ namespace BPCSharedComponent.ExtendedAudio
 		public void stop()
 		{
 			voice.Stop();
-			m_state = State.stopped;
 		}
 
 		/// <summary>
@@ -137,7 +145,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		}
 
 		/// <summary>
-		/// Sets the volume fo the sound.
+		/// Sets the volume of the sound.
 		/// </summary>
 		/// <param name="v">The volume to set the sound at.</param>
 		public void setVolume(float v)

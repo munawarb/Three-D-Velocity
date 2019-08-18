@@ -1344,7 +1344,7 @@ namespace TDV
 			if (jetRumble == null)
 				jetRumble = loadSound(soundPath + "e2.wav");
 			if (afStart == null)
-				afStart = loadSound(soundPath + "a1.wav");
+				afStart = loadSound(soundPath + "a1.wav", true); // Load with notifcations.
 			if (afFlame == null)
 				afFlame = loadSound(soundPath + "a2.wav");
 			afStart.setOnEnd(() =>

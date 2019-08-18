@@ -509,19 +509,24 @@ namespace TDV
 				}
 			}
 		}
-		public ExtendedAudioBuffer loadSound(string filename)
+		public ExtendedAudioBuffer loadSound(string filename, bool notifications)
 		{
 			ExtendedAudioBuffer s = null;
 			if (isAI && !autoPlayTarget)
 			{
 				if (!forceStareo)
-					s = DSound.LoadSound(filename);
+					s = DSound.LoadSound(filename, notifications);
 				else
-					s = DSound.LoadSound(filename);
+					s = DSound.LoadSound(filename, notifications);
 			}
 			else //Either this is not AI or this is autoPlayTarget
-				s = DSound.LoadSound(filename);
+				s = DSound.LoadSound(filename, notifications);
 			return s;
+		}
+
+		public ExtendedAudioBuffer loadSound(string filename)
+		{
+			return loadSound(filename, false);
 		}
 
 		private string prepend
