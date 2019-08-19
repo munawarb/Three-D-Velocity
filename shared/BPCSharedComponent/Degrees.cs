@@ -5,6 +5,7 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
+using SharpDX;
 using System;
 using System.Threading;
 namespace BPCSharedComponent.VectorCalculation
@@ -140,12 +141,16 @@ namespace BPCSharedComponent.VectorCalculation
 		///<remarks>Assuming timeElapsed is measured in seconds, this method will return the coordinates after one second of travel; if timeElapsed==0.5, this method will return the coordinates after 1/2 seconds of travel, or after 500 milliseconds.
 		///Note: the unit time and time elapsed variables must match.
 		///For instance, if an object moved 5 miles/milliseconds, a value of 1 to the time elapsed variable will assume that 1 millisecond has passed between calls of this method.</remarks> 
-		public static void moveObject(ref double X, ref double Y, int Dir, double speed, double timeElapsed)
+		///<returns>A Vector3 representing the object's velocity.</returns>
+		public static Vector3 moveObject(ref double X, ref double Y, int Dir, double speed, double timeElapsed)
 		{
 			Dir = adjustDirection(Dir);
 			double RadiansDir = toRadians(Dir);
-			Interlocked.Exchange(ref X, X + speed * Math.Cos(RadiansDir) * timeElapsed);
-			Interlocked.Exchange(ref Y, Y + speed * Math.Sin(RadiansDir) * timeElapsed);
+			double xVelocity = speed * Math.Cos(RadiansDir);
+			double yVelocity = speed * Math.Sin(RadiansDir);
+			Interlocked.Exchange(ref X, X + xVelocity * timeElapsed);
+			Interlocked.Exchange(ref Y, Y + yVelocity * timeElapsed);
+			return new Vector3((float)xVelocity, (float)yVelocity, 0f);
 		}
 
 		//Returns the vertical and horizontal maximum speed of an object with a nose angle
@@ -165,13 +170,16 @@ namespace BPCSharedComponent.VectorCalculation
 		/// </summary>
 		/// <param name="z">The starting Z coordinate of the object.</param>
 		/// <param name="speed">A range structure describing the horizontal and vertical speed of the object.</param>
-		public static void moveObject(ref double X, ref double Y, ref double z, int Dir, Range speed, double timeElapsed)
+		/// <returns>A Vector3 representing the velocity of the object.</returns>
+		public static Vector3 moveObject(ref double X, ref double Y, ref double z, int Dir, Range speed, double timeElapsed)
 		{
 			//First, call the original moveObject method to update x and y
-			moveObject(ref X, ref Y, Dir, speed.horizontalDistance, timeElapsed);
+			Vector3 velocity = moveObject(ref X, ref Y, Dir, speed.horizontalDistance, timeElapsed);
+			velocity.Z = (float)speed.verticalDistance;
 			//Next, update the z value based on the speed in the speed Range.
 			//This value is a speed vector, so simply adding it to the z value will yield the new coordinate for z.
 			Interlocked.Exchange(ref z, z + speed.verticalDistance * timeElapsed);
+			return velocity;
 		}
 
 		////The following method  expects two points in space and returns the angle at which one object must face to be in the direct line of the other object,

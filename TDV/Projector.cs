@@ -7,6 +7,7 @@
 */
 using BPCSharedComponent.ExtendedAudio;
 using BPCSharedComponent.VectorCalculation;
+using SharpDX;
 using SharpDX.XAudio2;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace TDV
 		public bool flyingCruiseMissile;
 		protected bool dirty;
 		#endregion
+		protected Vector3 velocity;
 		private OnlineRole m_role;
 		protected bool requestingSpectator, requestingCancelSpectator;
 		protected bool autoPlayTarget;
@@ -338,9 +340,11 @@ namespace TDV
 		}
 		public virtual void move()
 		{
-			Degrees.moveObject(ref x, ref y, ref z,
+			Vector3 v = Degrees.moveObject(ref x, ref y, ref z,
 						 direction,
 						 new Range(getHorizontalSpeed(1.0), getVerticalSpeed(1.0)), Common.intervalMS);
+			// We'll express the velocity in seconds. The velocity returned by moveObject gives us a value expressed in milliseconds.
+			velocity = Vector3.Multiply(v, 1000f);
 		}
 
 		//Below, accelerate and decelerate cast the acceleration speed value to miles per hour--
@@ -499,7 +503,7 @@ namespace TDV
 				if (isAI && !autoPlayTarget)
 				{
 					if (!forceStareo)
-						DSound.PlaySound3d(theSound, stopFlag, loopFlag, x, z, y);
+						DSound.PlaySound3d(theSound, stopFlag, loopFlag, x, z, y, velocity.X, velocity.Z, velocity.Y);
 					else
 						DSound.PlaySound(theSound, stopFlag, loopFlag);
 				}

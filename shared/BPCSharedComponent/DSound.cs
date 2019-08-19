@@ -177,14 +177,18 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="x">The x coordinate of the source.</param>
 		/// <param name="y">The y coordinate of the source.</param>
 		/// <param name="z">The z coordinate of the source.</param>
-		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, double x, double y, double z)
+		/// <param name="vx">The x component of the velocity vector.</param>
+		/// <param name="vy">The y component of the velocity  vector.</param>
+		/// <param name="vz">The z component of the velocity vector.</param>
+		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, double x, double y, double z, double vx=0, double vy=0, double vz=0)
 		{
 			Emitter emitter = new Emitter {
 				ChannelCount = 1,
 				CurveDistanceScaler = float.MinValue,
 				OrientFront = new Vector3(0, 0, 1),
 				OrientTop = new Vector3(0, 1, 0),
-				Position = new Vector3((float)x, (float)y, (float)z)
+				Position = new Vector3((float)x, (float)y, (float)z),
+				Velocity = new Vector3((float)vx, (float)vy, (float)vz)
 			};
 			sound.play(stop, loop);
 			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
