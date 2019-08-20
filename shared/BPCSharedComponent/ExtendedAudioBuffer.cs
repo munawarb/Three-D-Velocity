@@ -53,7 +53,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="voice">The SourceVoice that represents the pipeline of the supplied Audio Buffer. In order to use onEnd, this voice must be instantiated with delegate suport enabled.</param>
 		public ExtendedAudioBuffer(AudioBuffer buffer, SourceVoice voice)
 		{
-			this.buffer = buffer;
+this.buffer = buffer;
 			this.voice = voice;
 			hasNeverPlayed = true;
 			// Will only fire if callback support is enabled.

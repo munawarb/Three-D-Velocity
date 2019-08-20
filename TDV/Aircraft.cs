@@ -807,10 +807,6 @@ namespace TDV
 			}
 			updateOpenPosition();
 			if (!isAI || autoPlayTarget) {
-				if (pov == PointOfView.interior)
-					DSound.SetCoordinates(x, z, y);
-				else
-					DSound.SetCoordinates(x, 0.0, y);
 				updateListener();
 				playThrottleClick();
 				playCourseClick();
@@ -1528,10 +1524,12 @@ namespace TDV
 		}
 		private void updateListener()
 		{
-			double x = 0;
-			double y = 0;
-			Degrees.moveObject(ref x, ref y, direction, 1.0, 1.0);
-			DSound.setOrientation(x, z, y, 0.0, 1.0, 0.0);
+			DSound.setOrientation(velocity.X, 0,velocity.Y, 0.0, (facingState == FacingState.upright)? 1.0:-1.0, 0.0);
+			if (pov == PointOfView.interior)
+				DSound.SetCoordinates(this.x, this.z, this.y);
+			else
+				DSound.SetCoordinates(this.x, 0.0, this.y);
+			DSound.setVelocity(velocity.X, 0, velocity.Y);
 		}
 
 

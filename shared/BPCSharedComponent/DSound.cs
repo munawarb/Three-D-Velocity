@@ -149,12 +149,23 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="x2"></param>
 		/// <param name="y2"></param>
 		/// <param name="z2"></param>
-		public static void setOrientation(double x1, double y1, double z1, double x2, double y2, double z2)
+		public static void setOrientation(double x1, double y1, double z1, double x2=0, double y2=1, double z2=0)
 		{
 			Vector3 front = new Vector3((float)x1, (float)y1, (float)z1);
 			Vector3 top = new Vector3((float)x2, (float)y2, (float)z2);
 			listener.OrientFront = front;
 			listener.OrientTop = top;
+		}
+
+		/// <summary>
+		/// Sets the velocity of the listener.
+		/// </summary>
+		/// <param name="x">The x component of the velocity vector.</param>
+		/// <param name="y">The y component of the velocity vector.</param>
+		/// <param name="z">The z component of the velocity vector.</param>
+		public static void setVelocity(double x, double y, double z)
+		{
+			listener.Velocity = new Vector3((float)x, (float)y, (float)z);
 		}
 
 		/// <summary>
