@@ -149,10 +149,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="x2"></param>
 		/// <param name="y2"></param>
 		/// <param name="z2"></param>
-		public static void setOrientation(double x1, double y1, double z1, double x2=0, double y2=1, double z2=0)
+		public static void setOrientation(float x1, float y1, float z1, float x2=0, float y2=1, float z2=0)
 		{
-			Vector3 front = new Vector3((float)x1, (float)y1, (float)z1);
-			Vector3 top = new Vector3((float)x2, (float)y2, (float)z2);
+			Vector3 front = new Vector3(x1, y1, z1);
+			Vector3 top = new Vector3(x2, y2, z2);
 			listener.OrientFront = front;
 			listener.OrientTop = top;
 		}
@@ -163,9 +163,9 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="x">The x component of the velocity vector.</param>
 		/// <param name="y">The y component of the velocity vector.</param>
 		/// <param name="z">The z component of the velocity vector.</param>
-		public static void setVelocity(double x, double y, double z)
+		public static void setVelocity(float x, float y, float z)
 		{
-			listener.Velocity = new Vector3((float)x, (float)y, (float)z);
+			listener.Velocity = new Vector3(x, y, z);
 		}
 
 		/// <summary>
@@ -191,15 +191,15 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="vx">The x component of the velocity vector.</param>
 		/// <param name="vy">The y component of the velocity  vector.</param>
 		/// <param name="vz">The z component of the velocity vector.</param>
-		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, double x, double y, double z, double vx=0, double vy=0, double vz=0)
+		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, float x, float y, float z, float vx=0, float vy=0, float vz=0)
 		{
 			Emitter emitter = new Emitter {
 				ChannelCount = 1,
-				CurveDistanceScaler = float.MinValue,
+				CurveDistanceScaler = 1.0f,
 				OrientFront = new Vector3(0, 0, 1),
 				OrientTop = new Vector3(0, 1, 0),
-				Position = new Vector3((float)x, (float)y, (float)z),
-				Velocity = new Vector3((float)vx, (float)vy, (float)vz)
+				Position = new Vector3(x, y, z),
+				Velocity = new Vector3(vx, vy, vz)
 			};
 			sound.play(stop, loop);
 			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
@@ -212,9 +212,9 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="x">The x coordinate of the listener.</param>
 		/// <param name="y">The y coordinate of the listener.</param>
 		/// <param name="z">The z coordinate of the listener.</param>
-		public static void SetCoordinates(double x, double y, double z)
+		public static void SetCoordinates(float x, float y, float z)
 		{
-			listener.Position = new Vector3((float)x, (float)y, (float)z);
+			listener.Position = new Vector3(x, y, z);
 		}
 
 		/// <summary>

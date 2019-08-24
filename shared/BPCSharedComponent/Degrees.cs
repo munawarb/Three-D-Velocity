@@ -31,6 +31,10 @@ namespace BPCSharedComponent.VectorCalculation
 			equal = 3,
 			stationary = 4
 		}
+		/// <summary>
+		/// PI constant casted to float.
+		/// </summary>
+		private const float PI = (float)Math.PI;
 
 		private const Int16 m_North = 0;
 		private const Int16 m_East = 90;
@@ -102,7 +106,7 @@ namespace BPCSharedComponent.VectorCalculation
 		/// <returns>The adjusted value.</returns>
 		public static float getDegreeValue(float dir)
 		{
-			return (float)getDegreeValue((int)Math.Floor(dir)) + (dir - (float)Math.Floor(dir));
+			return getDegreeValue((int)Math.Floor(dir)) + (dir - (float)Math.Floor(dir));
 		}
 
 
@@ -142,69 +146,76 @@ namespace BPCSharedComponent.VectorCalculation
 		///Note: the unit time and time elapsed variables must match.
 		///For instance, if an object moved 5 miles/milliseconds, a value of 1 to the time elapsed variable will assume that 1 millisecond has passed between calls of this method.</remarks> 
 		///<returns>A Vector3 representing the object's velocity.</returns>
-		public static Vector3 moveObject(ref double X, ref double Y, int Dir, double speed, double timeElapsed)
+		public static Vector3 moveObject(ref float X, ref float Y, int Dir, float speed, float timeElapsed)
 		{
 			Dir = adjustDirection(Dir);
-			double RadiansDir = toRadians(Dir);
-			double xVelocity = speed * Math.Cos(RadiansDir);
-			double yVelocity = speed * Math.Sin(RadiansDir);
-			Interlocked.Exchange(ref X, X + xVelocity * timeElapsed);
-			Interlocked.Exchange(ref Y, Y + yVelocity * timeElapsed);
-			return new Vector3((float)xVelocity, (float)yVelocity, 0f);
+			float RadiansDir = toRadians(Dir);
+			float xVelocity = speed * (float)Math.Cos(RadiansDir);
+			float yVelocity = speed * (float)Math.Sin(RadiansDir);
+			X = X + xVelocity * timeElapsed;
+			Y = Y + yVelocity * timeElapsed;
+			return new Vector3(xVelocity, yVelocity, 0f);
 		}
 
-		//Returns the vertical and horizontal maximum speed of an object with a nose angle
-		//defined by v.direction. The ground is assumed to be the base line by which the nose angle of the object is calculated.
-		//For instance, if 90 degrees were passed to this method, the object would move straight upward with no horizontal thrust.
-		//The information calculated by this method is stored in a Range structure, which contains the horizontal and vertical speed of the object.
-		//For instance, if the speed value of 5 miles/hour was passed, a hypothetical situation is demonstrated below.
-		//Assuming the nose angle was 45.0 degrees, the returned Range would yield a horizontal speed of 2.5 miles/hour, and the vertical speed would yield 2.5 miles/hour.
+		/// <summary>
+		/// Returns the vertical and horizontal maximum speed of an object with a nose angle
+		/// defined by v.direction. The ground is assumed to be the base line by which the nose angle of the object is calculated.
+		/// For instance, if 90 degrees were passed to this method, the object would move straight upward with no horizontal thrust.
+		/// The information calculated by this method is stored in a Range structure, which contains the horizontal and vertical speed of the object.
+		/// For instance, if the speed value of 5 miles/hour was passed, a hypothetical situation is demonstrated below.
+		/// Assuming the nose angle was 45.0 degrees, the returned Range would yield a horizontal speed of 2.5 miles/hour, and the vertical speed would yield 2.5 miles/hour.
+		/// </summary>
+		/// <param name="v">A Velocity structure describing the velocity of the object.</param>
+		/// <returns>The velocity of the object.</returns>
 		public static Range getHVSpeed(Velocity v)
 		{
-			double radianDir = v.direction * 2.0 * Math.PI / 360.0;
-			return (new Range(v.speed * Math.Cos(radianDir), v.speed * Math.Sin(radianDir)));
+			float radianDir = v.direction * 2f * PI / 360f;
+			return (new Range(v.speed * (float)Math.Cos(radianDir), v.speed * (float)Math.Sin(radianDir)));
 		}
 
 		/// <summary>
 		///expects an object's coordinates and updates their values based on the information supplied by the Range structure.
 		/// </summary>
-		/// <param name="z">The starting Z coordinate of the object.</param>
+		/// <param name="Z">The starting Z coordinate of the object.</param>
 		/// <param name="speed">A range structure describing the horizontal and vertical speed of the object.</param>
 		/// <returns>A Vector3 representing the velocity of the object.</returns>
-		public static Vector3 moveObject(ref double X, ref double Y, ref double z, int Dir, Range speed, double timeElapsed)
+		public static Vector3 moveObject(ref float X, ref float Y, ref float Z, int Dir, Range speed, float timeElapsed)
 		{
 			//First, call the original moveObject method to update x and y
 			Vector3 velocity = moveObject(ref X, ref Y, Dir, speed.horizontalDistance, timeElapsed);
-			velocity.Z = (float)speed.verticalDistance;
+			velocity.Z = speed.verticalDistance;
 			//Next, update the z value based on the speed in the speed Range.
 			//This value is a speed vector, so simply adding it to the z value will yield the new coordinate for z.
-			Interlocked.Exchange(ref z, z + speed.verticalDistance * timeElapsed);
+			Z = Z + speed.verticalDistance * timeElapsed;
 			return velocity;
 		}
 
-		////The following method  expects two points in space and returns the angle at which one object must face to be in the direct line of the other object,
-		////such that the object at coordinates (x1, y1) must face the course of 
-		////degrees.getDegreesBetween(x1, y1, x2, y2)
-		////to be able to orient itself on a collision with an object stationed at (x2, y2).
-		public static int GetDegreesBetween(double X1, double Y1, double X2, double Y2)
+		/// <summary>
+		/// Calculates the degree mark of object 2 relative to object 1 such that obj(x1, y1) must orient itself to this degree mark to be on a collision course with obj(x2, y2).
+		/// </summary>
+		/// <param name="X1">The x coordinate of object 1.</param>
+		/// <param name="Y1">The y coordinate of object 1.</param>
+		/// <param name="X2">The x coordinate of object 2.</param>
+		/// <param name="Y2">The y coordinate of object 2.</param>
+		/// <returns>The course object 1 must face to intercept object 2.</returns>
+		public static int GetDegreesBetween(float X1, float Y1, float X2, float Y2)
 		{
 			double TheTa = 0;
-			double X = 0;
-			double Y = 0;
+			float X = 0f;
+			float Y = 0f;
 			X = X1 - X2;
 			Y = Y2 - Y1;
 			TheTa = Math.Atan2(-X, Y);
 			if (TheTa < 0)
 			{
-				TheTa = TheTa + 2.0 * Math.PI;
+				TheTa = TheTa + 2f * PI;
 			}
-			return (int)(TheTa * 180 / Math.PI);
+			return (int)((float)TheTa * 180f / PI);
 		}
 
-		////The following method returns the distance between two ordered pairs.
-		public static double getDistanceBetween(double X1, double Y1, double X2, double Y2)
+		public static float getDistanceBetween(float X1, float Y1, float X2, float Y2)
 		{
-			return (System.Math.Sqrt(System.Math.Pow(X2 - X1, 2) + System.Math.Pow(Y2 - Y1, 2)));
+			return (float)System.Math.Sqrt((float)System.Math.Pow(X2 - X1, 2) + (float)System.Math.Pow(Y2 - Y1, 2));
 		}
 
 		////The following method returns a boolean flag indicating whether the supplied degree value is a cardinal direction.
@@ -262,8 +273,8 @@ namespace BPCSharedComponent.VectorCalculation
 
 		//Returns a RelativePosition structure that defines the
 		//position of jbect 2 to object 1, from the perspective of object 1.
-		public static RelativePosition getPosition(double x1, double y1, double z1, int dir1,
-			double x2, double y2, double z2, int dir2,
+		public static RelativePosition getPosition(float x1, float y1, float z1, int dir1,
+			float x2, float y2, float z2, int dir2,
 			bool isObject)
 		{
 			RelativePosition r = new RelativePosition();
@@ -318,8 +329,8 @@ namespace BPCSharedComponent.VectorCalculation
 
 		//Overloaded. Should be called if the target object is an aircraft or other flying object
 		//for which views would be relevant
-		public static RelativePosition getPosition(double x1, double y1, double z1, int dir1,
-			double x2, double y2, double z2, int dir2)
+		public static RelativePosition getPosition(float x1, float y1, float z1, int dir1,
+			float x2, float y2, float z2, int dir2)
 		{
 			return (getPosition(x1, y1, z1, dir1,
 				x2, y2, z2, dir2,
@@ -358,9 +369,9 @@ namespace BPCSharedComponent.VectorCalculation
 			return 0;
 		}
 
-		public static double getCircumference(double r)
+		public static float getCircumference(float r)
 		{
-			return (2.0 * Math.PI * r);
+			return (2f * PI * r);
 		}
 
 
@@ -397,9 +408,9 @@ namespace BPCSharedComponent.VectorCalculation
 		/// </summary>
 		/// <param name="d">The degree value to convert</param>
 		/// <returns>The degree value in radians</returns>
-		public static double toRadians(int d)
+		public static float toRadians(int d)
 		{
-			return d * 2.0 * Math.PI / 360.0;
+			return d * 2f * PI / 360f;
 		}
 	}
 }

@@ -14,9 +14,9 @@ namespace BPCSharedComponent.VectorCalculation
 	public struct Velocity
 	{
 		//Speed per unit time
-		private double m_speed;
+		private float m_speed;
 		private int m_course;
-		public double speed
+		public float speed
 		{
 			get { return (m_speed); }
 			set { m_speed = value; }
@@ -29,7 +29,7 @@ namespace BPCSharedComponent.VectorCalculation
 			set { m_course = value; }
 		}
 
-		public Velocity(int d, double s)
+		public Velocity(int d, float s)
 		{
 			m_course = d;
 			m_speed = s;

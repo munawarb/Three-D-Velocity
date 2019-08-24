@@ -13,25 +13,25 @@ namespace BPCSharedComponent.VectorCalculation
 	/// </summary>
 	public struct Range
 	{
-		private double m_h;
-		private double m_v;
+		private float m_h;
+		private float m_v;
 
 		//The x component of a vector, typically obtained by taking the cosine of the vector.
-		public double horizontalDistance
+		public float horizontalDistance
 		{
 			get { return (m_h); }
 			set { m_h = value; }
 		}
 
 		//The y component of a vector, typically obtained by taking the sine of the vector.
-		public double verticalDistance
+		public float verticalDistance
 		{
 			get { return (m_v); }
 			set { m_v = value; }
 		}
 
 
-		public Range(double h, double v)
+		public Range(float h, float v)
 		{
 			m_h = h;
 			m_v = v;
