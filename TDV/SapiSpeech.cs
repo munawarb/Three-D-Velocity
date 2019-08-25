@@ -15,19 +15,25 @@ using BPCSharedComponent.ExtendedAudio;
 namespace TDV
 {
 	/// <summary>
-	/// For this class to work as expected, a 32-bit application should define a conditional variable named x86.
-	/// In addition, 32-bit applications should reference JFWAPICTRLLib, and 64-bit applications should reference FSAPILib.
-	/// This can be done by adding the COM references under the "References" node in the project solution.
-	/// Also, the NVDA API should exist in the same directory as the executable. 32-bit applications should use nvdaControllerClient32.dll and 64-bit applications should use nvdaControllerClient64.dll.
+	/// Output speech using a common screen reader or SAPI. Both 32-bit and 64-bit environments are supported with respect to the NVDA screen-reader.
 	/// </summary>
 	public class SapiSpeech
 	{
+		// For the 32-bit versions, we'll keep the function names the same as in the headers.
 		[DllImport("nvdaControllerClient32.dll", CharSet = CharSet.Unicode)]
 		static extern int nvdaController_speakText(String text);
 		[DllImport("nvdaControllerClient32.dll", CharSet = CharSet.Unicode)]
 		static extern int nvdaController_cancelSpeech();
 		[DllImport("nvdaControllerClient32.dll", CharSet = CharSet.Unicode)]
 		static extern int nvdaController_testIfRunning();
+
+		// For the 64-bit counterparts, we'll use the nvdaController64 prefix.
+		[DllImport("nvdaControllerClient64.dll", EntryPoint = "nvdaController_speakText", CharSet = CharSet.Unicode)]
+		static extern int nvdaController64_speakText(String text);
+		[DllImport("nvdaControllerClient64.dll", EntryPoint = "nvdaController_cancelSpeech", CharSet = CharSet.Unicode)]
+		static extern int nvdaController64_cancelSpeech();
+		[DllImport("nvdaControllerClient64.dll", EntryPoint = "nvdaController_testIfRunning", CharSet = CharSet.Unicode)]
+		static extern int nvdaController64_testIfRunning();
 
 
 		/// <summary>
@@ -112,7 +118,10 @@ namespace TDV
 				//wineyes fails silently
 				stopWinEyesSpeech();
 				//nvda fails silently
-				nvdaController_cancelSpeech();
+				if (Environment.Is64BitProcess)
+					nvdaController64_cancelSpeech();
+				else
+					nvdaController_cancelSpeech();
 			} //if stop flag
 
 			if (source == SpeechSource.auto)
@@ -122,7 +131,7 @@ namespace TDV
 				if (initializeWinEyes() && sayThroughWinEyes(sayString))
 					return;
 
-				if (nvdaController_speakText(sayString) == 0)
+				if (((Environment.Is64BitProcess)? nvdaController64_speakText(sayString):nvdaController_speakText(sayString)) == 0)
 					return;
 			}
 
@@ -163,8 +172,12 @@ namespace TDV
 					voice.SpeakAsyncCancelAll();
 				else if (JAWS != null)
 					stopJAWSSpeech();
-				else //nvda fails silently
-					nvdaController_cancelSpeech();
+				else { //nvda fails silently
+					if (Environment.Is64BitProcess)
+						nvdaController64_cancelSpeech();
+					else
+						nvdaController_cancelSpeech();
+				}
 			}
 			catch (System.OperationCanceledException)
 			{
