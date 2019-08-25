@@ -20,10 +20,10 @@ namespace TDV
 			: base(w, "p" + (int)WeaponTypes.tankMissile)
 		{
 			weapon.decreaseAmmunitionFor(WeaponTypes.tankMissile);
-			neutralizeSpeed(100.0);
+			neutralizeSpeed(100f);
 			launch = loadSound(soundPath + "tg1.wav");
 			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
-			setSpan(0.01, 0.01);
+			setSpan(0.01f, 0.01f);
 			followTarget = false;
 		}
 

@@ -19,7 +19,7 @@ namespace TDV
 		private ExtendedAudioBuffer missileSound;
 		private ExtendedAudioBuffer missileHitSound;
 		private ExtendedAudioBuffer fox;
-		private double tz;
+		private float tz;
 
 		public Missile(Weapons w)
 			: base(w, "p" + (int)WeaponTypes.missile)
@@ -28,8 +28,8 @@ namespace TDV
 			weapon.decreaseAmmunitionFor(WeaponTypes.missile);
 			missileLaunchSound = loadSound(soundPath + "m1.wav");
 			missileSound = DSound.LoadSound(DSound.SoundPath + "\\m2.wav");
-			neutralizeSpeed(1500.0);
-			setSpan(0.1, 0.1);
+			neutralizeSpeed(1500f);
+			setSpan(0.1f, 0.1f);
 		}
 
 		public override void lockOn(Projector target)
@@ -125,7 +125,7 @@ namespace TDV
 			if (!base.load())
 				return false;
 			BinaryReader r = Common.inFile;
-			tz = r.ReadDouble();
+			tz = r.ReadSingle();
 			return true;
 		}
 

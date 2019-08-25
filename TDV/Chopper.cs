@@ -11,7 +11,7 @@ namespace TDV
 {
 	public class Chopper : Aircraft
 	{
-		public Chopper(double x, double y)
+		public Chopper(float x, float y)
 			: base(0, 1000, "c", true, new Track(Options.currentTrack))
 		{
 			showInList = true;
@@ -21,7 +21,7 @@ namespace TDV
 			weapon = new Weapons(this,
 						 WeaponTypes.guns, WeaponTypes.explosiveMissile);
 			weapon.setAmmunitionFor(WeaponTypes.explosiveMissile, 50);
-			startAtHeight(15000.0);
+			startAtHeight(15000f);
 			if (!Options.isLoading)
 				Mission.chopperCount++;
 			setDamagePoints(2500);
@@ -29,7 +29,7 @@ namespace TDV
 		}
 
 		public Chopper()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 
@@ -54,36 +54,35 @@ namespace TDV
 				return;
 			}
 			if (firstMove)
-				z = Mission.player.z - 1000.0;
+				z = Mission.player.z - 1000f;
 			base.move();
 			if (Mission.player.z > minAltitude
-					&& Mission.player.z < maxAltitude - 5000.0)
+					&& Mission.player.z < maxAltitude - 5000f)
 			{
-				if (Math.Abs(z - Mission.player.z) <= 550.0)
+				if (Math.Abs(z - Mission.player.z) <= 550f)
 					z = Mission.player.z;
 			} //if player z > 1000
-			if (z <= 1.0)
-				z = 1000.0;
-			if (Degrees.getDistanceBetween(x, y,
-				Mission.player.x, Mission.player.y) >= 20.0)
+			if (z <= 1f)
+				z = 1000f;
+			if (Degrees.getDistanceBetween(x, y, Mission.player.x, Mission.player.y) >= 20f)
 			{
 				x = Common.getRandom((int)Math.Min(x, Mission.player.x),
-				(int)Math.Max(x, Mission.player.x));
+					(int)Math.Max(x, Mission.player.x));
 				y = Common.getRandom((int)Math.Min(y, Mission.player.y),
 					(int)Math.Max(y, Mission.player.y));
 				if (x == Mission.player.x)
 				{
 					if (Math.Max(x, Mission.player.x) == x)
-						x += 3.0;
+						x += 3f;
 					else
-						x -= 3.0;
+						x -= 3f;
 				} //if we fell on player
 				if (y == Mission.player.y)
 				{
 					if (Math.Max(y, Mission.player.y) == y)
-						y += 3.0;
+						y += 3f;
 					else
-						y -= 3.0;
+						y -= 3f;
 				} //if we fell on player
 			} //if chopper running away
 		}
@@ -93,10 +92,9 @@ namespace TDV
 		public override void revive()
 		{
 			base.revive();
-			z = Mission.player.z - 1000.0;
-			if (z < 1000.0)
-				z = 1000.0;
+			z = Mission.player.z - 1000f;
+			if (z < 1000f)
+				z = 1000f;
 		}
-
 	}
 }

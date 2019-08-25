@@ -69,7 +69,7 @@ namespace TDV
 		protected MemoryStream stream;
 		public bool unlisted;
 
-		private double m_engineRadius;
+		private float m_engineRadius;
 		private int m_engineDamagePoints;
 
 		protected int engineDamagePoints
@@ -84,7 +84,7 @@ namespace TDV
 			get { return m_maxEngineDamagePoints; }
 			set { m_maxEngineDamagePoints = value; }
 		}
-		private double m_radius;
+		private float m_radius;
 		private bool m_forceStareo, doneDestroyedBy;
 
 
@@ -95,7 +95,7 @@ namespace TDV
 		private int m_maxWeight;
 		protected float m_fuelWeight;
 		protected float m_maxFuelWeight;
-		private double m_height;
+		private float m_height;
 
 		private String m_id;
 		private bool m_isAI;
@@ -105,18 +105,18 @@ namespace TDV
 		private string m_name;
 		private int m_damage;
 		private int m_maxDamagePoints;
-		public double x;
-		public double y;
-		public double z;
-		private double m_speed; //total speed output of aircraft, measured in mph.
+		public float x;
+		public float y;
+		public float z;
+		private float m_speed; //total speed output of aircraft, measured in mph.
 		//represents airspeed
 		private int m_rpm; //engine rpm, can go up to
 		//Projector.maxRPM
 		private static int m_maxRPM = 40000;
 		private static int m_idleRPM = 20000;
-		private double m_maxSpeed;
-		private double m_matchSpeed;
-		private double m_totalDistance;
+		private float m_maxSpeed;
+		private float m_matchSpeed;
+		private float m_totalDistance;
 		private int m_direction;
 		private int m_noseAngle;
 		////Acceleration (in miles/second)
@@ -125,7 +125,7 @@ namespace TDV
 		private byte m_decelerationSpeed;
 		private bool m_isObject; //determines if aircraft or object
 
-		public double radius
+		public float radius
 		{
 			get { return m_radius; }
 			set { m_radius = value; }
@@ -147,7 +147,7 @@ namespace TDV
 			get { return (m_idleRPM); }
 		}
 
-		public double engineRadius
+		public float engineRadius
 		{
 			get { return (m_engineRadius); }
 			set { m_engineRadius = value; }
@@ -167,7 +167,7 @@ namespace TDV
 			get { return (m_isProjectorStopped); }
 			set { m_isProjectorStopped = value; }
 		}
-		public double height
+		public float height
 		{
 			get { return (m_height); }
 			set { m_height = value; }
@@ -206,7 +206,7 @@ namespace TDV
 		//it only represents the speed that should be achieved by the engine thrust, neglecting nose angle.
 		//If an object should not accelerate and should maintain maxspeed,
 		// a class should call the neutralizeSpeed() method, passing to it the neutralization speed
-		public virtual double maxSpeed
+		public virtual float maxSpeed
 		{
 			get { return (m_maxSpeed); }
 			set { m_maxSpeed = value; }
@@ -214,7 +214,7 @@ namespace TDV
 
 		//gets or sets the speed the projector is to match
 		//The maxspeed determines the maximum possible speed of the projector, whereas this property only determines the new speed for throttle up/down
-		public virtual double matchSpeed
+		public virtual float matchSpeed
 		{
 			get { return (m_matchSpeed); }
 			set { m_matchSpeed = value; }
@@ -222,7 +222,7 @@ namespace TDV
 
 		//Represents angular velocity of engine
 		//Viz. rpm.
-		public double speed
+		public float speed
 		{
 			get { return (m_speed); }
 			set { m_speed = value; }
@@ -231,11 +231,11 @@ namespace TDV
 		//Returns or sets the speed of the engines, in miles/hour.
 		//Note: This value does not represent the actual speed at which the object will be traveling;
 		//it only represents the speed that should be achieved by the engine thrust, neglecting nose angle.
-		public double engineSpeed
+		public float engineSpeed
 		{
 			get
 			{
-				return ((double)rpm * Degrees.getCircumference(engineRadius));
+				return rpm * Degrees.getCircumference(engineRadius);
 			}
 		}
 
@@ -254,7 +254,7 @@ namespace TDV
 		}
 
 		////The total horizontal distance in miles a class has traveled since its instantiation
-		public double totalDistance
+		public float totalDistance
 		{
 			get { return (m_totalDistance); }
 			set { m_totalDistance = value; }
@@ -324,10 +324,10 @@ namespace TDV
 
 			this.isAI = isAI;
 
-			double circumference = (double)maxSpeed / (double)maxRPM;
+			float circumference = (float)maxSpeed / maxRPM;
 			//circumference is 2PIR, so get the radius
-			double r = circumference / Math.PI; //diameter
-			r /= 2.0;
+			float r = circumference / Degrees.PI; //diameter
+			r /= 2f;
 			//this is the radius that we need to put the engine at
 			//to achieve maxSpeed at maxRPM.
 			engineRadius = r;
@@ -342,7 +342,7 @@ namespace TDV
 		{
 			Vector3 v = Degrees.moveObject(ref x, ref y, ref z,
 						 direction,
-						 new Range(getHorizontalSpeed(1.0), getVerticalSpeed(1.0)), Common.intervalMS);
+						 new Range(getHorizontalSpeed(1f), getVerticalSpeed(1f)), Common.intervalMS);
 			// We'll express the velocity in seconds. The velocity returned by moveObject gives us a value expressed in milliseconds.
 			velocity = Vector3.Multiply(v, 1000f);
 		}
@@ -355,8 +355,8 @@ namespace TDV
 			bool speedChanged = speed < maxSpeed;
 			if ((speed < maxSpeed))
 			{
-				speed += Common.convertToTickDistance(accelerationSpeed * 60.0 * 60.0);
-				if ((speed > maxSpeed))
+				speed += Common.convertToTickDistance(accelerationSpeed * 60f * 60f);
+				if (speed > maxSpeed)
 				{
 					speed = maxSpeed;
 				}
@@ -375,7 +375,7 @@ namespace TDV
 			bool speedChanged = speed > 0;
 			if ((speed > 0))
 			{
-				speed -= Common.convertToTickDistance(decelerationSpeed * 60.0 * 60.0);
+				speed -= Common.convertToTickDistance(decelerationSpeed * 60f * 60f);
 				if ((speed < 0))
 				{
 					speed = 0;
@@ -393,7 +393,7 @@ namespace TDV
 		////This method should be called with the speed of an object if
 		////the object should not accelerate or decelerate
 		////If the speed property is modified after this call, the object will remain stationary
-		public void neutralizeSpeed(double n)
+		public void neutralizeSpeed(float n)
 		{
 			speed = n;
 			maxSpeed = speed;
@@ -425,31 +425,31 @@ namespace TDV
 		}
 		////Returns the horizontal speed in miles/hour at the current nose angle
 		////Note: if a value is supplied to  the parameter ms, the function will return the speed over the millisecond interval viz. speed per ms milliseconds
-		public double getHorizontalSpeed(double ms)
+		public float getHorizontalSpeed(float ms)
 		{
-			double milesPerHour = (Degrees.getHVSpeed(getVerticalEngineVelocity()).horizontalDistance);
+			float milesPerHour = (Degrees.getHVSpeed(getVerticalEngineVelocity()).horizontalDistance);
 			////return horizontal speed in miles/hour
 			if (ms > 0.0) milesPerHour = Common.convertToTickDistance(milesPerHour, ms);
 			return (milesPerHour);
 		}
 
-		public double getHorizontalSpeed()
+		public float getHorizontalSpeed()
 		{
-			return (getHorizontalSpeed(0.0));
+			return (getHorizontalSpeed(0f));
 		}
 
 		////Returns the vertical speed in feet/hour at the current nose angle
 		////Note: if a value is supplied to  the parameter ms, the function will return the speed over the millisecond interval viz. speed per ms milliseconds
-		public double getVerticalSpeed(double ms)
+		public float getVerticalSpeed(float ms)
 		{
-			double feetPerHour = Common.convertToFeet(Degrees.getHVSpeed(getVerticalEngineVelocity()).verticalDistance);
+			float feetPerHour = Common.convertToFeet(Degrees.getHVSpeed(getVerticalEngineVelocity()).verticalDistance);
 			if (ms > 0.0) feetPerHour = Common.convertToTickDistance(feetPerHour, ms);
 			return (feetPerHour);
 		}
 
-		public double getVerticalSpeed()
+		public float getVerticalSpeed()
 		{
-			return (getVerticalSpeed(0.0));
+			return getVerticalSpeed(0f);
 		}
 
 		////hittable implementation
@@ -584,9 +584,9 @@ namespace TDV
 		}
 		public virtual void brake()
 		{
-			speed -= speed / 4.0;
-			if (speed <= 0.0)
-				speed = 0.0;
+			speed -= speed / 4f;
+			if (speed <= 0f)
+				speed = 0f;
 		}
 		public virtual void bankLeft()
 		{
@@ -629,9 +629,9 @@ namespace TDV
 		}
 
 		//Sets the radius and height of the object.
-		//These values are double values and pertain to the standard unit of measurement for the game.
+		//These values are float values and pertain to the standard unit of measurement for the game.
 		//For instance, a height of 1.0 signifies that this object spans 1 foot out from center in each direction
-		public void setSpan(double h, double r)
+		public void setSpan(float h, float r)
 		{
 			height = h;
 			radius = r;
@@ -669,9 +669,9 @@ namespace TDV
 		//Objects should override this method for their own implementation.
 		protected virtual void useFuel()
 		{
-			m_fuelWeight -= (float)Common.convertToTickDistance(speed * 3.525);
-			if (m_fuelWeight < 0.0f)
-				m_fuelWeight = 0.0f;
+			m_fuelWeight -= Common.convertToTickDistance(speed * 3.525f);
+			if (m_fuelWeight < 0f)
+				m_fuelWeight = 0f;
 		}
 
 		public void setDamagePoints(int maxDamage)
@@ -725,14 +725,14 @@ namespace TDV
 			isRequestedTerminated = r.ReadBoolean();
 			isProjectorStopped = r.ReadBoolean();
 			showInList = r.ReadBoolean();
-			x = r.ReadDouble();
-			y = r.ReadDouble();
-			z = r.ReadDouble();
+			x = r.ReadSingle();
+			y = r.ReadSingle();
+			z = r.ReadSingle();
 			direction = r.ReadInt32();
 			virtualNoseAngle = r.ReadInt32();
 			damage = r.ReadInt32();
 			maxDamagePoints = r.ReadInt32();
-			totalDistance = r.ReadDouble();
+			totalDistance = r.ReadSingle();
 			return true;
 		}
 
@@ -779,9 +779,9 @@ namespace TDV
 
 		public bool collidesWith(Projector target)
 		{
-			double d1 = Math.Pow(x - target.x, 2);
-			double d2 = Math.Pow(y - target.y, 2);
-			double s = Math.Sqrt(d1 + d2);
+			float d1 = (float)Math.Pow(x - target.x, 2);
+			float d2 = (float)Math.Pow(y - target.y, 2);
+			float s = (float)Math.Sqrt(d1 + d2);
 			//If s < r1 + r2 
 			//and the distance between the z values is < the heights of these objects,
 			//then these two spheres
@@ -950,9 +950,9 @@ namespace TDV
 			dirty = true;
 		}
 
-		protected double getMaxSpeedPercentage()
+		protected float getMaxSpeedPercentage()
 		{
-			return 0.0;
+			return 0f;
 		}
 
 		/// <summary>
@@ -974,13 +974,12 @@ namespace TDV
 		}
 
 		/// <summary>
-		/// Changes the heading of the object in a thread-safe manner.
+		/// Changes the heading of the object.
 		/// </summary>
 		/// <param name="d">The new heading. This value should already represent a correct degree marking.</param>
 		protected void changeDirectionTo(int d)
 		{
-			curDir = d;
-			Interlocked.Exchange(ref m_direction, d);
+			curDir = m_direction = d;
 		}
 
 		/*

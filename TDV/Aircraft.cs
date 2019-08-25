@@ -238,6 +238,9 @@ namespace TDV
 		private const float windThreshold = 0.2f; // Wind will never drop below this value
 		private const float windVolumeIncrement = (1f - windThreshold) / 1500f;
 		private const float windFreqIncrement = 0.0005f;
+		private const float retractGearAltitude = 1000f;
+		protected const float minAltitude = 10000f; // Expressed in feet.
+		protected const float maxAltitude = 90000f; // Expressed in feet.
 		private int sectorX, sectorY;
 		private int lastDirection;
 		private OpenPositions openPosition, lastOpenPosition;
@@ -319,8 +322,7 @@ namespace TDV
 		private bool isFalling;
 		private float fallRate = 0.0f; //in meters/s
 		private bool m_isLeveling;
-		private double m_retractGearAltitude = 1000.0;
-		private double ctz;
+		private float ctz;
 		private TargetState targetState;
 
 		/// <summary>
@@ -333,9 +335,9 @@ namespace TDV
 		private bool m_isOnRunway;
 		private byte m_lap;
 		private bool m_isTurning;
-		private double m_currentDistance;
+		private float m_currentDistance;
 		private bool m_isElevating;
-		private double elevationAltitude;
+		private float elevationAltitude;
 		private bool checkForAltitude;
 		private bool m_isLifting;
 
@@ -411,21 +413,6 @@ namespace TDV
 		{
 			get { return (-1000); }
 		}
-		private double retractGearAltitude
-		{
-			get { return (m_retractGearAltitude); }
-		}
-
-		////Max altitude in feet.
-		protected double maxAltitude
-		{
-			get { return (90000.0); }
-		}
-
-		protected double minAltitude
-		{
-			get { return (currentTrack.harddeck); }
-		}
 		private bool isLandingGearRetracted
 		{
 			get { return (m_isLandingGearRetracted); }
@@ -452,7 +439,7 @@ namespace TDV
 		}
 
 		//Distance traveled on current Straightaway.
-		private double currentDistance
+		private float currentDistance
 		{
 			get { return (m_currentDistance); }
 			set { m_currentDistance = value; }
@@ -503,14 +490,14 @@ namespace TDV
 		/// <summary>
 		/// maximum achievable rpm for aircraft
 		/// </summary>
-		public override double maxSpeed
+		public override float maxSpeed
 		{
 			get
 			{
 				if (isOnRunway)
-					return 200.0;
+					return 200f;
 				else
-					return ((!isLandingGearRetracted) ? 530.0 : base.maxSpeed) - getMaxSpeedPercentage();
+					return ((!isLandingGearRetracted) ? 530f : base.maxSpeed) - getMaxSpeedPercentage();
 			}
 			set { base.maxSpeed = value; }
 		}
@@ -585,7 +572,7 @@ namespace TDV
 				else
 					setDamagePoints(Common.getRandom(3000, 5000));
 			}
-			setSpan(10.0, 0.5);
+			setSpan(10f, 0.5f);
 			accelerationSpeed = 30;
 			decelerationSpeed = 20;
 			setWeight(71250, 27000, 37000);
@@ -627,7 +614,7 @@ namespace TDV
 				totalTime = 0;
 
 			if (isMissionFighter()) {
-				startAtHeight(15000.0);
+				startAtHeight(15000f);
 				weapon.setInfiniteAmmunition();
 			} //if missionFighter
 		}
@@ -651,9 +638,9 @@ namespace TDV
 			trainer3 = t3;
 			if (t1) {
 				if (Mission.player.z + 10000.0 >= 50000.0)
-					startAtHeight(Mission.player.z - 10000.0);
+					startAtHeight(Mission.player.z - 10000f);
 				else
-					startAtHeight(Mission.player.z + 10000.0);
+					startAtHeight(Mission.player.z + 10000f);
 				liftSpeed = 0; //don't let them follow player.
 			}
 			if (t3)
@@ -757,7 +744,7 @@ namespace TDV
 			if (!(trainer1 || trainer2 || !isAI && (currentStage == TrainingStages.killFighter1 || currentStage == TrainingStages.solidToneOnFighter1 || currentStage == TrainingStages.killFighter2)))
 				base.move();
 			if (z < 0.0)
-				z = 0.0; //stop from going to negative altitude
+				z = 0f; //stop from going to negative altitude
 			if (!isFalling && isStallCondition())
 				isFalling = true;
 
@@ -1280,7 +1267,7 @@ namespace TDV
 					z = weapon.getLockedTarget().z;
 
 				if (z >= maxAltitude)
-					z = maxAltitude - 1000.0;
+					z = maxAltitude - 1000f;
 				if (virtualNoseAngle == 0)
 					levelOut();
 				return;
@@ -1305,10 +1292,10 @@ namespace TDV
 				z -= liftSpeed;
 				if (weapon.isValidLock()
 					&& Math.Abs(z - weapon.getLockedTarget().z)
-					<= liftSpeed + 50.0)
+					<= liftSpeed + 50f)
 					z = weapon.getLockedTarget().z;
-				if (z < 1000.0)
-					z = 1000.0;
+				if (z < 1000f)
+					z = 1000f;
 				if (virtualNoseAngle == 0)
 					levelOut();
 				return;
@@ -1410,22 +1397,22 @@ namespace TDV
 					hit(0, Interaction.Cause.finishedRace);
 				} else {
 					////if laps < options.laps
-					resetVehicle();
+					resetAircraft();
 					lap += 1;
 				}
 			} else {
 				////if hasn't reached end of track
-				currentDistance = 0.0;
+				currentDistance = 0f;
 				////reset distance on straightaway
 				currentStraightaway = currentTrack.getStraightaway(currentStraightaway.id + 1);
 			}
 		}
-		private void resetVehicle()
+		private void resetAircraft()
 		{
-			x = 0.0;
-			y = 0.0;
+			x = 0f;
+			y = 0f;
 			direction = 0;
-			currentDistance = 0.0;
+			currentDistance = 0f;
 			currentStraightaway = currentTrack.getStraightaway(0);
 		}
 
@@ -1439,7 +1426,7 @@ namespace TDV
 				isOnRunway = false;
 				if (!isAI)
 					virtualNoseAngle = 5;
-				z += 2.0;
+				z += 2f;
 				playSound(enginesLaunch, true, false);
 				playSound(jetRumble, true, true);
 				//Only send ascend command if we're about to take off.
@@ -1513,22 +1500,22 @@ namespace TDV
 					turnSignal.stop();
 				return;
 			}
-			double x = 0;
-			double y = 0;
-			double z = 0;
+			float x = 0;
+			float y = 0;
+			float z = 0;
 			x = this.x;
 			y = this.y;
 			z = this.z;
-			Degrees.moveObject(ref x, ref y, currentStraightaway.direction, 1.0, 3.0);
+			Degrees.moveObject(ref x, ref y, currentStraightaway.direction, 1f, 3f);
 			DSound.PlaySound3d(turnSignal, false, true, x, z, y);
 		}
 		private void updateListener()
 		{
-			DSound.setOrientation(velocity.X, 0,velocity.Y, 0.0, (facingState == FacingState.upright)? 1.0:-1.0, 0.0);
+			DSound.setOrientation(velocity.X, 0f,velocity.Y, 0f, (facingState == FacingState.upright)? 1f:-1f, 0f);
 			if (pov == PointOfView.interior)
 				DSound.SetCoordinates(this.x, this.z, this.y);
 			else
-				DSound.SetCoordinates(this.x, 0.0, this.y);
+				DSound.SetCoordinates(this.x, 0, this.y);
 			DSound.setVelocity(velocity.X, 0, velocity.Y);
 		}
 
@@ -2093,11 +2080,11 @@ weapon.firingRange);
 					Common.executeSvOrSr(() => SelfVoice.NLS(Interaction.getSector((Projector)this), true, true), () => SapiSpeech.speak(Interaction.getSector((Projector)this, false)), Options.statusVoiceMode);
 					return true;
 				case Status.refuelerCount:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber((double)Mission.refuelCount, true), () => SapiSpeech.speak("" + Mission.refuelCount), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(Mission.refuelCount, true), () => SapiSpeech.speak("" + Mission.refuelCount), Options.statusVoiceMode);
 					return true;
 				case Status.lap:
 					if (Options.mode == Options.Modes.racing)
-						Common.executeSvOrSr(() => SelfVoice.VoiceNumber((double)lap, true), () => SapiSpeech.speak(""+lap), Options.statusVoiceMode);
+						Common.executeSvOrSr(() => SelfVoice.VoiceNumber(lap, true), () => SapiSpeech.speak(""+lap), Options.statusVoiceMode);
 					return true;
 				case Status.distance:
 					string msgstr = "";
@@ -2118,7 +2105,7 @@ weapon.firingRange);
 					sayRelative = false;
 					return true;
 				case Status.course:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber((double)direction, true), () => SapiSpeech.speak("" + direction), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(direction, true), () => SapiSpeech.speak("" + direction), Options.statusVoiceMode);
 					sayRelative = false;
 					return true;
 				case Status.rank:
@@ -2210,13 +2197,11 @@ weapon.firingRange);
 				if (p.isAhead) {
 					if (p.degreesDifference > 5) {
 						targetSolutionSound3.stop();
-						double tx = x;
-						double tY = y;
-						Degrees.moveObject(ref tx, ref tY, p.degrees, 1.0, 1.0);
+						float tx = x;
+						float tY = y;
+						Degrees.moveObject(ref tx, ref tY, p.degrees, 1f, 1f);
 						targetSolutionSound.setFrequency(48100.0f - (100 * p.degreesDifference));
-						DSound.PlaySound3d(targetSolutionSound, false, true, tx,
-							(pov == PointOfView.interior) ? z : 0.0,
-tY);
+						DSound.PlaySound3d(targetSolutionSound, false, true, tx, (pov == PointOfView.interior) ? z : 0f, tY);
 					} else { //if degree difference==0
 						targetSolutionSound.stop();
 						playSound(targetSolutionSound3, false, true);
@@ -2680,7 +2665,7 @@ tY);
 			hit(damage, Interaction.Cause.selfDestructed);
 		}
 
-		public void startAtHeight(double z)
+		public void startAtHeight(float z)
 		{
 			this.z = z;
 			isOnRunway = false;
@@ -2811,7 +2796,7 @@ tY);
 				if (sayRelative && weapon.isValidLock()) {
 					RelativePosition r = getPosition(weapon.getLockedTarget());
 					String name = weapon.getLockedTarget().name;
-					double hd = r.vDistance;
+					float hd = r.vDistance;
 					string w = null;
 					if (hd < 0.0)
 						w = (Options.isPlayingOnline) ? "abt" : "above";
@@ -2924,7 +2909,7 @@ tY);
 				} else {
 					if (!SelfVoice.setPathTo("n", false))
 						return;
-					SelfVoice.VoiceNumber((double)direction, true);
+					SelfVoice.VoiceNumber(direction, true);
 				} //if don't speak relative
 			} //if not force
 		}
@@ -3393,9 +3378,9 @@ tY);
 			if (!base.load())
 				return false;
 			BinaryReader r = Common.inFile;
-			currentDistance = r.ReadDouble();
+			currentDistance = r.ReadSingle();
 			isOnRunway = r.ReadBoolean();
-			speed = r.ReadDouble();
+			speed = r.ReadSingle();
 			throttlePosition = r.ReadInt32();
 			missileWarnTime = r.ReadInt32();
 			hasMissileWarned = r.ReadBoolean();
@@ -3614,7 +3599,7 @@ tY);
 		{
 			if (landingOnCarrier
 				&& successfulLanding(true) && collidesWith(Mission.carrier)) {
-				z = 100.0;
+				z = 100f;
 				if (isSender()) {
 					cloak(); //queues cloak command to send to server
 					sendObjectUpdate();
@@ -4012,7 +3997,7 @@ tY);
 			if (!enginesOff)
 				return;
 			if (initSpeed)
-				speed = 450.0;
+				speed = 450f;
 			enginesOff = false;
 			throttleDown();
 		}
@@ -4020,7 +4005,7 @@ tY);
 		public void catapult()
 		{
 			playSound(catapultSound, true, false);
-			z = 1000.0;
+			z = 1000f;
 			restartEngine(true);
 			throttlePosition = 1;
 			throttleDown();
@@ -4102,7 +4087,7 @@ tY);
 			showInList = true;
 		}
 
-		public void revive(double x, double y)
+		public void revive(float x, float y)
 		{
 			revive();
 			this.x = x;
@@ -4110,10 +4095,10 @@ tY);
 			z = Mission.player.z -
 				((Common.getRandom(1, 2) == 1) ? -3000 : 1000);
 			//Either 3000 feet above player or 1000 feet below.
-			if (z < 1000.0)
-				z = 1000.0;
-			if (z > 50000.0)
-				z = 45000.0;
+			if (z < 1000f)
+				z = 1000f;
+			if (z > 50000f)
+				z = 45000f;
 		}
 
 		private void startFighterSwarm()
@@ -4179,8 +4164,8 @@ tY);
 			if (!weapon.isValidLock()
 				|| this is Chopper) //Choppers dont' have afterburners
 				return false;
-			double distance = getPosition(weapon.getLockedTarget()).distance;
-			if (distance >= 8.0)
+			float distance = getPosition(weapon.getLockedTarget()).distance;
+			if (distance >= 8f)
 				return true;
 			else
 				return false;
@@ -4317,19 +4302,19 @@ tY);
 								break;
 
 							case 3:
-								x = queue.ReadDouble();
+								x = queue.ReadSingle();
 								break;
 
 							case 4:
-								y = queue.ReadDouble();
+								y = queue.ReadSingle();
 								break;
 
 							case 5:
-								z = queue.ReadDouble();
+								z = queue.ReadSingle();
 								break;
 
 							case 6:
-								speed = queue.ReadDouble();
+								speed = queue.ReadSingle();
 								break;
 
 							case 7:
@@ -4941,18 +4926,18 @@ tY);
 			}
 
 			if (currentStage == TrainingStages.putInGear) {
-				if (z < 2000.0)
-					z = 2000.0;
+				if (z < 2000f)
+					z = 2000f;
 				completedTrainingStage = isLandingGearRetracted;
 			}
 
 			if (currentStage == TrainingStages.increaseAOA) {
 				playAlarms = true;
-				completedTrainingStage = z > minAltitude + 500.0;
+				completedTrainingStage = z > minAltitude + 500f;
 			}
 
 			if (currentStage == TrainingStages.aboveHardDeck) {
-				completedTrainingStage = z > minAltitude + 500.0;
+				completedTrainingStage = z > minAltitude + 500f;
 			}
 
 			if (currentStage == TrainingStages.levelOutAboveHardDeck) {
@@ -5048,9 +5033,9 @@ tY);
 			if (currentStage == TrainingStages.lockOnFighter1) {
 				if (saidInstructions) {
 					int dir = Degrees.getDegreeValue(direction + 10);
-					double px = x;
-					double py = y;
-					Degrees.moveObject(ref px, ref py, dir, 1.0, 3.0);
+					float px = x;
+					float py = y;
+					Degrees.moveObject(ref px, ref py, dir, 1f, 3f);
 					Mission.trainer.x = px;
 					Mission.trainer.y = py;
 				}
@@ -5063,9 +5048,9 @@ tY);
 
 			if (currentStage == TrainingStages.matchFighter1Altitude) {
 				int dir = Degrees.getDegreeValue(direction + 10);
-				double px = x;
-				double py = y;
-				Degrees.moveObject(ref px, ref py, dir, 1.0, 3.0);
+				float px = x;
+				float py = y;
+				Degrees.moveObject(ref px, ref py, dir, 1f, 3f);
 				Mission.trainer.x = px;
 				Mission.trainer.y = py;
 				completedTrainingStage = weapon.isValidLock() && z == weapon.getLockedTarget().z && DSound.isPlaying(targetSolutionSound); //otherwise trainer talks before solution kicks in.
@@ -5074,9 +5059,9 @@ tY);
 			if (currentStage == TrainingStages.solidToneOnFighter1) {
 				if (!saidInstructions) {
 					int dir = Degrees.getDegreeValue(direction + 10);
-					double px = x;
-					double py = y;
-					Degrees.moveObject(ref px, ref py, dir, 1.0, 3.0);
+					float px = x;
+					float py = y;
+					Degrees.moveObject(ref px, ref py, dir, 1f, 3f);
 					Mission.trainer.x = px;
 					Mission.trainer.y = py;
 					Mission.trainer.z = z;
@@ -5092,9 +5077,9 @@ tY);
 
 			if (currentStage == TrainingStages.lockOnFighter2) {
 				if (saidInstructions) {
-					double px = x, py = y;
+					float px = x, py = y;
 					int dir = Degrees.getDegreeValue(direction + 180);
-					Degrees.moveObject(ref px, ref py, dir, 1.0, 2.0);
+					Degrees.moveObject(ref px, ref py, dir, 1f, 2f);
 					Mission.trainer.x = px;
 					Mission.trainer.y = py;
 					Mission.trainer.direction = direction;
@@ -5109,9 +5094,9 @@ tY);
 			if (currentStage == TrainingStages.splitS2) {
 				completedTrainingStage = weapon.isValidLock() && getPosition(weapon.getLockedTarget()).isAhead;
 				if (completedTrainingStage) {
-					double px = x, py = y;
+					float px = x, py = y;
 					int dir = Degrees.getDegreeValue(direction);
-					Degrees.moveObject(ref px, ref py, dir, 1.0, 2.0);
+					Degrees.moveObject(ref px, ref py, dir, 1f, 2f);
 					Mission.trainer.x = px;
 					Mission.trainer.y = py;
 				}
@@ -5132,8 +5117,8 @@ tY);
 			if (currentStage == TrainingStages.descendTo5000) {
 				if (!saidInstructions) {
 					requestLand();
-					x = 0.0;
-					y = 10.0;
+					x = 0f;
+					y = 10f;
 					direction = getPosition(Mission.landingBeacon).degrees;
 				}
 				completedTrainingStage = z <= 5000.0;
@@ -5144,15 +5129,15 @@ tY);
 			}
 
 			if (currentStage == TrainingStages.threeMilesAway) {
-				completedTrainingStage = getPosition(Mission.landingBeacon).distance <= 5.0;
+				completedTrainingStage = getPosition(Mission.landingBeacon).distance <= 5f;
 			}
 
 			if (currentStage == TrainingStages.slowToStallWarning) {
-				completedTrainingStage = speed <= 300.0;
+				completedTrainingStage = speed <= 300f;
 			}
 
 			if (currentStage == TrainingStages.descendTo1000) {
-				completedTrainingStage = z <= 1000.0;
+				completedTrainingStage = z <= 1000f;
 			}
 
 			if (currentStage == TrainingStages.takeOutGear) {
@@ -5185,9 +5170,9 @@ tY);
 					Mission.createNewTrainer(Mission.trainer = new Aircraft(0, 1000, "f2", false, true, false));
 				if (!saidInstructions && currentStage == TrainingStages.killFighter3) {
 					Mission.createNewTrainer(Mission.trainer = new Aircraft(0, 1500, "f3", false, false, true));
-					double px = x;
-					double py = y;
-					Degrees.moveObject(ref px, ref py, Degrees.getDegreeValue(direction - 30), 1.0, 7.0);
+					float px = x;
+					float py = y;
+					Degrees.moveObject(ref px, ref py, Degrees.getDegreeValue(direction - 30), 1f, 7f);
 					Mission.trainer.x = px;
 					Mission.trainer.y = py;
 				}
@@ -5288,13 +5273,13 @@ tY);
 		private void playCourseClick()
 		{
 			if (direction != lastDirection) {
-				double x = 0;
-				double y = 0;
-				double z = 0;
+				float x = 0;
+				float y = 0;
+				float z = 0;
 				x = this.x;
 				y = this.y;
 				z = this.z;
-				Degrees.moveObject(ref x, ref y, 0, 1.0, 3.0);
+				Degrees.moveObject(ref x, ref y, 0, 1f, 3f);
 				DSound.PlaySound3d(courseClickSound, true, false, x, z, y);
 			}
 		}

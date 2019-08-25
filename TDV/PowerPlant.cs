@@ -12,18 +12,18 @@ namespace TDV
 {
 	public class PowerPlant : MissionObjectBase
 	{
-		public PowerPlant(double x, double y)
+		public PowerPlant(float x, float y)
 			: base("pp", null)
 		{
 			this.x = x;
 			this.y = y;
-			setSpan(0.25, 0.25);
+			setSpan(0.25f, 0.25f);
 			setDamagePoints(5000);
 			explodeString = soundPath + "d2.wav";
 		}
 
 		public PowerPlant()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

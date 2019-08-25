@@ -27,8 +27,8 @@ namespace TDV
 		{
 			type = WeaponTypes.cruiseMissile;
 			weapon.decreaseAmmunitionFor(WeaponTypes.cruiseMissile);
-			neutralizeSpeed((weapon.creator.flyingCruiseMissile) ? 1800.0 : 900.0);
-			setSpan(0.10, 0.25);
+			neutralizeSpeed((weapon.creator.flyingCruiseMissile) ? 1800f : 900f);
+			setSpan(0.10f, 0.25f);
 			launchSound = loadSound(soundPath + "cr1.wav");
 			missileSound = DSound.LoadSound(DSound.SoundPath + "\\cr2.wav");
 		}

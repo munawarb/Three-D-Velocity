@@ -34,7 +34,7 @@ namespace BPCSharedComponent.VectorCalculation
 		/// <summary>
 		/// PI constant casted to float.
 		/// </summary>
-		private const float PI = (float)Math.PI;
+		public const float PI = (float)Math.PI;
 
 		private const Int16 m_North = 0;
 		private const Int16 m_East = 90;

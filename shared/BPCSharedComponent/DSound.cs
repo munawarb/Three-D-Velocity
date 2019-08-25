@@ -5,16 +5,14 @@
 * Note that containing works (such as SharpDX) may be available under a different license.
 * Copyright (C) Munawar Bijani
 */
+using SharpDX;
+using SharpDX.Multimedia;
+using SharpDX.X3DAudio;
+using SharpDX.XAudio2;
 using System;
-using System.Collections;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using SharpDX;
-using SharpDX.Multimedia;
-using BPCSharedComponent.Security;
-using SharpDX.XAudio2;
-using SharpDX.X3DAudio;
 
 namespace BPCSharedComponent.ExtendedAudio
 {

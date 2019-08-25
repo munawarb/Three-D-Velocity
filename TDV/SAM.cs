@@ -12,18 +12,18 @@ namespace TDV
 {
 	public class SAM : MissionObjectBase
 	{
-		public SAM(double x, double y)
+		public SAM(float x, float y)
 			: base("sb", null)
 		{
 			this.x = x;
 			this.y = y;
-			setSpan(0.05, 0.05);
+			setSpan(0.05f, 0.05f);
 			weapon.weaponIndex = WeaponTypes.samMissile;
 			explodeString = soundPath + "d2.wav";
 		}
 
 		public SAM()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

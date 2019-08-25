@@ -408,9 +408,9 @@ namespace TDV
 						return node;
 				} //foreach
 			}
-			double minDistance = Degrees.getDistanceBetween(x, y, start.position.X, start.position.Y);
+			float minDistance = Degrees.getDistanceBetween(x, y, start.position.X, start.position.Y);
 			MapNode minNode = start;
-			double tempDistance = 0.0;
+			float tempDistance = 0f;
 			foreach (MapNode node in AllNodes)
 			{
 				tempDistance = Degrees.getDistanceBetween(x, y, node.position.X, node.position.Y);

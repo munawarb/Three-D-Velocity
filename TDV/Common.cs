@@ -25,6 +25,25 @@ namespace TDV
 	public class Common
 	{
 		public static String applicationVersion = Assembly.GetExecutingAssembly().GetName().Version.Major + "." + Assembly.GetExecutingAssembly().GetName().Version.Minor;
+		/// <summary>
+		/// The time between frame updates, measured in seconds.
+		/// </summary>
+		public const float interval = 0.1f;
+		/// <summary>
+		/// The time between frame updates, expressed in milliseconds.
+		/// </summary>
+		public const int intervalMS = (int)(interval * 1000);
+		public const string trackDirectory = "tracks";
+		/// <summary>
+		/// The length of one nautical mile.
+		/// </summary>
+		public const float KNOT = 0.868976242f;
+		//Measurement of one mach.
+		public const float mach = 761.2f;
+		/// <summary>
+		/// The length of a sector in miles. 
+		/// </summary>
+		public const float sectorLength = 0.1f;
 		private static Dictionary<String, String> friendlyNames = new Dictionary<String, String>()
 		{
 			{"r1", "Racer 1" },
@@ -144,47 +163,8 @@ namespace TDV
 			return (new Random().Next(min, max + 1));
 		}
 
-		////Returns the standard length of a nautical mile. One mile is equal to this value.
 
-		public static string trackDirectory
-		{
-			get { return ("tracks"); }
-		}
-		public static double KNOT
-		{
-			get { return (0.868976242); }
-		}
-		public static double mach
-		{
-			get { return (761.2); }
-		}
-		////--------
-		////property to return sector length of each sector.
-		////This value is expressed as a decimal value,
-		////and is the specified portion to a mile.
-		////Thus, 0.10==1/10 of a mile.
-		public static double sectorLength
-		{
-			get { return (0.1); }
-		}
 
-		////Property to return interval of each individual tick.
-		////This value is expressed as a decimal, and is a millisecond proportion of a second.
-		////Therefore, a value of 0.1 means 1/10 of a second, or 100 ms.
-		////To retrieve an integer millisecond amount for a tick, the intervalMS property should be used.
-		public static double interval
-		{
-			get { return (0.1); }
-		}
-
-		////Property to return the interval in an integer amount, converted to milliseconds, of a game tick.
-		////This property is based on the interval property found elsewhere in this class,
-		////and should be used instead of interval since it returns an actual millisecond value.
-		////If the former property is used, conversion to milliseconds will have to be done by the calling method.
-		public static int intervalMS
-		{
-			get { return (int)(interval * 1000.0); }
-		}
 
 		[STAThread]
 		public static void Main(String[] args)
@@ -271,24 +251,24 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 
 		////Returns the miles that an object should move on each tick (intervalMS.)
 		////Expects the MPH rating of the object (viz. 100 MPH).
-		public static double convertToTickDistance(double miles)
+		public static float convertToTickDistance(float miles)
 		{
-			double intervalMS = Common.intervalMS;
+			float intervalMS = Common.intervalMS;
 			return (convertToTickDistance(miles, intervalMS));
 		}
 		////Returns the MPH rating for the millisecond interval.
 		////For instance, if 100 were passed to this method,
 		////It would return the MPH rating in miles per 100 milliseconds.
 		////Likewise, passing 1 to this method will return the MPH rating in terms of miles per 1 millisecond.
-		public static double convertToTickDistance(double miles, double tick)
+		public static float convertToTickDistance(float miles, float tick)
 		{
-			return (miles / 60.0 / 60.0 / 1000.0 * tick);
+			return miles / 60f / 60f / 1000f * tick;
 		}
 
-		////Returns the whole number "equivalent" of the double with the specified precision.
+		////Returns the whole number "equivalent" of the float with the specified precision.
 		////For instance, if the arguments 5.57, 2 were passed to this method,
 		////it would return 557.
-		public static int convertToWholeNumber(double number, int precision)
+		public static int convertToWholeNumber(float number, int precision)
 		{
 			return ((int)(Math.Round(number, precision) * Math.Pow(10, precision)));
 		}
@@ -533,7 +513,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			return sVGenerateMenu(intro, menu, 0, keys);
 		}
 
-		public static double convertToKNOTS(double miles)
+		public static float convertToKNOTS(float miles)
 		{
 			return (miles * KNOT);
 		}
@@ -574,13 +554,13 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			return (finalArray);
 		}
 
-		public static double convertToFeet(double miles)
+		public static float convertToFeet(float miles)
 		{
-			return (miles * 5280.0);
+			return miles * 5280f;
 		}
-		public static double convertToMiles(double feet)
+		public static float convertToMiles(float feet)
 		{
-			return (feet / 5280.0);
+			return (feet / 5280f);
 		}
 		public static void handleError(Exception e, String msg)
 		{
@@ -1270,19 +1250,12 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			loadedReg = true;
 		}
 
-		public static String cultureNeutralRound(double value, int precision)
-		{
-			return Convert.ToString(
-			 Math.Round(value, precision), CultureInfo.InvariantCulture);
-		}
-
 		public static String cultureNeutralRound(float value, int precision)
 		{
-			return Convert.ToString(
-			 Math.Round(value, precision), CultureInfo.InvariantCulture);
+			return Convert.ToString(Math.Round(value, precision), CultureInfo.InvariantCulture);
 		}
 
-		public static String cultureNeutralRound(double value)
+		public static String cultureNeutralRound(float value)
 		{
 			return Convert.ToString(value, CultureInfo.InvariantCulture);
 		}

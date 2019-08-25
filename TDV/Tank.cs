@@ -15,21 +15,21 @@ namespace TDV
 	{
 		private ExtendedAudioBuffer moveSound;
 		private bool firstLoad;
-		public Tank(double x, double y, Instructions i)
+		public Tank(float x, float y, Instructions i)
 			: base("t", i)
 		{
 			firstLoad = true;
 			this.x = x;
 			this.y = y;
-			setSpan(0.01, 0.01);
-			neutralizeSpeed(20.0);
+			setSpan(0.01f, 0.01f);
+			neutralizeSpeed(20f);
 			weapon.weaponIndex = WeaponTypes.tankMissile;
 			moveSound = loadSound(soundPath + "e8.wav");
 			explodeString = soundPath + "d4.wav";
 		}
 
 		public Tank()
-			: this(0.0, 0.0, new Instructions())
+			: this(0f, 0f, new Instructions())
 		{ }
 
 		public override void move()

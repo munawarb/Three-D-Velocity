@@ -12,18 +12,18 @@ namespace TDV
 {
 	public class TrainingCamp : MissionObjectBase
 	{
-		public TrainingCamp(double x, double y)
+		public TrainingCamp(float x, float y)
 			: base("tg", null)
 		{
 			this.x = x;
 			this.y = y;
-			setSpan(0.1, 2.0);
+			setSpan(0.1f, 2.0f);
 			explodeString = soundPath + "d2.wav";
 			setDamagePoints(2000);
 		}
 
 		public TrainingCamp()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

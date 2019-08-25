@@ -25,8 +25,8 @@ namespace TDV
 		{
 			type = WeaponTypes.missileInterceptor;
 			weapon.decreaseAmmunitionFor(WeaponTypes.missileInterceptor);
-			neutralizeSpeed(900.0);
-			setSpan(0.10, 0.25);
+			neutralizeSpeed(900f);
+			setSpan(0.10f, 0.25f);
 			launchSound = loadSound(soundPath + "ci1.wav");
 			missileSound = DSound.LoadSound(DSound.SoundPath + "\\ci2.wav");
 		}

@@ -170,7 +170,7 @@ namespace TDV
 		}
 
 		//Determines if the current projectile is vertically aligned with tz.
-		public bool inVerticalRange(double tz)
+		public bool inVerticalRange(float tz)
 		{
 			if (origTarget == null)
 				throw new ArgumentException("Orig Target was null "
@@ -192,7 +192,7 @@ namespace TDV
 		//this emthod returns what horizontal distance is achievable closest to the target.
 		protected Range getIdealFireRange()
 		{
-			return (new Range((speed / 60.0 / 60.0 / 1000.0 * (double)Common.intervalMS) + 0.20, 3.0));
+			return new Range((speed / 60f / 60f / 1000f * Common.intervalMS) + 0.2f, 3f);
 		}
 
 		public override void save(BinaryWriter w)
@@ -261,7 +261,7 @@ namespace TDV
 		{
 			expl = DSound.LoadSound(DSound.SoundPath + "\\m4-1.wav");
 			playSound3d(expl, true, false);
-			List<Projector> hits = Interaction.getObjectsInRange(this, new Range(2.0, 1000.0), Interaction.RangeFlag.existing);
+			List<Projector> hits = Interaction.getObjectsInRange(this, new Range(2f, 1000f), Interaction.RangeFlag.existing);
 			if (hits == null)
 				return;
 			foreach (Projector hit in hits) {

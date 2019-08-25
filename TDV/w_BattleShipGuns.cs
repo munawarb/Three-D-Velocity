@@ -22,10 +22,10 @@ namespace TDV
 			: base(w, "p" + (int)WeaponTypes.battleShipGuns)
 		{
 			weapon.decreaseAmmunitionFor(WeaponTypes.battleShipGuns);
-			neutralizeSpeed(1000.0);
+			neutralizeSpeed(1000f);
 			launch = loadSound(soundPath + "bsg1.wav");
 			moveSound = DSound.LoadSound(DSound.SoundPath + "\\bsg2.wav");
-			setSpan(0.05, 0.10);
+			setSpan(0.05f, 0.10f);
 			followTarget = false;
 			explodes = (Common.getRandom(0, 1) == 0) ? false : true;
 		}

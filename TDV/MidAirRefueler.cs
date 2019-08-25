@@ -19,36 +19,36 @@ namespace TDV
 		private ExtendedAudioBuffer moveSound;
 		public ExtendedAudioBuffer message;
 		private bool firstLoad;
-		private double sx;
-		private double sy;
+		private float sx;
+		private float sy;
 		private bool isCalling;
 		public bool isConnecting;
 		public Range startConnectManeuverRange;
 		public Range connectRange;
 
-		public MidAirRefueler(double x, double y)
+		public MidAirRefueler(float x, float y)
 			: base("r", null)
 		{
 			isObject = false;
 			firstLoad = true;
 			showInList = false;
-			setSpan(0.3, 0.6);
+			setSpan(0.3f, 0.6f);
 			if (!Options.isLoading)
 				initPosition(x, y);
-			neutralizeSpeed(1500.0);
+			neutralizeSpeed(1500f);
 			weapon.weaponIndex = WeaponTypes.battleShipGuns;
 			moveSound = loadSound(soundPath + "e4.wav");
 			setDamagePoints(500);
 			explodeString = soundPath + "d3.wav";
-			startConnectManeuverRange = new Range(5.0, 50.0);
-			connectRange = new Range(2.0, 50.0);
+			startConnectManeuverRange = new Range(5f, 50f);
+			connectRange = new Range(2f, 50f);
 		}
 
 		public MidAirRefueler()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
-		public void initPosition(double x, double y)
+		public void initPosition(float x, float y)
 		{
 			this.x = x;
 			this.y = y;
@@ -128,7 +128,7 @@ speed //this gives total hours
 			isCalling = false;
 			isConnecting = false;
 			time = 0;
-			neutralizeSpeed(1500.0);
+			neutralizeSpeed(1500f);
 			if (message != null && DSound.isPlaying(message))
 				message.stop();
 		}
@@ -138,7 +138,7 @@ speed //this gives total hours
 			playMessage(DSound.SoundPath + "\\rf14.wav", true);
 			isConnecting = true;
 			direction = Degrees.getDegreeValue((short)(Mission.player.direction + 180));
-			neutralizeSpeed(500.0);
+			neutralizeSpeed(500f);
 			time = Environment.TickCount;
 		}
 
@@ -210,23 +210,23 @@ speed //this gives total hours
 			isConnecting = r.ReadBoolean();
 			isCalling = r.ReadBoolean();
 			time = r.ReadInt64();
-			sx = r.ReadDouble();
-			sy = r.ReadDouble();
+			sx = r.ReadSingle();
+			sy = r.ReadSingle();
 			return true;
 		}
 
-		public void setHoverPosition(double sx, double sy)
+		public void setHoverPosition(float sx, float sy)
 		{
 			this.sx = sx;
 			this.sy = sy;
-			x = sx - 10.0;
-			y = sy - 10.0;
+			x = sx - 10f;
+			y = sy - 10f;
 		}
 
 		public void setJuliusHoverPosition()
 		{
 			setHoverPosition(
-								Mission.player.x - 10.0, Mission.player.y - 10.0);
+								Mission.player.x - 10f, Mission.player.y - 10f);
 		}
 
 		public override void freeResources()

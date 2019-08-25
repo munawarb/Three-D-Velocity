@@ -79,7 +79,7 @@ namespace TDV
 			blockSound = loadSound("fb.wav");
 			stunSound = loadSound("fstun.wav");
 			if (!isAI)
-				DSound.SetCoordinates(x, 0.0, y);
+				DSound.SetCoordinates(x, 0f, y);
 		}
 
 		/// <summary>
@@ -476,7 +476,7 @@ namespace TDV
 			this.x = x;
 			this.y = y;
 			if (!isAI)
-				DSound.SetCoordinates(x, 0.0, y);
+				DSound.SetCoordinates(x, 0f, y);
 		}
 
 		public override bool isBlocked(int x, int y)

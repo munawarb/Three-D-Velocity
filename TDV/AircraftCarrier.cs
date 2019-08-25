@@ -29,26 +29,26 @@ namespace TDV
 		private Range r34;
 		private Range r12;
 		private Range r14;
-		public AircraftCarrier(double x, double y)
+		public AircraftCarrier(float x, float y)
 			: base("ac", null)
 		{
 			showInList = false;
 			firstLoad = true;
 			this.x = x;
 			this.y = y;
-			setSpan(300.0, 2.0);
-			neutralizeSpeed(50.0);
+			setSpan(300f, 2f);
+			neutralizeSpeed(50f);
 			weapon.weaponIndex = WeaponTypes.battleShipGuns;
 			moveSound = loadSound(soundPath + "e7.wav");
 			setDamagePoints(5000);
 			explodeString = soundPath + "d3.wav";
-			r34 = new Range(4.75, Weapons.maxVRange);
-			r12 = new Range(3.50, Weapons.maxVRange);
-			r14 = new Range(2.25, Weapons.maxVRange);
+			r34 = new Range(4.75f, Weapons.maxVRange);
+			r12 = new Range(3.5f, Weapons.maxVRange);
+			r14 = new Range(2.25f, Weapons.maxVRange);
 		}
 
 		public AircraftCarrier()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

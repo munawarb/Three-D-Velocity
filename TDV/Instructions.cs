@@ -127,7 +127,7 @@ namespace TDV
 		}
 
 		////Method adds node expecting all parameters to be set. See overload below
-		public void addNode(bool changeNoseAngle, bool changeCourse, bool target, Int16 direction, Int16 noseAngle, double x, double y)
+		public void addNode(bool changeNoseAngle, bool changeCourse, bool target, Int16 direction, Int16 noseAngle, float x, float y)
 		{
 			InstructionNode n = addNode();
 			n.changeNoseAngle = changeNoseAngle;
@@ -138,7 +138,7 @@ namespace TDV
 			n.x = x;
 			n.y = y;
 		}
-		public void addNode(bool target, double x, double y, InstructionNode n)
+		public void addNode(bool target, float x, float y, InstructionNode n)
 		{
 			if (n == null)
 			{
@@ -150,7 +150,7 @@ namespace TDV
 		}
 
 		////Passes node as NULL reference
-		public void addNode(bool target, double x, double y)
+		public void addNode(bool target, float x, float y)
 		{
 			addNode(target, x, y, null);
 		}
@@ -184,8 +184,8 @@ namespace TDV
 				n.course = r.ReadInt16();
 				n.noseAngle = r.ReadInt16();
 				n.target = r.ReadBoolean();
-				n.x = r.ReadDouble();
-				n.y = r.ReadDouble();
+				n.x = r.ReadSingle();
+				n.y = r.ReadSingle();
 			}
 		}
 

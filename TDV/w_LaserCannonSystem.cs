@@ -20,9 +20,9 @@ namespace TDV
 		{
 			type = WeaponTypes.laserCannonSystem;
 			weapon.decreaseAmmunitionFor(WeaponTypes.laserCannonSystem);
-			neutralizeSpeed(3000.0);
+			neutralizeSpeed(3000f);
 			cannonLaunch = loadSound(DSound.SoundPath + "\\ca1.wav");
-			setSpan(0.001, 0.001);
+			setSpan(0.001f, 0.001f);
 		}
 
 		public override void free()

@@ -54,6 +54,7 @@ namespace TDV
 			demoExpired,
 			successfulLanding
 		}
+		public const float nextXIncrement = 0.2f;
 		public static Person player;
 		private static Thread spectatorThread, playersThread;
 		private static bool m_determiningKillConditions;
@@ -107,7 +108,7 @@ namespace TDV
 		private static string dName;
 		private static List<Projector> terminatedArray;
 		private static List<Aircraft> rankArray;
-		private static double nextX;
+		private static float nextX;
 		private static Int32 m_completeCount;
 		private static int m_numberOfNonlisted;
 		private static OggBuffer miscSound;
@@ -116,11 +117,6 @@ namespace TDV
 		{
 			get { return (m_numberOfNonlisted); }
 			set { m_numberOfNonlisted = value; }
-		}
-
-		public static double nextXIncrement
-		{
-			get { return (0.2); }
 		}
 
 
@@ -327,7 +323,7 @@ namespace TDV
 			}
 		}
 
-		public static double getAndUpdateX()
+		public static float getAndUpdateX()
 		{
 			nextX += nextXIncrement;
 			return (nextX);
@@ -668,7 +664,7 @@ namespace TDV
 			currentTrack = null;
 			rankArray = new List<Aircraft>();
 			DSound.setListener(); //reset the listener, or create it
-			nextX = 0.0;
+			nextX = 0f;
 			m_completeCount = 0;
 			resetObjectCount();
 			theArray = null;
@@ -819,7 +815,7 @@ namespace TDV
 						if (Mission.radarCount == 0)
 						{
 							Mission.isDestroyingRadar = false;
-							Mission.createNewJuliusAircraft(208.0, 210.0);
+							Mission.createNewJuliusAircraft(208f, 210f);
 							Mission.isJuliusFight = true;
 							Mission.refueler.setJuliusHoverPosition();
 							playNextMissionObjective();
@@ -1079,16 +1075,16 @@ namespace TDV
 			RelativePosition[] r = new RelativePosition[objects.Length];
 			RelativePosition[] rSorted = new RelativePosition[objects.Length];
 			int i = 0;
-			double x = requester.x;
-			double y = requester.y;
-			double z = requester.z;
+			float x = requester.x;
+			float y = requester.y;
+			float z = requester.z;
 			int direction = requester.direction;
 
 			for (i = 0; i <= r.Length - 1; i++)
 			{
-				double tX = objects[i].x;
-				double tY = objects[i].y;
-				double tZ = objects[i].z;
+				float tX = objects[i].x;
+				float tY = objects[i].y;
+				float tZ = objects[i].z;
 				int tDirection = objects[i].direction;
 				r[i] = Degrees.getPosition(x, y, z, direction, tX, tY, tZ, tDirection);
 			}
@@ -1408,13 +1404,13 @@ namespace TDV
 			if (type == ObjectType.aircraft)
 				p = new Aircraft(0, 1500, name, true, t);
 			else if (type == ObjectType.carrierBlue)
-				p = new AircraftCarrier(5.0, 5.0);
+				p = new AircraftCarrier(5f, 5f);
 			else if (type == ObjectType.carrierGreen)
-				p = new AircraftCarrier(5.0, 10.0);
+				p = new AircraftCarrier(5f, 10f);
 			else if (type == ObjectType.carrierRed)
-				p = new AircraftCarrier(8.0, 5.0);
+				p = new AircraftCarrier(8f, 5f);
 			else if (type == ObjectType.carrierYellow)
-				p = new AircraftCarrier(8.0, 10.0);
+				p = new AircraftCarrier(8f, 10f);
 			p.role = role;
 			holderAt(0).add(p);
 			p.setID(id);
@@ -1613,7 +1609,7 @@ namespace TDV
 				MapNode.loadAStarFromFile("maps\\map4.tdv");
 			}
 
-			DSound.setOrientation(0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+			DSound.setOrientation(0f, 0f, 1f, 0f, 1f, 0f);
 			while (!won && !lost)
 			{
 				foreach (Person person in people)

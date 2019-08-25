@@ -285,25 +285,25 @@ namespace TDV
 
 				MissionObjectBase MOB = null;
 				int j = 0;
-				refueler = new MidAirRefueler(200.0, 200.0);
-				carrier = new AircraftCarrier(200.0, 200.0);
+				refueler = new MidAirRefueler(200f, 200f);
+				carrier = new AircraftCarrier(200f, 200f);
 				h.add(refueler);
 				h.add(carrier);
 				for (j = 40; j <= 50; j += 5)
 				{
-					MOB = new SAM(40.0, j);
+					MOB = new SAM(40f, j);
 					h.add(MOB);
 				}
-				MOB = new SAM(100.0, 110.0);
+				MOB = new SAM(100f, 110f);
 				h.add(MOB);
 
-				MOB = new SAM(100.0, 115.0);
+				MOB = new SAM(100f, 115f);
 				h.add(MOB);
 
-				MOB = new SAM(110.0, 120.0);
+				MOB = new SAM(110f, 120f);
 				h.add(MOB);
 
-				MOB = new SAM(120.0, 115.0);
+				MOB = new SAM(120f, 115f);
 				h.add(MOB);
 
 				for (j = 170; j <= 190; j += 10)
@@ -322,9 +322,9 @@ namespace TDV
 				i.addNode(true, 20, 0);
 				i.addNode(true, 0, 20);
 				i.addNode(true, 15, 15);
-				MOB = new BattleShip(20.0, 20.0, i);
+				MOB = new BattleShip(20f, 20f, i);
 				h.add(MOB);
-				MOB = new Island(110.0, 110.0);
+				MOB = new Island(110f, 110f);
 				h.add(MOB);
 				island = MOB;
 
@@ -469,7 +469,7 @@ namespace TDV
 			}
 		}
 
-		public static void createNewJuliusAircraft(double x, double y)
+		public static void createNewJuliusAircraft(float x, float y)
 		{
 			createNewObject("db"); //will assign reference to Mission.darkBlaze
 			darkBlaze.x = x; darkBlaze.y = y;
@@ -501,17 +501,17 @@ namespace TDV
 					ac.x = Mission.player.x - radius; ac.y = Mission.player.y;
 					break;
 				case 5:
-					ac.x = Mission.player.x - 2.0; ac.y = Mission.player.y + 2.0;
+					ac.x = Mission.player.x - 2f; ac.y = Mission.player.y + 2f;
 					break;
 				case 6:
-					ac.x = Mission.player.x + 10.0; ac.y = Mission.player.y - 10.0;
+					ac.x = Mission.player.x + 10f; ac.y = Mission.player.y - 10f;
 					break;
 			}
 			Interaction.holderAt(0).add(ac);
 			return ac;
 		}
 
-		public static Aircraft createNewFighter(double x, double y)
+		public static Aircraft createNewFighter(float x, float y)
 		{
 			Aircraft ac = (Aircraft)createNewObject($"f{getNextFighterNumber()}");
 			ac.x = x;

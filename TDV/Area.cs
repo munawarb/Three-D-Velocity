@@ -17,7 +17,7 @@ namespace TDV
 			mission = 1,
 			track
 		}
-		private double m_runwayLength;
+		private float m_runwayLength;
 		private string m_name;
 		private Int16 m_harddeck = 10000;
 		public Int16 harddeck
@@ -30,7 +30,7 @@ namespace TDV
 			get { return (m_name); }
 			set { m_name = value; }
 		}
-		public double runwayLength
+		public float runwayLength
 		{
 			get { return (m_runwayLength); }
 			set { m_runwayLength = value; }

@@ -13,14 +13,14 @@ namespace TDV
 	{
 		private Int16 m_degrees;
 		////length of this straightaway in miles.
-		private double m_length;
+		private float m_length;
 		////obsticle type of this straightaway
 		private byte m_terrain;
 		private byte m_ID;
 
 
 		////Returns this straightaway's length in miles
-		public double length
+		public float length
 		{
 			get { return (m_length); }
 		}
@@ -39,7 +39,7 @@ namespace TDV
 			get { return (m_terrain); }
 		}
 
-		public Straightaway(Int16 degrees, double length, byte terrain, byte id)
+		public Straightaway(Int16 degrees, float length, byte terrain, byte id)
 		{
 			m_degrees = degrees;
 			m_length = length;

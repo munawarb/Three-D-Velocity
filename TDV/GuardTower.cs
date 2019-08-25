@@ -12,19 +12,19 @@ namespace TDV
 {
 	public class GuardTower : MissionObjectBase
 	{
-		public GuardTower(double x, double y)
+		public GuardTower(float x, float y)
 			: base("gt", null)
 		{
 			this.x = x;
 			this.y = y;
-			setSpan(0.1, 0.1);
+			setSpan(0.1f, 0.1f);
 			weapon.weaponIndex = WeaponTypes.missile;
 			weapon.setAmmunitionFor(WeaponTypes.missile, 30);
 			explodeString = soundPath + "d7.wav";
 		}
 
 		public GuardTower()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

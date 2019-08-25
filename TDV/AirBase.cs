@@ -11,19 +11,19 @@ namespace TDV
 {
 	public class AirBase : MissionObjectBase
 	{
-		public AirBase(double x, double y)
+		public AirBase(float x, float y)
 			: base("ab", null)
 		{
 			Mission.airbase = this;
 			this.x = x;
 			this.y = y;
-			setSpan(2.0, 1.0);
+			setSpan(2f, 1f);
 			setDamagePoints(4000);
 			explodeString = soundPath + "d2.wav";
 		}
 
 		public AirBase()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

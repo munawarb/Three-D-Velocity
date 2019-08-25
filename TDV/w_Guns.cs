@@ -21,8 +21,8 @@ namespace TDV
 		{
 			type = WeaponTypes.guns;
 			weapon.decreaseAmmunitionFor(WeaponTypes.guns);
-			setSpan(200.0, 0.1);
-			neutralizeSpeed(2000.0);
+			setSpan(200f, 0.1f);
+			neutralizeSpeed(2000f);
 		}
 		public override void lockOn(Projector target)
 		{

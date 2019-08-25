@@ -14,13 +14,13 @@ namespace TDV
 	public class RadarTower : MissionObjectBase
 	{
 		private bool missileAttacker;
-		public RadarTower(double x, double y, bool missileAttacker)
+		public RadarTower(float x, float y, bool missileAttacker)
 			: base("rs", null)
 		{
 			this.missileAttacker = missileAttacker;
 			this.x = x;
 			this.y = y;
-			setSpan(0.05, 0.05);
+			setSpan(0.05f, 0.05f);
 			weapon.weaponIndex = WeaponTypes.missile;
 			if (!Options.isLoading)
 				incrementRadarCount();
@@ -28,7 +28,7 @@ namespace TDV
 		}
 
 		public RadarTower()
-			: this(0.0, 0.0, false)
+			: this(0f, 0f, false)
 		{ }
 
 		private void incrementRadarCount()

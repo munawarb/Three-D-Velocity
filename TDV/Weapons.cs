@@ -265,7 +265,7 @@ namespace TDV
 			get
 			{
 				if (creator is Aircraft)
-					return (new Range(creator.z / 10000.0 * 20.0, maxVRange));
+					return (new Range(creator.z / 10000f * 20f, maxVRange));
 				else
 					return (m_radarRange);
 			}
@@ -280,30 +280,30 @@ namespace TDV
 		{
 			get
 			{
-				Range r = new Range(0.0, 0.0);
+				Range r = new Range(0f, 0f);
 				switch (weaponIndex) {
 					case WeaponTypes.missile:
 					case WeaponTypes.explosiveMissile:
-						r = new Range(15.0, (creator is GuardTower) ? 50000.0 : 300.0);
+						r = new Range(15f, (creator is GuardTower) ? 50000f : 300f);
 						break;
 					case WeaponTypes.guns:
-						r = new Range(4.0, 300.0);
+						r = new Range(4f, 300f);
 						break;
 					case WeaponTypes.laserCannonSystem:
-						r = new Range(10.0, 300.0);
+						r = new Range(10f, 300f);
 						break;
 					case WeaponTypes.cruiseMissile:
 					case WeaponTypes.missileInterceptor:
-						r = new Range(30.0, 1000.0);
+						r = new Range(30f, 1000f);
 						break;
 					case WeaponTypes.tankMissile:
-						r = new Range(30.0, 50000.0);
+						r = new Range(30f, 50000f);
 						break;
 					case WeaponTypes.battleShipGuns:
-						r = new Range(5.0, 50000.0);
+						r = new Range(5f, 50000f);
 						break;
 					case WeaponTypes.samMissile:
-						r = new Range(5.0, 50000.0);
+						r = new Range(5f, 50000f);
 						break;
 					case WeaponTypes.landingBeaconLock:
 						return new Range(maxHRange, maxVRange);
@@ -314,7 +314,7 @@ namespace TDV
 				if (Options.mode == Options.Modes.mission
 								&& isValidLock()
 								&& getLockedTarget().isObject)
-					r.verticalDistance = 50000.0;
+					r.verticalDistance = 50000f;
 				return r;
 			}
 		}
@@ -401,9 +401,9 @@ namespace TDV
 			System.Diagnostics.Trace.WriteLineIf(creator is JuliusAircraft, "Mode during weapons create is " + Options.mode);
 			if (creator is Aircraft
 							&& (!creator.isAI || Options.mode != Options.Modes.mission))
-				m_radarRange = new Range(creator.z / 10000.0 * 20.0, maxVRange);
+				m_radarRange = new Range(creator.z / 10000f * 20f, maxVRange);
 			else
-				m_radarRange = new Range(10.0, maxVRange);
+				m_radarRange = new Range(10f, maxVRange);
 			weaponIndex = WeaponTypes.guns;
 			validIndecies = new List<WeaponTypes>();
 			m_ammunition = new int[Enum.GetValues(typeof(WeaponTypes)).Length];
@@ -856,7 +856,7 @@ Range reachRange)
 				//so this call just sets up the weapon to execute onTick properly.
 				//NOTE: onTick will *NOT* execute until all weapons are done loading.
 				createNewWeapon((WeaponTypes)type, lockId, index++,
-					new Range(r.ReadDouble(), r.ReadDouble())).load();
+					new Range(r.ReadSingle(), r.ReadSingle())).load();
 			} //while more weapons to load
 			if (maxIndex > -1) //loaded weapons
 				isWaitingForLoad = true;

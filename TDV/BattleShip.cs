@@ -15,20 +15,20 @@ namespace TDV
 	{
 		private ExtendedAudioBuffer moveSound;
 		private bool firstLoad;
-		public BattleShip(double x, double y, Instructions i)
+		public BattleShip(float x, float y, Instructions i)
 			: base("bs", i)
 		{
 			firstLoad = true;
 			this.x = x;
 			this.y = y;
-			setSpan(0.5, 0.5);
-			neutralizeSpeed(50.0);
+			setSpan(0.5f, 0.5f);
+			neutralizeSpeed(50f);
 			weapon.weaponIndex = WeaponTypes.battleShipGuns;
 			moveSound = loadSound(soundPath + "e7.wav");
 			explodeString = soundPath + "d3.wav";
 		}
 		public BattleShip()
-			: this(0.0, 0.0, new Instructions())
+			: this(0f, 0f, new Instructions())
 		{ }
 
 		public override void move()

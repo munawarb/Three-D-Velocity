@@ -174,7 +174,6 @@
     <Compile Include="Degrees.cs" />
     <Compile Include="DSound.cs" />
     <Compile Include="DXInput.cs" />
-    <Compile Include="Encrypter.cs" />
     <Compile Include="ExtendedAudioBuffer.cs" />
     <Compile Include="OggBuffer.cs" />
     <Compile Include="Range.cs" />
@@ -196,7 +195,7 @@
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties Reactor_Output="" Reactor_Configuration="ALL" Reactor_Project="" Reactor_Commands="" Reactor_Enabled="0" />
+      <UserProperties Reactor_Enabled="0" Reactor_Commands="" Reactor_Project="" Reactor_Configuration="ALL" Reactor_Output="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

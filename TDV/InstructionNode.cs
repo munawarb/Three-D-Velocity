@@ -15,8 +15,8 @@ namespace TDV
 		private bool m_changeNoseAngle;
 		private bool m_ChangeCourse;
 		private bool m_target;
-		private double m_x;
-		private double m_y;
+		private float m_x;
+		private float m_y;
 		private short m_noseAngle;
 		private short m_course;
 
@@ -40,12 +40,12 @@ namespace TDV
 			get { return (m_course); }
 			set { m_course = value; }
 		}
-		public double x
+		public float x
 		{
 			get { return (m_x); }
 			set { m_x = value; }
 		}
-		public double y
+		public float y
 		{
 			get { return (m_y); }
 			set { m_y = value; }

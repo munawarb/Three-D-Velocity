@@ -12,19 +12,19 @@ namespace TDV
 {
 	public class Island : MissionObjectBase
 	{
-		public Island(double x, double y)
+		public Island(float x, float y)
 			: base("i", null)
 		{
 			this.x = x;
 			this.y = y;
-			setSpan(1.0, 100.0);
+			setSpan(1f, 100f);
 			forceStareo = true;
 			explodeString = soundPath + "d8.wav";
 			showInList = false;
 		}
 
 		public Island()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

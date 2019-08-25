@@ -23,8 +23,8 @@ namespace BPCSharedComponent.VectorCalculation
 		private int m_degreeDifference;
 		private int m_relativeMark;
 		private int m_degrees;
-		private double m_distance;
-		private double m_vDistance;
+		private float m_distance;
+		private float m_vDistance;
 		private int m_clockMark;
 
 		public bool sapiMode
@@ -47,7 +47,7 @@ namespace BPCSharedComponent.VectorCalculation
 		//the object in question this object is.
 		//If this value is negative,
 		//this object is below the other object, else it is above.
-		public double vDistance
+		public float vDistance
 		{
 			get { return (m_vDistance); }
 			set { m_vDistance = value; }
@@ -111,7 +111,7 @@ namespace BPCSharedComponent.VectorCalculation
 		}
 
 		////Gets or sets the closure of this projector to the other projector.
-		public double distance
+		public float distance
 		{
 			get { return (m_distance); }
 			set { m_distance = value; }

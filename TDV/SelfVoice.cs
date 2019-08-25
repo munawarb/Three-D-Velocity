@@ -24,7 +24,7 @@ namespace TDV
 		public static long CurrentFreq = 44100;
 		private static string gSFilename;
 		private static bool gNWait;
-		private static double gNumber;
+		private static float gNumber;
 		private static Thread numThread = null;
 		private static StringBuilder files;
 		private static ExtendedAudioBuffer[] soundFiles;
@@ -51,7 +51,7 @@ namespace TDV
 					soundFiles[globalCounter].stop();
 			}
 		}
-		public static void VoiceNumber(double number)
+		public static void VoiceNumber(float number)
 		{
 			NLS("#" + number);
 		}
@@ -87,7 +87,7 @@ namespace TDV
 		}
 
 		//starts number voicing in new thread
-		public static void VoiceNumber(double n, bool newThread)
+		public static void VoiceNumber(float n, bool newThread)
 		{
 			//if something is already being voiced, stop it before starting this thread.
 			lock (locker)

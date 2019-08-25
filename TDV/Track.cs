@@ -42,7 +42,7 @@ namespace TDV
 				byte counter = 0;
 				for (counter = 1; counter <= trackLength; counter++)
 				{
-					setStraightaway(counter - 1, new Straightaway(s.ReadInt16(), s.ReadDouble(), s.ReadByte(), (byte)(counter - 1)));
+					setStraightaway(counter - 1, new Straightaway(s.ReadInt16(), (float)s.ReadDouble(), s.ReadByte(), (byte)(counter - 1)));
 				}
 				s.Close();
 			}
@@ -51,12 +51,12 @@ namespace TDV
 
 		////--------
 		////Property to return length of track in miles
-		public double length
+		public float length
 		{
 			get
 			{
 				byte i = 0;
-				double l = 0;
+				float l = 0;
 				for (i = 0; i <= m_track.Length - 1; i++)
 				{
 					l += getStraightaway(i).length;

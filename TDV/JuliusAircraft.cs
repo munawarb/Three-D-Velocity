@@ -27,7 +27,7 @@ namespace TDV
 		//Two values below are measured in seconds
 		private int maxRechargeTime;
 		private int maxFireTime;
-		public JuliusAircraft(double x, double y)
+		public JuliusAircraft(float x, float y)
 			: base(0, 1000, "db", true, new Track(Options.currentTrack))
 		{
 			showInList = true;
@@ -41,7 +41,7 @@ namespace TDV
 			 WeaponTypes.cruiseMissile,
 			 WeaponTypes.explosiveMissile);
 			weapon.setInfiniteAmmunition();
-			startAtHeight(1000.0);
+			startAtHeight(1000f);
 			setDamagePoints(10000);
 			setStrafeTime(20, 10);
 			liftSpeed = 200;
@@ -52,7 +52,7 @@ namespace TDV
 		}
 
 		public JuliusAircraft()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 
@@ -122,8 +122,8 @@ namespace TDV
 					specialMove();
 				if (getPosition(Mission.player).distance >= 15.0)
 				{
-					x = Mission.player.x - 3.0;
-					y = Mission.player.y + 3.0;
+					x = Mission.player.x - 3f;
+					y = Mission.player.y + 3f;
 					playTaunt(soundPath + "j2-"
 					 + Common.getRandom(1, 3)
 					 + ".wav");

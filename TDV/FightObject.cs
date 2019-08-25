@@ -59,7 +59,7 @@ namespace TDV
 		/// </summary>
 		/// <param name="f">The other object</param>
 		/// <returns>The distance</returns>
-		public double distanceBetween(FightObject f)
+		public float distanceBetween(FightObject f)
 		{
 			return Degrees.getDistanceBetween(x, y, f.x, f.y);
 		}

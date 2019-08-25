@@ -12,18 +12,18 @@ namespace TDV
 {
 	public class Bridge : MissionObjectBase
 	{
-		public Bridge(double x, double y)
+		public Bridge(float x, float y)
 			: base("b", null)
 		{
 			this.x = x;
 			this.y = y;
-			setSpan(0.0284090909, 0.5);
+			setSpan(0.0284090909f, 0.5f);
 			explodeString = soundPath + "d2.wav";
 			setDamagePoints(8000);
 		}
 
 		public Bridge()
-			: this(0.0, 0.0)
+			: this(0f, 0f)
 		{ }
 
 		public override void move()

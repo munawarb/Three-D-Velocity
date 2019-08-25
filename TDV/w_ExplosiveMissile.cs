@@ -26,8 +26,8 @@ namespace TDV
 			weapon.decreaseAmmunitionFor(WeaponTypes.explosiveMissile);
 			missileLaunchSound = loadSound(soundPath + "m1.wav");
 			missileSound = DSound.LoadSound(DSound.SoundPath + "\\m2.wav");
-			neutralizeSpeed(1500.0);
-			setSpan(0.1, 0.1);
+			neutralizeSpeed(1500f);
+			setSpan(0.1f, 0.1f);
 			followTarget = false;
 		}
 
