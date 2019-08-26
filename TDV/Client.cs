@@ -111,6 +111,20 @@ namespace TDV
 			messageOfTheDay = 64
 		}
 
+		public enum Fields: byte
+		{
+			damage = 1,
+			direction = 2,
+			x = 3,
+			y = 4,
+			z = 5,
+			speed = 6,
+			throttlePosition = 7,
+			isOnRunway = 8,
+			afterburnersActive = 9,
+			cloakStatus = 10
+		}
+
 		private static List<ChatRoomMember> members;
 		private static bool m_spec;
 		public static bool spectatorPending
@@ -559,47 +573,33 @@ namespace TDV
 			long numArgs = mem.Position;
 			writer.Write((ushort)0);
 			ushort size = 2;
-			writer.Write((sbyte)1);
+			writer.Write((byte)Fields.damage);
 			writer.Write(source.damage);
-			writer.Write((sbyte)2);
+			writer.Write((byte)Fields.direction);
 			writer.Write(source.direction);
 			if (includeCommonAttributes)
 			{
-				writer.Write((sbyte)3);
+				writer.Write((byte)Fields.x);
 				writer.Write(source.x);
-				writer.Write((sbyte)4);
+				writer.Write((byte)Fields.y);
 				writer.Write(source.y);
-				writer.Write((sbyte)5);
+				writer.Write((byte)Fields.z);
 				writer.Write(source.z);
-				writer.Write((sbyte)6);
+				writer.Write((byte)Fields.speed);
 				writer.Write(source.speed);
 				size += 4;
 				if (a != null)
 				{ //If this is object update for aircraft, need to send
 					//throttle and afterburner status also
-					writer.Write((sbyte)7);
+					writer.Write((byte)Fields.throttlePosition);
 					writer.Write(a.getThrottle());
-					writer.Write((sbyte)8);
+					writer.Write((byte)Fields.isOnRunway);
 					writer.Write(a.getRunwayStatus());
-					writer.Write((sbyte)9);
+					writer.Write((byte)Fields.afterburnersActive);
 					writer.Write(a.getAfterburnerStatus());
-					writer.Write((sbyte)10);
+					writer.Write((byte)Fields.cloakStatus);
 					writer.Write(a.getCloakStatus());
 					size += 4;
-					/*
-					if (newJoin) {
-						writer.Write('j');
-						writer.Write(a.getWeight());
-						writer.Write('k');
-						writer.Write(a.getMaxWeight());
-						writer.Write('l');
-						writer.Write(a.getFuelWeight());
-						writer.Write('m');
-						writer.Write(a.getMaxFuelWeight());
-						newJoin = false;
-						size += 4;
-					}
-					 * */
 				} //if sending update for aircraft
 			}
 

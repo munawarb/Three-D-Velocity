@@ -4281,7 +4281,7 @@ weapon.firingRange);
 			lock (dataLocker) {
 				if (queue.BaseStream.Length == 0) //we have no commands from the server
 					return;
-				sbyte uC; //current field, such as 2 for damage.
+				Client.Fields uC; //current field, such as 2 for damage.
 				System.Diagnostics.Trace.WriteLine(name + " received data");
 				while (queue.BaseStream.Length > queue.BaseStream.Position) {
 					System.Diagnostics.Trace.WriteLine("Positions: " + queue.BaseStream.Position + ", " + queue.BaseStream.Length);
@@ -4290,58 +4290,37 @@ weapon.firingRange);
 					int maxArgs = queue.ReadInt16();
 					System.Diagnostics.Trace.WriteLine(maxArgs);
 					for (int numArgs = 1; numArgs <= maxArgs; numArgs++) {
-						uC = queue.ReadSByte();
+						uC = (Client.Fields)queue.ReadByte();
 						System.Diagnostics.Trace.WriteLine(uC);
 						switch (uC) {
-							case 1:
+							case Client.Fields.damage:
 								damage = queue.ReadInt32();
 								break;
-
-							case 2:
+							case Client.Fields.direction:
 								direction = queue.ReadInt32();
 								break;
-
-							case 3:
+							case Client.Fields.x:
 								x = queue.ReadSingle();
 								break;
-
-							case 4:
+							case Client.Fields.y:
 								y = queue.ReadSingle();
 								break;
-
-							case 5:
+							case Client.Fields.z:
 								z = queue.ReadSingle();
 								break;
-
-							case 6:
+							case Client.Fields.speed:
 								speed = queue.ReadSingle();
 								break;
-
-							case 7:
+							case Client.Fields.throttlePosition:
 								throttlePosition = queue.ReadInt32();
 								break;
-
-							case 8:
+							case Client.Fields.isOnRunway:
 								isOnRunway = queue.ReadBoolean();
 								break;
-
-							case 9:
+							case Client.Fields.afterburnersActive:
 								afterburnersActive = queue.ReadBoolean();
 								break;
-
-							/*
-						case 'j':
-							int weight = queue.ReadInt32();
-							queue.ReadChar();
-							int maxWeight = queue.ReadInt32();
-							queue.ReadChar();
-							float fuelWeight = queue.ReadSingle();
-							queue.ReadChar();
-							float maxFuelWeight = queue.ReadSingle();
-							setWeight(weight, maxWeight, fuelWeight, maxFuelWeight);
-							break;
-							 * */
-							case 10:
+							case Client.Fields.cloakStatus:
 								setCloakStatus(queue.ReadBoolean());
 								break;
 						} //switch
