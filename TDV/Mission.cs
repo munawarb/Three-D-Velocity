@@ -545,8 +545,8 @@ namespace TDV
 				return new Bridge();
 			else if (name.Equals("c"))
 				return new Chopper();
-			else if (name.Equals("f1"))
-				return new Aircraft();
+			else if (name.StartsWith("f") && name.Length == 2) // f1 to fn (single digit)
+				return new Aircraft(name);
 			else if (name.Equals("gt"))
 				return new GuardTower();
 			else if (name.Equals("i"))
@@ -569,8 +569,7 @@ namespace TDV
 				return player = new Aircraft(false); //create player
 			else if (name.Equals("lb"))
 				return landingBeacon = new LandingBeacon();
-			else
-				return null;
+			throw new ArgumentException($"The string {name} is not a valid object name.");
 		}
 
 		#region ObjectGeneration

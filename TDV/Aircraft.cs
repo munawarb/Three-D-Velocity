@@ -621,8 +621,8 @@ namespace TDV
 			} //if missionFighter
 		}
 
-		public Aircraft()
-			: this(0, 1500, "f1", true, new Track(Options.currentTrack)) { }
+		public Aircraft(String name)
+			: this(0, 1500, name, true, new Track(Options.currentTrack)) { }
 		public Aircraft(bool isAI)
 			: this(0, 1500, (!isAI) ? "o" : "f1", isAI, new Track(Options.currentTrack)) { }
 
