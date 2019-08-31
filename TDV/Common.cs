@@ -326,9 +326,9 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			bool justEntered = true; //used for screen reader menus so
 									 //the prompt isn't cut off
 			if (menuWrapSound == null) {
-				menuWrapSound = DSound.LoadSound(DSound.SoundPath + "\\menumove.wav");
-				menuMoveSound = DSound.LoadSound(DSound.SoundPath + "\\mc" + getRandom(1, 2) + ".wav");
-				menuSelectSound = DSound.LoadSound(DSound.SoundPath + "\\mc3.wav");
+				menuWrapSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\menumove.wav");
+				menuMoveSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\mc" + getRandom(1, 2) + ".wav");
+				menuSelectSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\mc3.wav");
 			}
 			bool wrap = false;
 			while (DXInput.isKeyHeldDown(Key.Return)

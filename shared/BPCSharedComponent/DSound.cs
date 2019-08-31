@@ -189,7 +189,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="vx">The x component of the velocity vector.</param>
 		/// <param name="vy">The y component of the velocity  vector.</param>
 		/// <param name="vz">The z component of the velocity vector.</param>
-		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, float x, float y, float z, float vx=0, float vy=0, float vz=0)
+		/// <param name="flags">The 3D flags to calculate. The default will calculate volume and doppler shift. This parameter is useful if it is not desirable for XAudio2 to calculate doppler on sounds that modify their own frequencies as an example; in this case, the flags should omit doppler.</param>
+		public static void PlaySound3d(ExtendedAudioBuffer sound, bool stop, bool loop, float x, float y, float z, float vx=0, float vy=0, float vz=0, CalculateFlags flags = CalculateFlags.Matrix | CalculateFlags.Doppler)
 		{
 			Emitter emitter = new Emitter {
 				ChannelCount = 1,
@@ -200,8 +201,8 @@ namespace BPCSharedComponent.ExtendedAudio
 				Velocity = new Vector3(vx, vy, vz)
 			};
 			sound.play(stop, loop);
-			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, CalculateFlags.Matrix | CalculateFlags.Doppler, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
-			sound.apply3D(dspSettings, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
+			DspSettings dspSettings = x3DAudio.Calculate(listener, emitter, flags, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount);
+			sound.apply3D(dspSettings, sound.getVoiceDetails().InputChannelCount, mainMasteringVoice.VoiceDetails.InputChannelCount, flags);
 		}
 
 		/// <summary>

@@ -238,6 +238,8 @@ namespace TDV
 		private const float windThreshold = 0.2f; // Wind will never drop below this value
 		private const float windVolumeIncrement = (1f - windThreshold) / 1500f;
 		private const float windFreqIncrement = 0.0005f;
+		// Since the front of the aircraft is considered to be from -80 to 80, we'll have the target solution lower in pitch by semitones according to this range.
+		private const float targetSolutionFreqCoefficient = -5 / 80f;
 		private const float retractGearAltitude = 1000f;
 		protected const float minAltitude = 10000f; // Expressed in feet.
 		protected const float maxAltitude = 90000f; // Expressed in feet.
@@ -2200,8 +2202,8 @@ weapon.firingRange);
 						float tx = x;
 						float tY = y;
 						Degrees.moveObject(ref tx, ref tY, p.degrees, 1f, 1f);
-						targetSolutionSound.setFrequency(48100.0f - (100 * p.degreesDifference));
-						DSound.PlaySound3d(targetSolutionSound, false, true, tx, (pov == PointOfView.interior) ? z : 0f, tY);
+						targetSolutionSound.setFrequency(targetSolutionFreqCoefficient*p.degreesDifference);
+						DSound.PlaySound3d(targetSolutionSound, false, true, tx, (pov == PointOfView.interior) ? z : 0f, tY, flags: SharpDX.X3DAudio.CalculateFlags.Matrix);
 					} else { //if degree difference==0
 						targetSolutionSound.stop();
 						playSound(targetSolutionSound3, false, true);

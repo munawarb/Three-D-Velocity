@@ -109,10 +109,16 @@ this.buffer = buffer;
 		/// Applies 3-D settings represented by the supplied settings object to the sound.
 		/// </summary>
 		/// <param name="settings">The DspSettings object that represents changes that should be made to this sound.</param>
-		public void apply3D(DspSettings settings, int sourceChannels, int destinationChannels)
+		/// <param name="sourceChannels">The source channel count.</param>
+		/// <param name="destinationChannels">The destination channel count.</param>
+		/// <param name="flags">The 3D flags to calculate. The default will calculate volume and doppler shift. This parameter is useful if it is not desirable for XAudio2 to calculate doppler on sounds that modify their own frequencies as an example; in this case, the flags should omit doppler.</param>
+		public void apply3D(DspSettings settings, int sourceChannels, int destinationChannels, CalculateFlags flags)
 		{
 			voice.SetOutputMatrix(sourceChannels, destinationChannels, settings.MatrixCoefficients);
-			voice.SetFrequencyRatio(settings.DopplerFactor);
+			if ((flags & CalculateFlags.Doppler) == CalculateFlags.Doppler) {
+				voice.GetFrequencyRatio(out float freq);
+				voice.SetFrequencyRatio(settings.DopplerFactor * freq);
+			}
 		}
 
 		/// <summary>
