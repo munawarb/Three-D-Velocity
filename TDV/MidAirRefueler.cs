@@ -106,17 +106,11 @@ namespace TDV
 			isCalling = true;
 			z = Mission.player.z;
 			direction = Degrees.GetDegreesBetween(x, y, Mission.player.x, Mission.player.y);
-			int minutes = (int)(Degrees.getDistanceBetween(x, y,
-Mission.player.x, Mission.player.y)
-/
-speed //this gives total hours
-*
-60.0); //convert to minutes
-
+			int minutes = (int)(Degrees.getDistanceBetween(x, y, Mission.player.x, Mission.player.y) / speed * 60); // We need the minutes instead of hours here.
 			if (minutes <= 1)
 				playMessage(DSound.SoundPath + "\\rf0.wav");
 			else if (minutes >= 2 && minutes <= 9)
-				playMessage(DSound.SoundPath + String.Format("\\rf{0}.wav", minutes));
+				playMessage($"{DSound.SoundPath}\\rf{minutes}.wav");
 			else
 				SelfVoice.NLS("#" + minutes + "&mius.wav", true, true); //playMessage(DSound.SoundPath + "\\rf10.wav");
 		}
@@ -159,7 +153,7 @@ speed //this gives total hours
 		{
 			if (message != null)
 				message.stop();
-			message = DSound.LoadSound(o);
+			message = DSound.LoadSoundAlwaysLoud(o);
 			DSound.PlaySound(message, true, false);
 			if (wait)
 			{

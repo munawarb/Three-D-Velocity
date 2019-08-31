@@ -3487,7 +3487,7 @@ weapon.firingRange);
 			if (Options.mode != Options.Modes.mission)
 				return;
 			if (refuelerRanOutOfFuel) {
-				ExtendedAudioBuffer msg = DSound.LoadSound(DSound.SoundPath + "\\rf13.wav");
+				ExtendedAudioBuffer msg = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\rf13.wav");
 				DSound.PlaySound(msg, true, false);
 			}
 			if (callingRefueler) {
