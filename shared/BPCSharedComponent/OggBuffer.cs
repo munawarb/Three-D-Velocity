@@ -115,7 +115,6 @@ namespace BPCSharedComponent.ExtendedAudio
 			{
 				List<AudioBuffer> audioBuffers = new List<AudioBuffer>();
 				foreach (DataStream s in dataStreams) {
-					s.Seek(0, SeekOrigin.Begin);
 					audioBuffers.Add(new AudioBuffer { Stream = s, Flags = BufferFlags.None, AudioBytes = (int)s.Length });
 				}
 				return audioBuffers;
@@ -132,8 +131,8 @@ namespace BPCSharedComponent.ExtendedAudio
 				List<DataStream> streams = getAtLeast(minimumNumberOfBuffers);
 				List<AudioBuffer> buffers = convertToAudioBuffers(streams);
 				submitToSourceVoice(buffers);
-					// If this isn't the first consecutive track, we've already started playing this sourceVoice and are just filling it with data from the new track.
-					if (playPointer == 0)
+				// If this isn't the first consecutive track, we've already started playing this sourceVoice and are just filling it with data from the new track.
+				if (playPointer == 0)
 					sourceVoice.Start();
 				started = true;
 				while (true) {
@@ -141,21 +140,21 @@ namespace BPCSharedComponent.ExtendedAudio
 						break;
 					state = sourceVoice.State;
 					if (state.BuffersQueued < minimumNumberOfBuffers) {
-							// Fill the source with more samples since we're running low.
-							List<DataStream> moreStreams = getAtLeast(minimumNumberOfBuffers);
+						// Fill the source with more samples since we're running low.
+						List<DataStream> moreStreams = getAtLeast(minimumNumberOfBuffers);
 						if (moreStreams.Count < minimumNumberOfBuffers && loop) {
 							vorbis.DecodedPosition = 0;
 							noMoreData = false;
 						}
 						if (state.BuffersQueued == 0 && moreStreams.Count == 0)
 							break; // Nothing remaining to fill the source with and we've played everything.
-							List<AudioBuffer> moreBuffers = convertToAudioBuffers(moreStreams);
+						List<AudioBuffer> moreBuffers = convertToAudioBuffers(moreStreams);
 						submitToSourceVoice(moreBuffers);
 					}
 					Thread.Sleep(10);
 				}
-					// If we're transitioning to the next track and haven't received a stop signal.
-					if (!stopNow && playPointer < (fileNames.Length - 1)) {
+				// If we're transitioning to the next track and haven't received a stop signal.
+				if (!stopNow && playPointer < (fileNames.Length - 1)) {
 					process(playPointer + 1, loop);
 					vorbis.Dispose();
 					return;
