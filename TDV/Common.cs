@@ -676,6 +676,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				Mission.enterMissionMode();
 			//Initialize mission mode in case we need to start some music for a mode
 			startMusic();
+			System.Diagnostics.Trace.WriteLine("started music");
 			Track t = null;
 			int i = 0;
 			if (!Mission.isMission) {

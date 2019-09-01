@@ -1680,8 +1680,9 @@ namespace TDV
 		/// <summary>
 		/// Unmutes everything, including weapons.
 		/// </summary>
-		private static void unmuteAllObjects()
+		public static void unmuteAllObjects()
 		{
+			System.Diagnostics.Trace.WriteLine($"Called unmute at location {Environment.StackTrace}");
 			DSound.setVolumeOfSounds(1.0f);
 		}
 

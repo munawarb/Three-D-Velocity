@@ -324,6 +324,7 @@ namespace TDV
 				startGame(true);
 			while (true) {
 				try {
+					Interaction.unmuteAllObjects();
 					if (!KeyMap.readFromFile() && Common.firstTimeLoad) {
 						OggBuffer kError = DSound.loadOgg(DSound.NSoundPath + "\\kme.ogg");
 						kError.play();
@@ -359,8 +360,7 @@ namespace TDV
 						//If the player pressed ALT+F4, requestedShutdown will be true and this wait handle will be set.
 						if (Options.requestedShutdown)
 							return;
-					} //if not requested shutdown
-					  //eg. player did not choose exit from main menu
+					} //if not requested shutdown eg. player did not choose exit from main menu
 					else { //if requested shutdown
 						Options.requestedShutdown = false;
 						Common.shutdown();

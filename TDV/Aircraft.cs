@@ -4468,7 +4468,6 @@ weapon.firingRange);
 				pauseInput();
 				Interaction.stopAndMute(false);
 			}
-
 			if (e || t) {
 				while (DXInput.isKeyHeldDown() && !hit())
 					Thread.Sleep(0);
@@ -4478,9 +4477,9 @@ weapon.firingRange);
 					Thread.Sleep(5);
 				}
 				SelfVoice.purge(true);
+				Interaction.resumeAndUnmute();
+				resumeInput();
 			} //if status command
-			Interaction.resumeAndUnmute();
-			resumeInput();
 		}
 
 		private bool executeTABStatusCommand()
