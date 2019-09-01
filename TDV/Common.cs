@@ -681,7 +681,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			if (!Mission.isMission) {
 				t = new Track(Options.currentTrack);
 				Holder h = Interaction.holderAt(0);
-				for (i = 1; i <= /*((Options.mode == Options.Modes.testing || Options.mode == Options.Modes.training) ? 1 : getRandom(5, (Options.autoPlay) ? 7 : 5))*/2; i++) {
+				for (i = 1; i <= ((Options.mode == Options.Modes.testing || Options.mode == Options.Modes.training) ? 1 : getRandom(5, (Options.autoPlay) ? 7 : 5)); i++) {
 					string name = null;
 					if (i == 1)
 						name = "o";

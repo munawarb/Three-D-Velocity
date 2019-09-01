@@ -27,6 +27,8 @@ namespace BPCSharedComponent.ExtendedAudio
 		private SourceVoice voice;
 		private bool isInitializingPlayback; // If a consumer happens to query the state of this buffer while we're loading data, they might get State.stopped which is incorrect. So we'll use this flag to force this buffer to send State.playing.
 		private bool hasNeverPlayed;
+		private bool isStopped;
+		private bool looping;
 		private Action onEnd;
 
 		/// <summary>
@@ -39,8 +41,15 @@ namespace BPCSharedComponent.ExtendedAudio
 				if (isInitializingPlayback)
 					return State.playing;
 				else {
-					if (voice.State.BuffersQueued > 0)
-						return State.playing;
+					// If this track is looping, we can't rely on buffersQueued since none of the buffers get flushed.
+					// So the only way to stop a looping track is if we explicitly call the stop method.
+					if (looping) {
+						if (!isStopped)
+							return State.playing;
+					} else { // Not looping, just use buffersQueued.
+						if (voice.State.BuffersQueued > 0)
+							return State.playing;
+					}
 					return State.stopped;
 				}
 			}
@@ -50,10 +59,10 @@ namespace BPCSharedComponent.ExtendedAudio
 		///  Constructs a new ExtendedAudioBuffer.
 		/// </summary>
 		/// <param name="buffer">The AudioBuffer with which to fill the SourceVoice. The SourceVoice can either be filled beforehand or filled by calling play(true, false).</param>
-		/// <param name="voice">The SourceVoice that represents the pipeline of the supplied Audio Buffer. In order to use onEnd, this voice must be instantiated with delegate suport enabled.</param>
+		/// <param name="voice">The SourceVoice that represents the pipeline of the supplied Audio Buffer. In order to use onEnd, this voice must be instantiated with delegate support enabled.</param>
 		public ExtendedAudioBuffer(AudioBuffer buffer, SourceVoice voice)
 		{
-this.buffer = buffer;
+			this.buffer = buffer;
 			this.voice = voice;
 			hasNeverPlayed = true;
 			// Will only fire if callback support is enabled.
@@ -80,6 +89,7 @@ this.buffer = buffer;
 		/// <param name="loop">Whether or not to loop the sound.</param>
 		public void play(bool stop, bool loop)
 		{
+			this.looping = loop;
 			isInitializingPlayback = true;
 			if (loop) {
 				buffer.LoopCount = AudioBuffer.LoopInfinite;
@@ -94,6 +104,7 @@ this.buffer = buffer;
 				voice.SubmitSourceBuffer(buffer, null);
 			}
 			voice.Start();
+			isStopped = false;
 			isInitializingPlayback = false;
 		}
 
@@ -103,6 +114,7 @@ this.buffer = buffer;
 		public void stop()
 		{
 			voice.Stop();
+			isStopped = true;
 		}
 
 		/// <summary>
