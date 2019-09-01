@@ -1,6 +1,17 @@
 #### What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+##### Version 2.4, released on 09/01/2019
+Compatibility note: Saved games and settings files are not backwards compatible due to the switch to `float`.
+
+###### Added
+- TDV now uses XAudio2 for sound playback instead of DirectSound. XAudio2 is Microsoft's successor to DirectSound and offers many much-desired features that DirectSound lacked. As a result of the switch to XAudio2, much of the code in BPCSharedComponent.dll has been rewritten and a lot of old code was removed ([#91](../../issues/91)), ([#95](../../issues/95))
+- All `double` types in TDV now use `float` values instead, resulting in a smaller memory footprint and better conformance to multimedia API standards that typically use `float` values as parameters. In addition, the binaries are compiled for the "Any CPU" architecture, resulting in native 32-bit and 64-bit support. Previously, TDV was compiled for 32-bit processors only  ([#97](../../issues/97))
+
+###### Fixed
+- The game would crash with a "null reference exception" after the airbase cut scene. This problem would also cause crashes when new aircraft were spawned, such as in Training Mode and during the Dark Blaze fight ([#93](../../issues/93)), ([#96](../../issues/96)), ([#98](../../issues/98))
+- After an update, the updater would not delete the downloaded zip file with new binaries. Also, the update check happens when TDV first loads as opposed to after the logo ([#94](../../issues/94))
+
 ##### Version 2.31, released on 08/01/2019
 
 ###### Added

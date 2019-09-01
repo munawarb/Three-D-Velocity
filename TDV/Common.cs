@@ -1131,7 +1131,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			Holder h = Interaction.holderAt(1);
 			while (!h.haulted)
 				Thread.Sleep(100);
-			w.Write(1.3f);
+			w.Write(float.Parse(applicationVersion, CultureInfo.InvariantCulture.NumberFormat));
 			Mission.save(w);
 			w.Write(Interaction.length);
 			//Only save objects; don't save projectiles,
@@ -1181,6 +1181,8 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			inFile = new BinaryReader(new FileStream(file, FileMode.Open));
 			version = inFile.ReadSingle();
 			System.Diagnostics.Trace.WriteLine("Loaded version " + version);
+			if (version < 2.4) // Breaking changes ,don't load.
+				return false;
 			Mission.load();
 			System.Diagnostics.Trace.WriteLine("During load, missionNumber is " + Mission.missionNumber);
 

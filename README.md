@@ -61,7 +61,7 @@ Three-D Velocity picks up after the first attempt failed. The player acts as Lie
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
 ## What's new
-The latest version is 2.31, released on 08/01/2019. If you'd like to check out a list of new features, you can view the [change log here](changelog.md). When you download the binary distribution, you're always getting the most recent version noted in the change log. The Master branch might incorporate code that hasn't made it into the binary release yet.
+The latest version is 2.4, released on 09/01/2019. If you'd like to check out a list of new features, you can view the [change log here](changelog.md). When you download the binary distribution, you're always getting the most recent version noted in the change log. The Master branch might incorporate code that hasn't made it into the binary release yet.
 
 ### Updating From Previous Versions
 TDV comes with an auto updater. If you're running an older version, the game will download and install the latest update for you. For this reason, I advise against extracting TDV to a write-protected directory.
@@ -86,7 +86,7 @@ The zip file contains the TDV executable, all sounds, and the server executable.
 If you just want the source code without the TDV executable and media files, use the git clone command, like this:
 `git clone https://github.com/munawarb/Three-D-Velocity.git`
 
-Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2017 solutions, and .NET Framework 4.6 or higher to compile the project. You can get a copy of Visual Studio 2017 Community Edition from Microsoft. This is the recommended IDE. Visual Studio Community Edition is free. Open up the TDV/Three-D Velocity.sln solution in your C# IDE of choice and the project files will load. If you want to successfully run TDV, you must fetch the binaries submodule to include all dependencies and sound files.
+Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2019 solutions, and .NET Framework 4.7.2 or higher to compile the project. You can get a copy of Visual Studio 2017 Community Edition from Microsoft. This is the recommended IDE. Visual Studio Community Edition is free. Open up the TDV/Three-D Velocity.sln solution in your C# IDE of choice and the project files will load. If you want to successfully run TDV, you must fetch the binaries submodule to include all dependencies and sound files.
 
 ### I want everything!
 Now we're talking! If you want the whole thing which includes the source code and the huge binary release, use the git clone command, like this:
@@ -94,7 +94,7 @@ Now we're talking! If you want the whole thing which includes the source code an
 
 The `--recursive` option will tell Git to fetch the binaries submodule. It will be placed in TDV/Three-D-Velocity-Binaries
 
-Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2017 solutions, and .NET Framework 4.6 or higher to compile the project. You can get a copy of Visual Studio 2017 Community Edition from Microsoft. This is the recommended IDE. Visual Studio Community Edition is free. All other dependencies such as SharpDX and Ogg Vorbis libraries are downloaded with the binaries submodule, which was downloaded for you already. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the solution. The executables will be placed in TDV/Three-D-Velocity-Binaries.
+Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2019 solutions, and .NET Framework 4.7.2 or higher to compile the project. You can get a copy of Visual Studio 2017 Community Edition from Microsoft. This is the recommended IDE. Visual Studio Community Edition is free. All other dependencies such as SharpDX and Ogg Vorbis libraries are downloaded with the binaries submodule, which was downloaded for you already. The project solution already points to them. Open up the Three-D Velocity.sln solution in your C# IDE of choice and then build the solution. The executables will be placed in TDV/Three-D-Velocity-Binaries.
 
 ## The Multiplayer Server
 Yes, you read that correctly! TDV contains a multiplayer server so you can fight other aircraft online. If you want to run the server, run the file TDVServer.exe in the binary distribution. For those of you who have the source code, the source code for the server is located in TDV/TDVServer. If you compile the server, the executable will be placed in TDV/three-d-velocity-binaries.
