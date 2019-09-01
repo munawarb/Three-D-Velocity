@@ -323,18 +323,14 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 		/// <returns>The menu index on which ENTER was pressed.</returns>
 		public static int sVGenerateMenu(string intro, string[] menu, int menuPos, String nPath, ExtraItem[] keys, bool sapi)
 		{
-			bool justEntered = true; //used for screen reader menus so
-									 //the prompt isn't cut off
+			bool justEntered = true; // Used for screen reader menus so the prompt isn't cut off
 			if (menuWrapSound == null) {
 				menuWrapSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\menumove.wav");
 				menuMoveSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\mc" + getRandom(1, 2) + ".wav");
 				menuSelectSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\mc3.wav");
 			}
 			bool wrap = false;
-			while (DXInput.isKeyHeldDown(Key.Return)
-						 || DXInput.isKeyHeldDown(Key.Escape)
-						 || DXInput.isJSButtonHeldDown(0)
-						 || DXInput.isJSButtonHeldDown(1))
+			while (DXInput.isKeyHeldDown(Key.Return) || DXInput.isKeyHeldDown(Key.Escape) || DXInput.isJSButtonHeldDown(0) || DXInput.isJSButtonHeldDown(1))
 				Thread.Sleep(5);
 
 			ExtendedAudioBuffer ISound = null;
@@ -351,7 +347,6 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					else
 						ISound = DSound.LoadSoundAlwaysLoud(DSound.NSoundPath + "\\" + intro);
 					DSound.PlaySound(ISound, true, false);
-
 					while (DSound.isPlaying(ISound)) {
 						if (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown() || !DXInput.JSDirectionalPadIsCenter())
 							break;
@@ -369,10 +364,6 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			//prevents menu from starting on blank option
 			while (menu[menuPos].Equals("")) {
 				menuPos++;
-				//if (menuPos > max)
-				//throw new IndexOutOfRangeException("The menu was overrun while looking for a nonblank option. "
-				//+ "The pointer reached " + menuPos + " and the maximum allowed index was " + max
-				//+ ".");
 			}
 
 			while (!DXInput.isFirstPress(Key.Return) && !DXInput.isFirstPressJSB(0)) {
@@ -452,7 +443,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				Thread.Sleep(30);
 			}
 
-			if (!sapi)
+			if (sapi)
 				SapiSpeech.purge();
 			SelfVoice.purge(true);
 			DSound.PlaySound(menuSelectSound, true, false);

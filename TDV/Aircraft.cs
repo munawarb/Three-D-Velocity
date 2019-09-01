@@ -2034,6 +2034,7 @@ weapon.firingRange);
 			if (Options.mode == Options.Modes.training)
 				lastStatusCommand = s;
 			SelfVoice.setPathTo("n");
+			SapiSpeech.purge();
 			switch (s) {
 				case Status.missionObjective:
 					if (Options.mode == Options.Modes.mission && (int)Mission.missionNumber > 0) {
@@ -2752,8 +2753,7 @@ weapon.firingRange);
 				return;
 			Options.isPaused = true;
 			Common.music.stopOgg();
-			Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms5.ogg");
-			Common.music.play(true);
+			Common.startMusic(DSound.SoundPath + "\\ms5.ogg", 0.5f);
 			Interaction.stopAndMute(true, true);
 			while (!checkCommand(Action.pauseGame, true)) {
 				DXInput.updateKeyboardState();
@@ -4490,8 +4490,15 @@ weapon.firingRange);
 				Interaction.stopAndMute(false);
 				while (DXInput.isKeyHeldDown() && !hit())
 					Thread.Sleep(5);
-				SelfVoice.setPathTo("n");
-				SelfVoice.NLS("st.wav", true, true);
+				Common.executeSvOrSr(() =>
+				{
+					SelfVoice.setPathTo("n");
+					SelfVoice.NLS("st.wav", true, true);
+				}, () =>
+				{
+					SapiSpeech.purge();
+					SapiSpeech.speak("Status");
+				}, Options.statusVoiceMode);
 				while (DXInput.isKeyHeldDown(Key.Tab))
 					Thread.Sleep(5);
 				while ((k = DXInput.getKeyPressed()) == Key.Unknown && !hit())
@@ -4503,10 +4510,13 @@ weapon.firingRange);
 							Thread.Sleep(5);
 						return false;
 					}
-					if (Options.isPlayingOnline)
-						SapiSpeech.speak(weapon.getLockedTarget().name, SapiSpeech.SpeakFlag.interruptable);
-					else
+					Common.executeSvOrSr(() =>
+					{
 						SelfVoice.NLS(weapon.getLockedTarget().name + ".wav", true, true);
+					}, () =>
+					{
+						SapiSpeech.speak(Common.getFriendlyNameOf(weapon.getLockedTarget().name));
+					}, (Options.isPlayingOnline)?Options.VoiceModes.screenReader:Options.statusVoiceMode);
 					target = true;
 					while (DXInput.isKeyHeldDown(Key.Tab))
 						Thread.Sleep(5);

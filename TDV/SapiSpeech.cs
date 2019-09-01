@@ -87,11 +87,10 @@ namespace TDV
 			System.Diagnostics.Trace.WriteLine("Set speech source to " + source);
 			if (source == SpeechSource.SAPI)
 				initialize();
-			else
-			{
+			else {
 				initializeJAWS();
 				initializeWinEyes(); //if they have both JAWS and winEyes installed, load both since
-				//they could unload JAWS at any time.
+																									//they could unload JAWS at any time.
 			}
 		}
 
@@ -109,8 +108,7 @@ namespace TDV
 		public static void speak(string sayString, SpeakFlag flag)
 		{
 			lastSpokenString = sayString;
-			if (flag == SpeakFlag.interruptableButStop || flag == SpeakFlag.noInterruptButStop)
-			{
+			if (flag == SpeakFlag.interruptableButStop || flag == SpeakFlag.noInterruptButStop) {
 				System.Diagnostics.Trace.WriteLine("Stopping speech...");
 				if (voice != null)
 					voice.SpeakAsyncCancelAll();
@@ -124,14 +122,13 @@ namespace TDV
 					nvdaController_cancelSpeech();
 			} //if stop flag
 
-			if (source == SpeechSource.auto)
-			{
+			if (source == SpeechSource.auto) {
 				if (initializeJAWS() && sayThroughJAWS(sayString, flag == SpeakFlag.interruptableButStop || flag == SpeakFlag.noInterruptButStop))
 					return;
 				if (initializeWinEyes() && sayThroughWinEyes(sayString))
 					return;
 
-				if (((Environment.Is64BitProcess)? nvdaController64_speakText(sayString):nvdaController_speakText(sayString)) == 0)
+				if (((Environment.Is64BitProcess) ? nvdaController64_speakText(sayString) : nvdaController_speakText(sayString)) == 0)
 					return;
 			}
 
@@ -166,22 +163,20 @@ namespace TDV
 		/// </summary>
 		public static void purge()
 		{
-			try
-			{
-				if (voice != null)
+			if (voice != null) {
+				try {
 					voice.SpeakAsyncCancelAll();
-				else if (JAWS != null)
-					stopJAWSSpeech();
-				else { //nvda fails silently
-					if (Environment.Is64BitProcess)
-						nvdaController64_cancelSpeech();
-					else
-						nvdaController_cancelSpeech();
+				} catch (System.OperationCanceledException) {
 				}
 			}
-			catch (System.OperationCanceledException)
-			{
+			if (JAWS != null) {
+				stopJAWSSpeech();
 			}
+			// NVDA fails silently so we can safely make these calls even with a system that has no NVDA installed.
+			if (Environment.Is64BitProcess)
+				nvdaController64_cancelSpeech();
+			else
+				nvdaController_cancelSpeech();
 		}
 
 
@@ -225,8 +220,7 @@ namespace TDV
 		}
 		private static bool initializeWinEyes()
 		{
-			try
-			{
+			try {
 				if (winEyes != null)
 					return true;
 				winEyes = Type.GetTypeFromProgID("GWSpeak.Speak");
@@ -234,9 +228,7 @@ namespace TDV
 					return false;
 				oWinEyes = Activator.CreateInstance(winEyes);
 				return true;
-			}
-			catch
-			{
+			} catch {
 				winEyes = null;
 			}
 			return false;
