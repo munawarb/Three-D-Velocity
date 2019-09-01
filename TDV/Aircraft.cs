@@ -1943,7 +1943,8 @@ weapon.firingRange);
 		}
 		private float freqInterval()
 		{
-			return throttlePosition*0.05f;
+			float coef = 5 / base.maxSpeed; // one semitone per speed change, clamped at 5 semitones.
+			return coef * engineSpeed;
 		}
 
 		private void level()
@@ -3772,8 +3773,6 @@ weapon.firingRange);
 						break;
 					case Action.throttleUp:
 						throttleUp(); //will only activate with keyboard.
-						//SapiSpeech.speak("" + engine.getFrequency());
-						//engine.setFrequency(engine.getFrequency() + 1f);
 						break;
 					case Action.throttleDown:
 						throttleDown(); //will only activate with keyboard.

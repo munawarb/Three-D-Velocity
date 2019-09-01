@@ -321,9 +321,7 @@ namespace TDV
 		{
 			this.direction = direction;
 			this.maxSpeed = maxSpeed;
-
 			this.isAI = isAI;
-
 			float circumference = (float)maxSpeed / maxRPM;
 			//circumference is 2PIR, so get the radius
 			float r = circumference / Degrees.PI; //diameter
