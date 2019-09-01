@@ -17,6 +17,7 @@ namespace Updater
 			DirectoryCopy("update\\Three-D-Velocity-Binaries-master", ".", true);
 			System.Console.WriteLine("Cleaning up temporary files...");
 			Directory.Delete("update", true);
+			File.Delete("Three-D-Velocity-Binaries-master.zip");
 			System.Console.WriteLine("Done! Starting " + runAfter + "...");
 			System.Diagnostics.Process.Start(runAfter);
 			System.Console.WriteLine("Exiting setup");

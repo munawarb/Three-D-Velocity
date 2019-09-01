@@ -1109,13 +1109,18 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 			}
 		}
 
-		public static void startMusic(String filename)
+		public static void startMusic(String filename, float musicVolume)
 		{
 			DSound.setVolumeOfMusic(musicVolume);
 			if (music != null)
 				music.stopOgg();
 			music = DSound.loadMusicFile(filename);
 			music.play(true);
+		}
+
+		public static void startMusic(String filename)
+		{
+			startMusic(filename, musicVolume);
 		}
 
 		public static void saveGame(int slot)

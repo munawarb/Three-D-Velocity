@@ -263,6 +263,19 @@ namespace TDV
 				Common.onlineMenuNotifier = new AutoResetEvent(false);
 				Options.readFromFile();
 				DSound.setVolumeOfMusic(Common.musicVolume);
+				if (isUpdating()) {
+					while (!completedDownload)
+						Thread.Sleep(500);
+					completedDownload = false;
+
+					if (!error) {
+						MessageBox.Show("The update download is complete. Click OK to begin installing. TDV will restart once the update is complete.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						System.Diagnostics.Process.Start("Updater.exe", "tdv.exe");
+						SapiSpeech.enableJAWSHook();
+						Environment.Exit(0);
+					} else
+						Common.GenerateMenu("Error downloading update. Press ENTER to continue.", new String[] { "Ok" });
+				} //if getting update
 
 				if (Options.menuVoiceMode == Options.VoiceModes.none)
 					setSVMode();
@@ -285,17 +298,6 @@ namespace TDV
 				while (introSound.isPlaying() && !DXInput.isKeyHeldDown() && !DXInput.isJSButtonHeldDown() && DXInput.JSDirectionalPadIsCenter())
 					Thread.Sleep(100);
 				introSound.stopOgg();
-				if (isUpdating()) {
-					while (!completedDownload)
-						Thread.Sleep(500);
-					completedDownload = false;
-
-					if (!error) {
-						MessageBox.Show("The update download is complete. Click OK to begin installing. TDV will restart once the update is complete.", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						shutDownAndInstall = true;
-					} else
-						Common.GenerateMenu("Error downloading update. Press ENTER to continue.", new String[] { "Ok" });
-				} //if getting update
 				DateTime now = DateTime.Now;
 				Options.hour = now.Hour;
 				Options.day = now.Day;
@@ -320,12 +322,6 @@ namespace TDV
 		{
 			if (Common.firstTimeLoad)
 				startGame(true);
-			if (shutDownAndInstall) {
-				System.Diagnostics.Process.Start("Updater.exe", "tdv.exe");
-				SapiSpeech.enableJAWSHook();
-				Environment.Exit(0);
-			}
-
 			while (true) {
 				try {
 					if (!KeyMap.readFromFile() && Common.firstTimeLoad) {
@@ -1119,7 +1115,7 @@ namespace TDV
 
 		private void progressUpdated(Object sender, DownloadProgressChangedEventArgs e)
 		{
-			int progressPercentage = (int)((double)e.BytesReceived / totalSize * 100);
+			int progressPercentage = (int)((float)e.BytesReceived / totalSize* 100);
 			if (progressPercentage != lastProgress) {
 				lastProgress = progressPercentage;
 				progressBar1.Invoke((MethodInvoker)delegate { progressBar1.Value = lastProgress; });
@@ -1292,8 +1288,7 @@ namespace TDV
 				this.Text = "Downloading update, please wait...";
 				this.progressBar1.Visible = true;
 			});
-			Common.music = DSound.loadOgg(DSound.SoundPath + "\\ms5.ogg");
-			Common.music.play(true);
+			Common.startMusic(DSound.SoundPath + "\\ms5.ogg", 0.5f);
 			downloadUpdate("https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip", "Three-D-Velocity-Binaries-master.zip");
 		}
 
