@@ -18,6 +18,24 @@ namespace BPCSharedComponent.Input
 	public static class DXInput
 	{
 		/// <summary>
+		/// The states of initializing force feedback.
+		/// </summary>
+		public enum ForceFeedbackStatus
+		{
+			/// <summary>
+			/// No force feedback is available.
+			/// </summary>
+			noForceFeedback,
+			/// <summary>
+			/// Force feedback is available but could not be initialized.
+			/// </summary>
+			couldNotInitialize,
+			/// <summary>
+			/// Force feedback is initialized.
+			/// </summary>
+			initialized
+		}
+		/// <summary>
 		///Represents position of directional or point-of-view pad
 		/// </summary>
 		public enum DirectionalPadPositions
@@ -94,7 +112,7 @@ namespace BPCSharedComponent.Input
 		/// </summary>
 		/// <param name="handle">A pointer to the application's master form.</param>
 		/// <param name="g">The GUID of the device to initialize.</param>
-		public static void DInputInit(IntPtr handle, Guid g)
+		public static ForceFeedbackStatus DInputInit(IntPtr handle, Guid g)
 		{
 			if (JSDevice != null) {
 				JSDevice.Unacquire();
@@ -149,12 +167,15 @@ namespace BPCSharedComponent.Input
 			updateJSState();
 			TheJSButtons = JSState.Buttons;
 			if (nextOffset > 0) {
-				if (!dInputInitFD(JSDevice, xAxisOffset,
-					yAxisOffset, nextOffset)) {
+				if (!dInputInitFD(JSDevice, xAxisOffset, yAxisOffset, nextOffset)) {
 					forceFeedbackEnabled = false;
-				} else
+					return ForceFeedbackStatus.couldNotInitialize;
+				} else {
 					forceFeedbackEnabled = true;
+					return ForceFeedbackStatus.initialized;
+				}
 			}
+			return ForceFeedbackStatus.noForceFeedback;
 		}
 
 		/// <summary>

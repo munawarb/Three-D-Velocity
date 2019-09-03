@@ -787,8 +787,12 @@ namespace TDV
 			//that it was never configged below.
 			//silentMode means that the device was configged but this is the first time loading the game
 			//so we'll automatically enable the joystick
-			if (!silentMode)
-				DXInput.DInputInit(Common.guiHandle, guid);
+			if (!silentMode) {
+				DXInput.ForceFeedbackStatus status=  DXInput.DInputInit(Common.guiHandle, guid);
+				if (status == DXInput.ForceFeedbackStatus.couldNotInitialize) {
+					Common.playUntilKeyPress(DSound.SoundPath + "\\ffbd.ogg");
+				}
+			}
 
 			if (!File.Exists(Addendums.File.appPath
 						 + "\\dev_" + guid.ToString() + ".tdv")) {
@@ -817,8 +821,12 @@ namespace TDV
 				s.Close();
 				//If we're in silent mode the joystick object wasn't created yet,
 				//since we told it not to unless we're sure it's been configged before.
-				if (silentMode)
-					DXInput.DInputInit(Common.guiHandle, guid);
+				if (silentMode) {
+					DXInput.ForceFeedbackStatus status = DXInput.DInputInit(Common.guiHandle, guid);
+					if (status == DXInput.ForceFeedbackStatus.couldNotInitialize) {
+						Common.playUntilKeyPress(DSound.SoundPath + "\\ffbd.ogg");
+					}
+				}
 			}
 			return true;
 		}
