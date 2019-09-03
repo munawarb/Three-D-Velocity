@@ -1,6 +1,12 @@
 # What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+## Version 2.42, released on 09/03/2019
+
+### Fixed
+- The player's health would drop to 0 after one hit from a missile during Mission Mode ([#101](../../issues/101))
+- Due to premature destruction of buffer memory, music files and cut scenes were sometimes distorted. In rare cases, playing music files and cut scenes would result in memory access violations ([#92](../../issues/92)), ([#102](../../issues/102))
+
 ## Version 2.41, released on 09/01/2019
 
 ### Fixed

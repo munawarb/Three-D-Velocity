@@ -61,7 +61,7 @@ Three-D Velocity picks up after the first attempt failed. The player acts as Lie
 There's a training mode in the game that will help you get familiar with the basic concepts of TDV. [Full documentation can be found here.](http://htmlpreview.github.io/?https://github.com/munawarb/Three-D-Velocity-Binaries/blob/master/docs/documentation.htm)
 
 ## What's new
-The latest version is 2.41, released on 09/01/2019. If you'd like to check out a list of new features, you can view the [change log here](changelog.md). When you download the binary distribution, you're always getting the most recent version noted in the change log. The Master branch might incorporate code that hasn't made it into the binary release yet.
+The latest version is 2.42, released on 09/03/2019. If you'd like to check out a list of new features, you can view the [change log here](changelog.md). When you download the binary distribution, you're always getting the most recent version noted in the change log. The Master branch might incorporate code that hasn't made it into the binary release yet.
 
 ### Updating From Previous Versions
 TDV comes with an auto updater. If you're running an older version, the game will download and install the latest update for you. For this reason, I advise against extracting TDV to a write-protected directory.
@@ -75,8 +75,6 @@ There are several ways to download TDV, depending on your situation and what you
 
 If you find any bugs or have any suggestions, please post them on the [Issues Page.](https://github.com/munawarb/Three-D-Velocity/issues)
 
-While the commercial version offered a 64-bit version of the game, I've removed it from this source to make building easier. TDV will run fine on 64-bit systems under WoW-64 mode.
-
 ### I just want to play it
 If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip).
 
@@ -84,13 +82,17 @@ The zip file contains the TDV executable, all sounds, and the server executable.
 
 ### I just want the source code
 If you just want the source code without the TDV executable and media files, use the git clone command, like this:
-`git clone https://github.com/munawarb/Three-D-Velocity.git`
+```
+git clone https://github.com/munawarb/Three-D-Velocity.git
+```
 
 Three-D Velocity is written in C#.NET. You will need an IDE that supports Visual Studio 2019 solutions, and .NET Framework 4.7.2 or higher to compile the project. You can get a copy of Visual Studio 2017 Community Edition from Microsoft. This is the recommended IDE. Visual Studio Community Edition is free. Open up the TDV/Three-D Velocity.sln solution in your C# IDE of choice and the project files will load. If you want to successfully run TDV, you must fetch the binaries submodule to include all dependencies and sound files.
 
 ### I want everything!
 Now we're talking! If you want the whole thing which includes the source code and the huge binary release, use the git clone command, like this:
-`git clone --recursive https://github.com/munawarb/Three-D-Velocity.git`
+```
+git clone --recursive https://github.com/munawarb/Three-D-Velocity.git
+```
 
 The `--recursive` option will tell Git to fetch the binaries submodule. It will be placed in TDV/Three-D-Velocity-Binaries
 
