@@ -118,10 +118,11 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// Loads a wave file into a SourceVoice on the always loud device.
 		/// </summary>
 		/// <param name="FileName">The path of the file to load.</param>
+		/// <param name="notificationsSupport">True to enable receiving notifications on this buffer, false otherwise. A notification might include an event when this buffer starts processing data, or when the buffer has finished playing. Set this parameter to true if you wish to receive a notification when the buffer is done playing by means of the function passed to setOnEnd.</param>
 		/// <returns>A populated ExtendedAudioBuffer.</returns>
-		public static ExtendedAudioBuffer LoadSoundAlwaysLoud(string FileName)
+		public static ExtendedAudioBuffer LoadSoundAlwaysLoud(string FileName, bool notificationsSupport = false)
 		{
-			return LoadSound(FileName, alwaysLoudDevice, false);
+			return LoadSound(FileName, alwaysLoudDevice, notificationsSupport);
 		}
 
 		/// <summary>

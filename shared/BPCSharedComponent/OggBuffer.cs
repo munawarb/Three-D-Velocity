@@ -33,6 +33,7 @@ namespace BPCSharedComponent.ExtendedAudio
 		private SourceVoice sourceVoice;
 		private String[] fileNames = null;
 		private bool stopNow;
+		private List<AudioBuffer> memories; // Used to hold reference to AudioBuffer objects so we don't lose these references until XAudio2 is done playing the buffers.
 		private Status m_status;
 		public Status status
 		{
@@ -41,6 +42,7 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		public OggBuffer(XAudio2 device, String[] fileNames)
 		{
+			memories = new List<AudioBuffer>();
 			this.fileNames = fileNames;
 			this.device = device;
 		}
@@ -130,6 +132,7 @@ namespace BPCSharedComponent.ExtendedAudio
 				VoiceState state;
 				List<DataStream> streams = getAtLeast(minimumNumberOfBuffers);
 				List<AudioBuffer> buffers = convertToAudioBuffers(streams);
+				memories.AddRange(buffers);
 				submitToSourceVoice(buffers);
 				// If this isn't the first consecutive track, we've already started playing this sourceVoice and are just filling it with data from the new track.
 				if (playPointer == 0)
@@ -149,6 +152,11 @@ namespace BPCSharedComponent.ExtendedAudio
 						if (state.BuffersQueued == 0 && moreStreams.Count == 0)
 							break; // Nothing remaining to fill the source with and we've played everything.
 						List<AudioBuffer> moreBuffers = convertToAudioBuffers(moreStreams);
+						// The buffers that are already played can now be removed.
+						for (int i = 0; i < memories.Count - state.BuffersQueued; i++)
+							memories[i].Stream.Close();
+						memories.RemoveRange(0, memories.Count - state.BuffersQueued);
+						memories.AddRange(moreBuffers);
 						submitToSourceVoice(moreBuffers);
 					}
 					Thread.Sleep(10);
@@ -161,6 +169,9 @@ namespace BPCSharedComponent.ExtendedAudio
 				}
 				sourceVoice.Stop();
 				sourceVoice.FlushSourceBuffers();
+				for (int i = 0; i < memories.Count; i++)
+					memories[i].Stream.Close();
+				memories.Clear();
 				vorbis.Dispose();
 				m_status = Status.stopped;
 			}).Start();

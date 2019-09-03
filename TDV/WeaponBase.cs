@@ -265,8 +265,7 @@ namespace TDV
 			if (hits == null)
 				return;
 			foreach (Projector hit in hits) {
-				hit.hit(10, Interaction.Cause.destroyedByWeapon);
-				fireHitEvent(hit, hit.damage);
+				fireHitEvent(hit, 10);
 			}
 		}
 

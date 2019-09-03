@@ -481,7 +481,7 @@ namespace TDV
 		public virtual void hit(int decrementValue, Interaction.Cause cause)
 		{
 			damage -= decrementValue;
-			System.Diagnostics.Trace.WriteLineIf(!isAI, String.Format("Hit: decrement {0}, damage: {1}, called from: {2}", decrementValue, damage, (new System.Diagnostics.StackTrace()).ToString()));
+			System.Diagnostics.Trace.WriteLineIf(!isAI, String.Format("Hit: decrement {0}, damage: {1}, called from: {2}", decrementValue, damage, Environment.StackTrace));
 			if (decrementValue == 0 || damage <= 0)
 				m_cause = cause;
 		}
@@ -511,24 +511,24 @@ namespace TDV
 				}
 			}
 		}
-		public ExtendedAudioBuffer loadSound(string filename, bool notifications)
+		public ExtendedAudioBuffer loadSound(string filename, bool notifications, bool alwaysLoud)
 		{
 			ExtendedAudioBuffer s = null;
 			if (isAI && !autoPlayTarget)
 			{
 				if (!forceStareo)
-					s = DSound.LoadSound(filename, notifications);
+					s = (!alwaysLoud)? DSound.LoadSound(filename, notifications): DSound.LoadSoundAlwaysLoud(filename, notifications);
 				else
-					s = DSound.LoadSound(filename, notifications);
+					s = (!alwaysLoud)? DSound.LoadSound(filename, notifications): DSound.LoadSoundAlwaysLoud(filename, notifications);
 			}
 			else //Either this is not AI or this is autoPlayTarget
-				s = DSound.LoadSound(filename, notifications);
+				s = (!alwaysLoud) ? DSound.LoadSound(filename, notifications) : DSound.LoadSoundAlwaysLoud(filename, notifications);
 			return s;
 		}
 
 		public ExtendedAudioBuffer loadSound(string filename)
 		{
-			return loadSound(filename, false);
+			return loadSound(filename, false, false);
 		}
 
 		private string prepend

@@ -68,14 +68,14 @@
     </NoWarn>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>
     </CheckForOverflowUnderflow>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>Three-D-Velocity-Binaries\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <LangVersion>default</LangVersion>
     <ErrorReport>none</ErrorReport>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>portable</DebugType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">

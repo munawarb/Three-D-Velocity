@@ -1320,7 +1320,7 @@ namespace TDV
 			if (jetRumble == null)
 				jetRumble = loadSound(soundPath + "e2.wav");
 			if (afStart == null)
-				afStart = loadSound(soundPath + "a1.wav", true); // Load with notifcations.
+				afStart = loadSound(soundPath + "a1.wav", true, false); // Load with notifications.
 			if (afFlame == null)
 				afFlame = loadSound(soundPath + "a2.wav");
 			afStart.setOnEnd(() =>
@@ -1726,7 +1726,7 @@ namespace TDV
 			if (Options.mode == Options.Modes.training && !isAI && cause == Interaction.Cause.destroyedByWeapon)
 				return; //make player invincible
 			base.hit(decrementValue, cause);
-			System.Diagnostics.Trace.WriteLineIf(!isAI, "After base.hit, cause is " + this.cause);
+			System.Diagnostics.Trace.WriteLineIf(!isAI, "After base.hit, cause is " + this.cause + " and damage is " + damage);
 			//Even though RIOPlay checks for flags below, we put them here to decrease processing overhead. Otherwise, every object that inherits this class will
 			//go through the conditions below, and we don't want AI to check for these conditions since they don't play RIO anyway.
 			if (!isAI || autoPlayTarget) {
@@ -1793,7 +1793,8 @@ namespace TDV
 						sMessage = name + "'s engine exploded.";
 					}
 				} //if sender
-				explodeSound = loadSound(soundPath + "d1.wav");
+				// So that this sound doesn't get muted by playFinalOgg, we'll load it on the alwaysLoud device.
+				explodeSound = loadSound(soundPath + "d1.wav", false, true);
 				playSound(explodeSound, true, false);
 				if (!isAI) {
 					DXInput.startExplodeEffect();
