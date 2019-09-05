@@ -44,6 +44,7 @@ namespace TDV
 		/// The length of a sector in miles. 
 		/// </summary>
 		public const float sectorLength = 0.1f;
+		private static Random random = new Random();
 		private static Dictionary<String, String> friendlyNames = new Dictionary<String, String>()
 		{
 			{"r1", "Racer 1" },
@@ -160,7 +161,7 @@ namespace TDV
 		}
 		public static int getRandom(int min, int max)
 		{
-			return (new Random().Next(min, max + 1));
+			return random.Next(min, max + 1);
 		}
 
 

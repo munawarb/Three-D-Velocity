@@ -2151,8 +2151,7 @@ weapon.firingRange);
 							sayRelative = true;
 						return true;
 					} //if validLock
-					else
-						return false;
+					return false;
 			} //switch
 			return false;
 		}
@@ -2754,7 +2753,7 @@ weapon.firingRange);
 				return;
 			Options.isPaused = true;
 			Common.music.stopOgg();
-			Common.startMusic(DSound.SoundPath + "\\ms5.ogg", 0.5f);
+			Common.startMusic(DSound.SoundPath + "\\ms5.ogg");
 			Interaction.stopAndMute(true, true);
 			while (!checkCommand(Action.pauseGame, true)) {
 				DXInput.updateKeyboardState();
@@ -4460,8 +4459,15 @@ weapon.firingRange);
 					e = statusMode(Status.angleOfAttack);
 				else if (DXInput.isFirstPress(Key.F5, false))
 					e = statusMode(Status.integrity);
-				else if (DXInput.isKeyHeldDown(Key.Tab, false))
+				else if (DXInput.isKeyHeldDown(Key.Tab, false)) {
 					t = executeTABStatusCommand();
+					if (!t) {
+						Interaction.resumeAndUnmute();
+						resumeInput();
+						return;
+					}
+
+				}
 			} //if not alt or shift
 
 			if (e) {

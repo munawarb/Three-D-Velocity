@@ -1231,8 +1231,7 @@ namespace TDV
 				{
 					//If set, we will select a number 0-9,
 					//else a letter
-					bool selectNumber =
-					 Common.getRandom(1, 2) == 2;
+					bool selectNumber = Common.getRandom(1, 2) == 2;
 					if (selectNumber)
 						chars[i] = (char)Common.getRandom('0', '9');
 					else
