@@ -1,6 +1,17 @@
 # What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+## 2.43, released on 09/07/2019
+
+### Added
+- Users of screen-reading software are now asked to set a speech delay. This allows TDV to pause game actions until the screen-reader is finished speaking even if the screen-reader in use provides no way to determine if it is still speaking ([#106](../../issues/106))
+
+### Fixed
+- If the player pressed P to pause the game, all music would drop to one-half of its original volume ([#104](../../issues/104))
+- The random number generator would give the same number when called in rapid succession, such as in a tight loop. The generator now uses one seed throughout the game, resulting in sufficient randomness ([#105](../../issues/105))
+- When in Status Mode, if the player pressed T to get targeting information and no target was tracked, TDV would remain in a paused state indefinitely ([#103](../../issues/103))
+- TDV will now notify the player if force feedback could not be enabled. Previously, it would silently fail ([#76](../../issues/76))
+
 ## Version 2.42, released on 09/03/2019
 
 ### Fixed
