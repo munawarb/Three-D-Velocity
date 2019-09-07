@@ -2030,7 +2030,7 @@ weapon.firingRange);
 			playSound(pilotMessage, true, false);
 		}
 
-		private bool statusMode(Status s)
+		private bool statusMode(Status s, SapiSpeech.SpeakFlag flag = SapiSpeech.SpeakFlag.interruptableButStop)
 		{
 			if (Options.mode == Options.Modes.training)
 				lastStatusCommand = s;
@@ -2044,52 +2044,52 @@ weapon.firingRange);
 					}
 					return false;
 				case Status.facing:
-					Common.executeSvOrSr(() => SelfVoice.NLS("i" + (int)facingState + ".wav", true, true), () => SapiSpeech.speak(facingState.ToString()), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("i" + (int)facingState + ".wav", true, true), () => SapiSpeech.speak(facingState.ToString(), flag), Options.statusVoiceMode);
 					return true;
 				case Status.turnRadius:
 					if (bankAngle != 0 && !isBankStallConditions())
-						Common.executeSvOrSr(() => SelfVoice.NLS("#" + (int)getTurnRadius() + "&feet.wav", true, true), () => SapiSpeech.speak($"{getTurnRadius()} feet"), Options.statusVoiceMode);
+						Common.executeSvOrSr(() => SelfVoice.NLS("#" + (int)getTurnRadius() + "&feet.wav", true, true), () => SapiSpeech.speak($"{getTurnRadius()} feet", flag), Options.statusVoiceMode);
 					else
-						Common.executeSvOrSr(() => SelfVoice.NLS("unknown.wav", true, true), () => SapiSpeech.speak("Unknown"), Options.statusVoiceMode);
+						Common.executeSvOrSr(() => SelfVoice.NLS("unknown.wav", true, true), () => SapiSpeech.speak("Unknown", flag), Options.statusVoiceMode);
 					return true;
 				case Status.turnRate:
 					int rt = (int)Math.Floor(getRateOfTurn());
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + rt + "&" + (rt == 1 ? "dps.wav" : "dsps.wav"), true, true), () => SapiSpeech.speak($"{rt} degree{(rt == 1 ? "":"s")} per second"), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + rt + "&" + (rt == 1 ? "dps.wav" : "dsps.wav"), true, true), () => SapiSpeech.speak($"{rt} degree{(rt == 1 ? "":"s")} per second", flag), Options.statusVoiceMode);
 					return true;
 				case Status.bankAngle:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(bankAngle, true), () => SapiSpeech.speak(""+bankAngle), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(bankAngle, true), () => SapiSpeech.speak(""+bankAngle, flag), Options.statusVoiceMode);
 					return true;
 				case Status.altitudeRate:
 					int tr = (int)((fallRate == 0.0f) ? (getVerticalSpeed() / 60) : (fallRate * 60 / 3));
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + tr + "&fpm.wav", true, true), () => SapiSpeech.speak($"{tr} feet per minute"), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + tr + "&fpm.wav", true, true), () => SapiSpeech.speak($"{tr} feet per minute", flag), Options.statusVoiceMode);
 					return true;
 				case Status.ammunition:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(weapon.ammunitionFor(weapon.weaponIndex), true), () => SapiSpeech.speak("" + weapon.ammunitionFor(weapon.weaponIndex)), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(weapon.ammunitionFor(weapon.weaponIndex), true), () => SapiSpeech.speak("" + weapon.ammunitionFor(weapon.weaponIndex), flag), Options.statusVoiceMode);
 					return true;
 				case Status.fuel:
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + (int)m_fuelWeight + "&pof.wav", true, true), () => SapiSpeech.speak($"{(int)m_fuelWeight} pounds of fuel"), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + (int)m_fuelWeight + "&pof.wav", true, true), () => SapiSpeech.speak($"{(int)m_fuelWeight} pounds of fuel", flag), Options.statusVoiceMode);
 					return true;
 				case Status.targetIntegrity:
 					if (weapon.isValidLock() && !(weapon.getLockedTarget() is LandingBeacon)) {
-						Common.executeSvOrSr(() => SelfVoice.NLS("#" + weapon.getLockedTarget().getHealthPercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{weapon.getLockedTarget().getHealthPercent()} percent"), Options.statusVoiceMode);
+						Common.executeSvOrSr(() => SelfVoice.NLS("#" + weapon.getLockedTarget().getHealthPercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{weapon.getLockedTarget().getHealthPercent()} percent", flag), Options.statusVoiceMode);
 						return true;
 					} else
 						return false;
 				case Status.integrity:
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getHealthPercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{getHealthPercent()} percent"), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getHealthPercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{getHealthPercent()} percent", flag), Options.statusVoiceMode);
 					return true;
 				case Status.engineIntegrity:
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getEngineDamagePercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{getEngineDamagePercent()} percent"), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + getEngineDamagePercent() + "&p.wav", true, true), () => SapiSpeech.speak($"{getEngineDamagePercent()} percent", flag), Options.statusVoiceMode);
 					return true;
 				case Status.sector:
-					Common.executeSvOrSr(() => SelfVoice.NLS(Interaction.getSector((Projector)this), true, true), () => SapiSpeech.speak(Interaction.getSector((Projector)this, false)), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS(Interaction.getSector((Projector)this), true, true), () => SapiSpeech.speak(Interaction.getSector((Projector)this, false), flag), Options.statusVoiceMode);
 					return true;
 				case Status.refuelerCount:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(Mission.refuelCount, true), () => SapiSpeech.speak("" + Mission.refuelCount), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(Mission.refuelCount, true), () => SapiSpeech.speak("" + Mission.refuelCount, flag), Options.statusVoiceMode);
 					return true;
 				case Status.lap:
 					if (Options.mode == Options.Modes.racing)
-						Common.executeSvOrSr(() => SelfVoice.VoiceNumber(lap, true), () => SapiSpeech.speak(""+lap), Options.statusVoiceMode);
+						Common.executeSvOrSr(() => SelfVoice.VoiceNumber(lap, true), () => SapiSpeech.speak(""+lap, flag), Options.statusVoiceMode);
 					return true;
 				case Status.distance:
 					string msgstr = "";
@@ -2102,20 +2102,20 @@ weapon.firingRange);
 						else
 							msgstr += "mis.wav";
 						SelfVoice.NLS(msgstr, true, true);
-					}, () => SapiSpeech.speak($"{ds} mile{((ds==1)?"":"s")}"), Options.statusVoiceMode);
+					}, () => SapiSpeech.speak($"{ds} mile{((ds==1)?"":"s")}", flag), Options.statusVoiceMode);
 					return true;
 				case Status.altimeter:
 					String alt = Common.cultureNeutralRound(z, 1);
-					Common.executeSvOrSr(() => SelfVoice.NLS("#" + alt + "&" + "feet.wav", true, true), () => SapiSpeech.speak($"{alt} feet"), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.NLS("#" + alt + "&" + "feet.wav", true, true), () => SapiSpeech.speak($"{alt} feet", flag), Options.statusVoiceMode);
 					sayRelative = false;
 					return true;
 				case Status.course:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(direction, true), () => SapiSpeech.speak("" + direction), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(direction, true), () => SapiSpeech.speak("" + direction, flag), Options.statusVoiceMode);
 					sayRelative = false;
 					return true;
 				case Status.rank:
 					if (Options.mode == Options.Modes.racing && cause != Interaction.Cause.sentForLanding) {
-						Common.executeSvOrSr(() => SelfVoice.NLS("yai.wav" + "&" + Common.convertToWordNumber(getRank()) + ".wav" + "&" + "pl.wav", true, true), () => SapiSpeech.speak($"You are in {Common.convertToWordNumber(getRank()) } place"), Options.statusVoiceMode);
+						Common.executeSvOrSr(() => SelfVoice.NLS("yai.wav" + "&" + Common.convertToWordNumber(getRank()) + ".wav" + "&" + "pl.wav", true, true), () => SapiSpeech.speak($"You are in {Common.convertToWordNumber(getRank()) } place", flag), Options.statusVoiceMode);
 						return true;
 					} else
 						return false;
@@ -2128,10 +2128,10 @@ weapon.firingRange);
 						+ "&es.wav&#"
 						+ rpm + "&rpm.wav",
 						true, true);
-					}, () => SapiSpeech.speak($"Airspeed: {airspeed} knots; Engine speed: {rpm} rpm"), Options.statusVoiceMode);
+					}, () => SapiSpeech.speak($"Airspeed: {airspeed} knots; Engine speed: {rpm} rpm", flag), Options.statusVoiceMode);
 					return true;
 				case Status.angleOfAttack:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(virtualNoseAngle, true), () => SapiSpeech.speak("" + virtualNoseAngle), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(virtualNoseAngle, true), () => SapiSpeech.speak("" + virtualNoseAngle, flag), Options.statusVoiceMode);
 					return true;
 				case Status.target:
 					if (weapon.isValidLock()) {
@@ -2145,7 +2145,7 @@ weapon.firingRange);
 						}, () =>
 						{
 							position.sapiMode = true;
-							SapiSpeech.speak($"{Common.getFriendlyNameOf(weapon.getLockedTarget().ToString())} {position}, sector: {Interaction.getSector(weapon.getLockedTarget(), false)}");
+							SapiSpeech.speak($"{Common.getFriendlyNameOf(weapon.getLockedTarget().ToString())} {position}, sector: {Interaction.getSector(weapon.getLockedTarget(), false)}", flag);
 						}, Options.statusVoiceMode);
 						if (Options.RPAutoTrigger)
 							sayRelative = true;
@@ -4428,37 +4428,39 @@ weapon.firingRange);
 			if (waitingForHost())
 				return; //No status commands when game hasn't started.
 			bool e = false, t = false;
+			// For the f1..fn keys, we set flags to none so that the SAPISpeech API won't wait for the screen-reader to finish speaking.
+			// This is necessary for us to enter the code to mute the game, where we end up waiting ourselves until the screen-reader finishes.
 			if (DXInput.IsShift()) {
 				if (DXInput.isFirstPress(Key.F1, false))
-					e = statusMode(Status.sector);
+					e = statusMode(Status.sector, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F2, false))
-					e = statusMode(Status.lap);
+					e = statusMode(Status.lap, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F3, false))
-					e = statusMode(Status.distance);
+					e = statusMode(Status.distance, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F4, false))
-					e = statusMode(Status.course);
+					e = statusMode(Status.course, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F5, false))
-					e = statusMode(Status.targetIntegrity);
+					e = statusMode(Status.targetIntegrity, SapiSpeech.SpeakFlag.none);
 			} else if (DXInput.IsAlt()) {
 				if (DXInput.isFirstPress(Key.F1, false))
-					e = statusMode(Status.fuel);
+					e = statusMode(Status.fuel, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F2, false))
-					e = statusMode(Status.ammunition);
+					e = statusMode(Status.ammunition, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F3, false))
-					e = statusMode(Status.rank);
+					e = statusMode(Status.rank, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F5, false))
-					e = statusMode(Status.engineIntegrity);
+					e = statusMode(Status.engineIntegrity, SapiSpeech.SpeakFlag.none);
 			} else {
 				if (DXInput.isFirstPress(Key.F1, false))
-					e = statusMode(Status.target);
+					e = statusMode(Status.target, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F2, false))
-					e = statusMode(Status.speedometer);
+					e = statusMode(Status.speedometer, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F3, false))
-					e = statusMode(Status.altimeter);
+					e = statusMode(Status.altimeter, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F4, false))
-					e = statusMode(Status.angleOfAttack);
+					e = statusMode(Status.angleOfAttack, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isFirstPress(Key.F5, false))
-					e = statusMode(Status.integrity);
+					e = statusMode(Status.integrity, SapiSpeech.SpeakFlag.none);
 				else if (DXInput.isKeyHeldDown(Key.Tab, false)) {
 					t = executeTABStatusCommand();
 					if (!t) {
@@ -4477,7 +4479,7 @@ weapon.firingRange);
 			if (e || t) {
 				while (DXInput.isKeyHeldDown() && !hit())
 					Thread.Sleep(0);
-				while (SelfVoice.isThreadRunning()) {
+				while (Common.returnSvOrSr(() => SelfVoice.isThreadRunning(), () => SapiSpeech.isSpeaking(), Options.statusVoiceMode)) {
 					if (DXInput.isKeyHeldDown() || DXInput.isJSButtonHeldDown() || hit())
 						break;
 					Thread.Sleep(5);

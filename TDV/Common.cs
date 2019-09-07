@@ -171,7 +171,6 @@ namespace TDV
 		public static void Main(String[] args)
 		{
 			//System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(Addendums.File.appPath + "\\trace.log"));
-
 			/*
 			Mission.writeToFile();
 			if (1 == 1)
@@ -375,6 +374,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 					return -1;
 				}
 				if (DXInput.isFirstPress(Key.Up, false) || DXInput.isFirstPress(Key.Left, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.up) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.left)) {
+					justEntered = false;
 					menuPos--;
 					if (menuPos < 0) {
 						menuPos = max;
@@ -391,6 +391,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				}
 
 				if (DXInput.isFirstPress(Key.Down, false) || DXInput.isFirstPress(Key.Right, false) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.down) || DXInput.isFirstPressJSDP(DXInput.DirectionalPadPositions.right)) {
+					justEntered = false;
 					wrap = (menuPos = (menuPos + 1) % length) == 0;
 
 					while (menu[menuPos].Equals(""))
@@ -399,6 +400,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				}
 
 				if (DXInput.isFirstPress(Key.Home, false)) {
+					justEntered = false;
 					menuPos = 0;
 					while (menu[menuPos].Equals(""))
 						menuPos++;
@@ -406,6 +408,7 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 				}
 
 				if (DXInput.isFirstPress(Key.End, false)) {
+					justEntered = false;
 					menuPos = max;
 					while (menu[menuPos].Equals(""))
 						menuPos--;
@@ -434,8 +437,11 @@ Answering 'Yes' will also delete your joystick calibration data if you have your
 							SelfVoice.NLS(menu[menuPos], true, true);
 						else
 							SelfVoice.NLS(DSound.NSoundPath + "\\" + menu[menuPos], true, true);
-					} else //if sapi
-						SapiSpeech.speak(menu[menuPos], (justEntered) ? SapiSpeech.SpeakFlag.interruptable : SapiSpeech.SpeakFlag.interruptableButStop);
+					} else { //if sapi
+						if (!justEntered)
+							SapiSpeech.purge();
+						SapiSpeech.speak(menu[menuPos]);
+					}
 					justEntered = false;
 					HasSaid = true;
 				}

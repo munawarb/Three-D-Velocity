@@ -12,11 +12,16 @@ using BPCSharedComponent.ExtendedAudio;
 using Microsoft.VisualBasic;
 using System.Threading;
 using BPCSharedComponent.ExtendedAudio;
+using System.Collections.Generic;
+
 namespace TDV
 {
 
 	public class SelfVoice
 	{
+		private static String[] digits = new string[] { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
+		private static String[] tens = new string[] { "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+		private static String[] thousands = new string[] { "thousand", "million", "billion" };
 		private static int globalCounter;
 		private static string tempPath;
 		private static bool usingTempPath;
@@ -427,6 +432,100 @@ namespace TDV
 			for (int i = 0; i < sounds.Length; i++)
 				DSound.unloadSound(ref sounds[i]);
 			sounds = null;
+		}
+
+		private static String getWordDigit(String number)
+		{
+			if (number.Equals("0"))
+				return "zero";
+			return digits[int.Parse(number) - 1];
+		}
+
+		private static String getWordTens(String number)
+		{
+			return tens[int.Parse(number) - 2];
+		}
+
+		private static String getThousand(int n)
+		{
+			return thousands[n - 1];
+		}
+
+		private static String getTripple(String number)
+		{
+			if (number.Equals("0"))
+				return "zero";
+			String res = "";
+			int n = number.Length;
+			String d = "";
+			if (n == 3) {
+				d = number.Substring(0, 1);
+				if (d != "0") {
+					d = getWordDigit(d);
+					res += d + " hundred";
+				}
+			}
+			if (n >= 2) {
+				d = number.Substring(n - 2, 1);
+				if (d != "0") {
+					if (d != "1")
+						d = getWordTens(d);
+					else
+						d = getWordDigit(number.Substring(n - 2, 2));
+					if (!res.Equals(""))
+						res += " ";
+					res += d;
+				}
+			}
+			if (n == 1 || number.Substring(n - 2, 1) != "1") { // Make sure the tens column isn't a teen, otherwise we'll get numbers like 19 9 or 10 0
+				d = number.Substring(n - 1, 1);
+				if (d != "0") {
+					d = getWordDigit(d);
+					if (!res.Equals(""))
+						res += " ";
+					res += d;
+				}
+			}
+			return res;
+		}
+
+		public static String convertToWords(String value)
+		{
+			int thePoint = value.IndexOf(".");
+			String number = (thePoint > -1)?value.Substring(0, thePoint):value;
+			String fraction = (thePoint > -1) ? value.Substring(thePoint + 1) : "";
+			int triplets = number.Length / 3;
+			int mostSig = number.Length % 3;
+			String res = "";
+			String triplet = "";
+			for (int i = 0; i < triplets; i++) {
+				triplet = number.Substring(number.Length - 3 * i - 3, 3);
+				triplet = getTripple(triplet);
+				if (i > 0) {
+					triplet += " " + getThousand(i);
+				}
+				if (!res.Equals(""))
+					res = " " + res;
+				res = triplet + res;
+			}
+			if (mostSig > 0) {
+				triplet = number.Substring(0, mostSig);
+				triplet = getTripple(triplet);
+				if (triplets > 0) {
+					triplet += " " + getThousand(triplets);
+				}
+				if (!res.Equals(""))
+					res = " " + res;
+				res = triplet + res;
+			}
+			if (thePoint > -1) {
+				if (!res.Equals(""))
+					res += " ";
+				res += "point";
+				for (int i = 0, n = fraction.Length; i < n; i++)
+					res += " " + getWordDigit(fraction[i].ToString());
+			}
+			return res;
 		}
 
 	}

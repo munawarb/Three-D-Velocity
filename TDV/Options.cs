@@ -325,6 +325,7 @@ namespace TDV
 			s.Write(playRIO);
 			s.Write((byte)menuVoiceMode);
 			s.Write((byte)statusVoiceMode);
+			s.Write(SapiSpeech.screenReaderRate);
 			s.Flush();
 			s.Close();
 		}
@@ -376,6 +377,8 @@ namespace TDV
 				menuVoiceMode = (VoiceModes)sv;
 				sv = s.ReadByte();
 				statusVoiceMode = (VoiceModes)sv;
+				float readerRate = s.ReadSingle();
+				SapiSpeech.screenReaderRate = readerRate;
 			}
 			catch (Exception e)
 			{

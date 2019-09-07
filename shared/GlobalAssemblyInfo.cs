@@ -20,4 +20,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("2.42")]
 [assembly: AssemblyFileVersion("2.42")]
-[assembly: CLSCompliant(true)]
+[assembly: CLSCompliant(false)]

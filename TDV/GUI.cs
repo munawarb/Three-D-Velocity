@@ -26,7 +26,7 @@ namespace TDV
 	public class GUI : System.Windows.Forms.Form
 	{
 		private WebClient webClient;
-		private const int totalSize = 257486848;
+		private const int totalSize = 252000000;
 		private int lastProgress = 0;
 		private String chatTitle;
 		private String history;
@@ -277,7 +277,8 @@ namespace TDV
 						Common.GenerateMenu("Error downloading update. Press ENTER to continue.", new String[] { "Ok" });
 				} //if getting update
 
-				if (Options.menuVoiceMode == Options.VoiceModes.none)
+				// If they haven't selected self-voicing options yet or are using an older version with no speech delay, we need to reconfigure them.
+				if (Options.menuVoiceMode == Options.VoiceModes.none || ((Options.menuVoiceMode == Options.VoiceModes.screenReader || Options.statusVoiceMode == Options.VoiceModes.screenReader) && SapiSpeech.screenReaderRate == 0f))
 					setSVMode();
 
 				if (SapiSpeech.source == SapiSpeech.SpeechSource.notSet)
@@ -1356,6 +1357,16 @@ namespace TDV
 			while (choice2 == 0)
 				choice2 = Common.GenerateMenu("Choose a self-voicing option for status messages. These are in-game announcements such as fuel readouts and speed", new string[] { "Self-voicing: Status messages will be announced using recorded speech", "Screen-reader: Status messages will be read using your screen-reader" }) + 1;
 			Options.statusVoiceMode = (Options.VoiceModes)choice2;
+			if (Options.menuVoiceMode == Options.VoiceModes.screenReader || Options.statusVoiceMode == Options.VoiceModes.screenReader) {
+				// Next, switch to the user's screen reader for the speed test.
+				SapiSpeech.setSource(SapiSpeech.SpeechSource.auto);
+				Common.GenerateMenu("Since you've opted to use a screen-reader, you'll be presented with a short piece of text on the next screen. Press ENTER when your screen-reader finishes speaking it.", new string[] { "Ok" });
+				System.Diagnostics.Stopwatch w = System.Diagnostics.Stopwatch.StartNew();
+				String testString = "I really have nothing interesting to put here not even the secret to life except this really long run on sentence that is probably the most boring thing you have ever read but that will help me get an idea of how fast your screen reader is speaking.";
+				float wordCount = testString.Split().Length;
+				Common.GenerateMenu(testString, new string[] { "Ok" });
+				SapiSpeech.screenReaderRate = w.ElapsedMilliseconds / wordCount;
+			}
 			Options.writeToFile();
 		}
 	}
