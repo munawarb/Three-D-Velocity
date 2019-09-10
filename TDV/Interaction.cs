@@ -1624,10 +1624,21 @@ namespace TDV
 				lost = player.damage <= 0;
 				if (!lost)
 					won = opp.damage <= 0;
-				if (DXInput.isFirstPress(Key.H, false))
-					SelfVoice.NLS("#" + player.getHealthPercentage() + "&p.wav", true, true);
-				if (DXInput.isFirstPress(Key.T, false))
-					SelfVoice.NLS("#" + opp.getHealthPercentage() + "&p.wav", true, true);
+				if (DXInput.isFirstPress(Key.H, false)) {
+					Common.executeSvOrSr(() =>
+					{
+						SelfVoice.setPathTo("n");
+						SelfVoice.NLS("#" + player.getHealthPercentage() + "&p.wav", true, true);
+					}, () => SapiSpeech.speak($"{player.getHealthPercentage()}%"), Options.statusVoiceMode);
+				}
+				if (DXInput.isFirstPress(Key.T, false)) {
+					Common.executeSvOrSr(() =>
+					{
+						SelfVoice.setPathTo("n");
+						SelfVoice.NLS("#" + opp.getHealthPercentage() + "&p.wav", true, true);
+					}, () => SapiSpeech.speak($"{opp.getHealthPercentage()}%"), Options.statusVoiceMode);
+				}
+				Common.executeExtraCommands(Common.musicExtraItem);
 				Thread.Sleep(5);
 			} //while
 			Common.fadeMusic();

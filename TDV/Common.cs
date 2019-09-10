@@ -86,7 +86,7 @@ namespace TDV
 		private static bool loadedReg;
 		public static bool ACBMode = false;
 		public static bool failedConnect;
-		private static ExtraItem[] musicExtraItem;
+		public static ExtraItem[] musicExtraItem;
 		private static ExtraItem[] serverExtraItem;
 		public static IntPtr guiHandle;
 		public static String input;

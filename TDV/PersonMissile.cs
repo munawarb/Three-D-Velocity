@@ -38,8 +38,8 @@ namespace TDV
 			this.maxDamage = maxDamage;
 			this.target = target;
 			startTime = DateTime.Now;
-			moveSound = DSound.LoadSound(DSound.SoundPath + "\\a_mmove.wav");
-			explodeSound = DSound.LoadSound(DSound.SoundPath + "\\a_mexpl.wav");
+			moveSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\a_mmove.wav");
+			explodeSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\a_mexpl.wav");
 			DSound.PlaySound3d(moveSound, true, true, x, 0, y);
 		}
 

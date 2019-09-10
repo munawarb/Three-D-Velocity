@@ -335,10 +335,6 @@ namespace TDV
 					move(Person.MovementDirection.south, DXInput.isFirstPress(Key.Down));
 				else if (DXInput.isKeyHeldDown(Key.Left))
 					move(Person.MovementDirection.west, DXInput.isFirstPress(Key.Left));
-				if (DXInput.isFirstPress(Key.F6))
-					Common.decreaseMusicVolume();
-				if (DXInput.isFirstPress(Key.F7))
-					Common.increaseMusicVolume();
 			}
 			if (swinging && (DateTime.Now - startSwingTime).TotalMilliseconds > 200)
 				doPunch();
@@ -508,8 +504,8 @@ namespace TDV
 		public override void playCrashSound(int x, int y)
 		{
 			if (crashSound == null)
-				crashSound = DSound.LoadSound(DSound.SoundPath + "\\a_fwall.wav");
-			DSound.PlaySound3d(crashSound, true, false, x, y, 0);
+				crashSound = DSound.LoadSoundAlwaysLoud(DSound.SoundPath + "\\a_fwall.wav");
+			DSound.PlaySound3d(crashSound, true, false, x, 0, y);
 		}
 
 		/// <summary>
