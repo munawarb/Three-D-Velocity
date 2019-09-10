@@ -265,7 +265,6 @@ namespace TDV
 			pointsWorth = 0; //reset the point value
 			if (!Options.isDemo)
 				readFromFile();
-			racingScore = deathMatchScore = 200;
 			bool rComplete = (Options.loadedFromMainMenu) ? true : (racingScore >= passingRacingScore);
 			bool dComplete = (Options.loadedFromMainMenu) ? true : (deathMatchScore >= passingDeathMatchScore);
 			if (!Options.loadedFromMainMenu)

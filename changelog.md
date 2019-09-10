@@ -1,6 +1,17 @@
 # What's New
 On this page you'll find a list of all updates made to Three-D Velocity since it's open-source push on January 21, 2017. The binary distribution incorporates all of the changes listed here. The Master branch might be ahead of this change log.
 
+## 2.44, released on 09/10/2019
+
+### Added
+- When in a brawl, the player can now press the increase and decrease music commands (F7 and F6 by default) to change the volume of the background music ([#109](../../issues/109))
+
+### Fixed
+- Documentation updates such as correcting the description of the ailerons on the glossary and noting the switch to `SharpDX` from `SlimDX` ([#111](../../issues/111))
+- In a brawl, all sounds would be muted indefinitely. This was a consequence to the switch to XAudio2 since the brawl sounds were loaded onto the same device that aircraft sounds are sent to, effectively muting them ([#107](../../issues/107))
+- During a brawl, if the player pressed H to get their health status or T to get the opponent's health status, and they chose to have status messages read using a screen-reader, the selection would not be honored and TDV would continue to self voice the output of these commands. Also, if the player chose to have status messages read using self-voicing, the numbers would be read in Captain Chase's voice instead of the radar voice ([#108](../../issues/108))
+- If a screen-reader was chosen as output, TDV would crash on a negative number due to improper conversion of a negative number to its equivalent in words ([#110](../../issues/110))
+
 ## 2.43, released on 09/07/2019
 
 ### Added
