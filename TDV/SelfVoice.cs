@@ -491,6 +491,11 @@ namespace TDV
 
 		public static String convertToWords(String value)
 		{
+			bool negative = false;
+			if (value.StartsWith("-")) {
+				value = value.Substring(1);
+				negative = true;
+			}
 			int thePoint = value.IndexOf(".");
 			String number = (thePoint > -1)?value.Substring(0, thePoint):value;
 			String fraction = (thePoint > -1) ? value.Substring(thePoint + 1) : "";
@@ -525,6 +530,8 @@ namespace TDV
 				for (int i = 0, n = fraction.Length; i < n; i++)
 					res += " " + getWordDigit(fraction[i].ToString());
 			}
+			if (negative)
+				res = "negative " + res;
 			return res;
 		}
 
