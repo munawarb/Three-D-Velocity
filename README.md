@@ -10,6 +10,7 @@
 * [What's new](#what's-new)
   * [Updating From Previous Versions](#updating-from-previous-versions)
 * [Downloading the game](#downloading-the-game)
+  * [Dependencies](#dependencies)
 * [The Multiplayer Server](#the-multiplayer-server)
 * [Parental Advisory](#parental-advisory)
 
@@ -74,6 +75,9 @@ To get feedback during the update process, turn on "progress bar announcements" 
 There are several ways to download TDV, depending on your situation and what you want.
 
 If you find any bugs or have any suggestions, please post them on the [Issues Page.](https://github.com/munawarb/Three-D-Velocity/issues)
+
+### Dependencies
+TDV uses XAudio2 to output sound. XAudio2 is not guaranteed to exist on all systems, no matter how new. If you get an XAudio2 or DirectX error at startup, please download and install the [DirectX Web Installer from Microsoft](https://www.microsoft.com/en-us/download/details.aspx?id=35). TDV also requires .NET framework 4.7.2 or higher, which you should already have as part of regular Windows updates.
 
 ### I just want to play it
 If all you want is the executable and supporting files and you're not interested in the source code, you can always [download the latest version here](https://github.com/munawarb/Three-D-Velocity-Binaries/archive/master.zip).
