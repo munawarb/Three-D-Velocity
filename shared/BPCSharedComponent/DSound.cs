@@ -61,7 +61,15 @@ namespace BPCSharedComponent.ExtendedAudio
 			NumPath = NSoundPath + "\\ns";
 			mainSoundDevice = new XAudio2();
 			mainMasteringVoice = new MasteringVoice(mainSoundDevice);
-			x3DAudio = new X3DAudio((Speakers)mainMasteringVoice.ChannelMask);
+			if (mainSoundDevice.Version == XAudio2Version.Version27)
+			{
+				WaveFormatExtensible deviceFormat = mainSoundDevice.GetDeviceDetails(0).OutputFormat;
+				x3DAudio = new X3DAudio(deviceFormat.ChannelMask);
+			}
+			else
+			{
+				x3DAudio = new X3DAudio((Speakers)mainMasteringVoice.ChannelMask);
+			}
 			musicDevice = new XAudio2();
 			musicMasteringVoice = new MasteringVoice(musicDevice);
 			alwaysLoudDevice = new XAudio2();
@@ -319,7 +327,14 @@ namespace BPCSharedComponent.ExtendedAudio
 		/// <param name="pan">The value by which to pan the sound. -1.0f is completely left, and 1.0f is completely right. 0.0f is center.</param>
 		public static void setPan(ExtendedAudioBuffer sound, float pan)
 		{
-			SpeakerConfiguration mask = (SpeakerConfiguration)mainMasteringVoice.ChannelMask;
+			SpeakerConfiguration mask;
+			if (mainSoundDevice.Version == XAudio2Version.Version27)
+			{
+				WaveFormatExtensible deviceFormat = mainSoundDevice.GetDeviceDetails(0).OutputFormat;
+				mask = (SpeakerConfiguration)deviceFormat.ChannelMask;
+			}
+			else
+				mask = (SpeakerConfiguration)mainMasteringVoice.ChannelMask;
 			float[] outputMatrix = new float[8];
 			float left = 0.5f - pan / 2;
 			float right = 0.5f + pan / 2;
