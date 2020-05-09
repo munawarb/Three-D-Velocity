@@ -31,8 +31,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			quad = Speakers.FrontLeft|Speakers.FrontRight|Speakers.BackLeft|Speakers.BackRight,
 			fourPointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight,
 			fivePointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.FrontCenter|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight,
-			// SharpDX doesn't define constants for leftOfCenter and rightOfCenter. These constants were obtained from https://devel.nuclex.org/external/svn/directx/trunk/include/audiodefs.h
-			sevenPointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.FrontCenter|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight | 0x00000040 | 0x00000080,
+			sevenPointOne = Speakers.FrontLeft|Speakers.FrontRight|Speakers.FrontCenter|Speakers.LowFrequency|Speakers.BackLeft|Speakers.BackRight | Speakers.FrontLeftOfCenter | Speakers.FrontRightOfCenter,
 			fivePointOneSurround = Speakers.FrontLeft | Speakers.FrontRight | Speakers.FrontCenter | Speakers.LowFrequency | Speakers.SideLeft | Speakers.SideRight,
 			sevenPointOneSurround = Speakers.FrontLeft | Speakers.FrontRight | Speakers.FrontCenter | Speakers.LowFrequency | Speakers.BackLeft|Speakers.BackRight| Speakers.SideLeft | Speakers.SideRight
 		}
@@ -321,7 +320,8 @@ namespace BPCSharedComponent.ExtendedAudio
 
 		/// <summary>
 		/// Pans a sound.
-		/// This method was written using the guide at https://docs.microsoft.com/en-us/windows/win32/xaudio2/how-to--pan-a-sound
+		/// This method was initially written using the guide at https://docs.microsoft.com/en-us/windows/win32/xaudio2/how-to--pan-a-sound
+		/// The code has finally been improved thanks to the MonoGame framework code: https://github.com/MonoGame/MonoGame
 		/// </summary>
 		/// <param name="sound">The sound to pan.</param>
 		/// <param name="pan">The value by which to pan the sound. -1.0f is completely left, and 1.0f is completely right. 0.0f is center.</param>
@@ -335,40 +335,47 @@ namespace BPCSharedComponent.ExtendedAudio
 			}
 			else
 				mask = (SpeakerConfiguration)mainMasteringVoice.ChannelMask;
-			float[] outputMatrix = new float[8];
-			float left = 0.5f - pan / 2;
-			float right = 0.5f + pan / 2;
-			switch(mask) {
-				case SpeakerConfiguration.mono:
-					outputMatrix[0] = 1.0f;
-					break;
-				case SpeakerConfiguration.stereo:
-				case SpeakerConfiguration.twoPointOne:
-				case SpeakerConfiguration.surround:
-					outputMatrix[0] = left;
-					outputMatrix[1] = right;
-					break;
-				case SpeakerConfiguration.quad:
-					outputMatrix[0] = outputMatrix[2] = left;
-					outputMatrix[1] = outputMatrix[3] = right;
-					break;
-				case SpeakerConfiguration.fourPointOne:
-					outputMatrix[0] = outputMatrix[3] = left;
-					outputMatrix[1] = outputMatrix[4] = right;
-					break;
-				case SpeakerConfiguration.fivePointOne:
-				case SpeakerConfiguration.sevenPointOne:
-				case SpeakerConfiguration.fivePointOneSurround:
-					outputMatrix[0] = outputMatrix[4] = left;
-					outputMatrix[1] = outputMatrix[5] = right;
-					break;
-				case SpeakerConfiguration.sevenPointOneSurround:
-					outputMatrix[0] = outputMatrix[4] = outputMatrix[6] = left;
-					outputMatrix[1] = outputMatrix[5] = outputMatrix[7] = right;
-					break;
-			}
 			VoiceDetails soundDetails = sound.getVoiceDetails();
 			VoiceDetails masteringDetails = mainMasteringVoice.VoiceDetails;
+			int srcChannelCount = soundDetails.InputChannelCount;
+			int dstChannelCount = masteringDetails.InputChannelCount;
+			// Create an array to hold the output matrix. Warning : the minimum size of the output matrix is the number of channels in the source voice times the number of channels in the output voice.
+			// Note that the outputMatrix indices are placed in the same order as the SharpDX.Multimedia.Speakers enum.  
+			// Don't forget there are two times more cells in the matrix if the source sound is stereo)
+			float[] outputMatrix = new float[srcChannelCount * dstChannelCount];
+			Array.Clear(outputMatrix, 0, outputMatrix.Length);
+			// From there, we'll hope that the sound file is either mono or stereo. If the WAV had more than 2 channels, it would be to difficult to handle. 
+			// Similarly, we'll also only output to the front-left and front-right speakers for simplicity, e.g. like the XNA framework does. 
+			if (srcChannelCount == 1) // Mono source
+			{
+				// Left/Right output levels:
+				//   Pan -1.0: L = 1.0, R = 0.0
+				//   Pan  0.0: L = 1.0, R = 1.0
+				//   Pan +1.0: L = 0.0, R = 1.0
+				outputMatrix[0] = (pan > 0f) ? ((1f - pan)) : 1f; // Front-left output
+				outputMatrix[1] = (pan < 0f) ? ((1f + pan)) : 1f; // Front-right output
+			}
+			else if (srcChannelCount == 2) // Stereo source
+			{
+				// Left/Right input (Li/Ri) mix for Left/Right outputs (Lo/Ro):
+				//   Pan -1.0: Lo = 0.5Li + 0.5Ri, Ro = 0.0Li + 0.0Ri
+				//   Pan  0.0: Lo = 1.0Li + 0.0Ri, Ro = 0.0Li + 1.0Ri
+				//   Pan +1.0: Lo = 0.0Li + 0.0Ri, Ro = 0.5Li + 0.5Ri
+				if (pan <= 0f)
+				{
+					outputMatrix[0] = 1f + pan * 0.5f; // Front-left output, Left input
+					outputMatrix[1] = -pan * 0.5f; // Front-left output, Right input
+					outputMatrix[2] = 0f; // Front-right output, Left input
+					outputMatrix[3] = 1f + pan; // Front-right output, Right input
+				}
+				else
+				{
+					outputMatrix[0] = 1f - pan; // Front-left output, Left input
+					outputMatrix[1] = 0f; // Front-left output, Right input
+					outputMatrix[2] = pan * 0.5f; // Front-right output, Left input
+					outputMatrix[3] = 1f - pan * 0.5f; // Front-right output, Right input
+				}
+			}
 			sound.setOutputMatrix(soundDetails.InputChannelCount, masteringDetails.InputChannelCount, outputMatrix);
 		}
 
