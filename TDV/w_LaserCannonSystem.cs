@@ -64,7 +64,6 @@ namespace TDV
 
 			if (inFiringRange())
 			{
-				cannonLaunch.stop();
 				origTarget.hit(true);
 				fireHitEvent(origTarget, 0);
 				weapon.lCSTarget = origTarget;
