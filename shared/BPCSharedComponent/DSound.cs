@@ -344,7 +344,7 @@ namespace BPCSharedComponent.ExtendedAudio
 			// Don't forget there are two times more cells in the matrix if the source sound is stereo)
 			float[] outputMatrix = new float[srcChannelCount * dstChannelCount];
 			Array.Clear(outputMatrix, 0, outputMatrix.Length);
-			// From there, we'll hope that the sound file is either mono or stereo. If the WAV had more than 2 channels, it would be toO difficult to handle. 
+			// From there, we'll hope that the sound file is either mono or stereo. If the WAV had more than 2 channels, it would be too difficult to handle. 
 			// Similarly, we'll also only output to the front-left and front-right speakers for simplicity, e.g. like the XNA framework does. 
 			if (srcChannelCount == 1) // Mono source
 			{
