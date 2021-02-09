@@ -243,6 +243,7 @@ namespace TDV
 		private const float retractGearAltitude = 1000f;
 		protected const float minAltitude = 10000f; // Expressed in feet.
 		protected const float maxAltitude = 90000f; // Expressed in feet.
+		protected const int maxRefuelCount = 5; // maximum number of times the refueler can be called in mission mode
 		private int sectorX, sectorY;
 		private int lastDirection;
 		private OpenPositions openPosition, lastOpenPosition;
@@ -2085,7 +2086,7 @@ weapon.firingRange);
 					Common.executeSvOrSr(() => SelfVoice.NLS(Interaction.getSector((Projector)this), true, true), () => SapiSpeech.speak(Interaction.getSector((Projector)this, false), flag), Options.statusVoiceMode);
 					return true;
 				case Status.refuelerCount:
-					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(Mission.refuelCount, true), () => SapiSpeech.speak("" + Mission.refuelCount, flag), Options.statusVoiceMode);
+					Common.executeSvOrSr(() => SelfVoice.VoiceNumber(maxRefuelCount - Mission.refuelCount, true), () => SapiSpeech.speak("" + (maxRefuelCount - Mission.refuelCount), flag), Options.statusVoiceMode);
 					return true;
 				case Status.lap:
 					if (Options.mode == Options.Modes.racing)
@@ -3510,7 +3511,7 @@ weapon.firingRange);
 			}
 			Interaction.stopAndMute(false);
 			pauseInput();
-			String[] oArray = { (Mission.refuelCount < 5) ? "r.wav" : "", "ac.wav" };
+			String[] oArray = { (Mission.refuelCount < maxRefuelCount) ? "r.wav" : "", "ac.wav" };
 			int index = Common.sVGenerateMenu(null, oArray);
 			if (index == 0) {
 				callingRefueler = true;
